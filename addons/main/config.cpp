@@ -18,9 +18,9 @@ class CfgPatches
         weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium"};
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu"};
-        version = 0.5;
-        versionStr = "0.5.0";
-        versionAr[] = {0,5,0};
+        version = 0.6;
+        versionStr = "0.6.0";
+        versionAr[] = {0,6,0};
     };
 };
 
@@ -78,6 +78,9 @@ class CfgFunctions
 
         // 4. Baski altinda artan sway
         #include "stress\CfgFunctions.hpp"
+
+        // 5. Mermi yakin gecis (crack) + ekran efekti + HUD
+        #include "crack\CfgFunctions.hpp"
     };
 };
 

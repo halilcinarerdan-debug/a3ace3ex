@@ -19,3 +19,6 @@ call TAC_fnc_recoilPostInit;
 
 // 4. Baskı altında artan sway
 call TAC_fnc_stressPostInit;
+
+// 5. Mermi yakın geçiş (crack)
+call TAC_fnc_crackPostInit;

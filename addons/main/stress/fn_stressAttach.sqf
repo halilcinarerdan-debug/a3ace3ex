@@ -25,10 +25,13 @@ if (!isNull _oldUnit) then {
 if (isNull _newUnit || {(_newUnit getVariable ["TAC_stress_ehSuppressed", -1]) >= 0}) exitWith {};
 
 // Suppressed: [unit, distance, shooter, instigator, ammoObject, ammoClassName, ammoConfig]
+// Dagitilan CBA olayi: [unit, mesafe, atici, muhimmat, mermi hizi (m/s, bilinmiyorsa -1)]
 private _id = _newUnit addEventHandler ["Suppressed", {
-    params ["_unit", "_distance", "_shooter", "", "", "_ammoClass"];
+    params ["_unit", "_distance", "_shooter", "", "_ammoObject", "_ammoClass"];
 
-    ["TAC_suppressed", [_unit, _distance, _shooter, _ammoClass]] call CBA_fnc_localEvent;
+    private _speed = if (isNull _ammoObject) then {-1} else {vectorMagnitude (velocity _ammoObject)};
+
+    ["TAC_suppressed", [_unit, _distance, _shooter, _ammoClass, _speed]] call CBA_fnc_localEvent;
 }];
 
 _newUnit setVariable ["TAC_stress_ehSuppressed", _id];

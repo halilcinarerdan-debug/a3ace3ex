@@ -12,7 +12,7 @@ Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey
 | 2 | Gelişmiş NVG pili ve efektleri | ✅ hazır (test bekliyor) |
 | 3 | Kalibreye göre dinamik recoil | ✅ hazır (test bekliyor) |
 | 4 | Baskı altında artan sway | ✅ hazır (test bekliyor) |
-| 5 | Mermi yakın geçiş (crack) + ekran efekti + HUD kapatma | ⏳ |
+| 5 | Mermi yakın geçiş (crack) + ekran efekti + HUD kapatma | ✅ hazır (test bekliyor) |
 | 6 | Aiming deadzone / silah inertiası | ⏳ |
 
 Her özelliğin kendi CBA "aktif" ayarı vardır; parça parça test ederken diğerlerini kapatabilirsin.
@@ -80,6 +80,14 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
         fn_stressTick.sqf                seviyeyi düşürür, çarpanı uygular (yalnızca stres varken)
         fn_stressReset.sqf               temel değeri geri yazar, döngüyü kaldırır
         fn_stressDebug.sqf               teşhis (call TAC_fnc_stressDebug)
+    crack/                               5. özellik
+        CfgFunctions.hpp
+        fn_crackInitSettings.sqf         CBA ayarları
+        fn_crackPostInit.sqf             "TAC_suppressed" dinleyicisi + CBA "unit" olayı
+        fn_crackOnSuppressed.sqf         koşullar: mesafe, hız (>343 m/s), dost, bekleme
+        fn_crackStart.sqf                blur + vignette + HUD gizleme, zamanlayıcılar
+        fn_crackEnd.sqf                  temizlik + HUD'u geri yükleme
+        fn_crackDebug.sqf                teşhis (call TAC_fnc_crackDebug)
 ```
 
 ## Mikero ile derleme
@@ -426,6 +434,50 @@ Her şey yerel oyuncuda; ağa hiçbir şey yayınlanmaz, sunucuya yük sıfır. 
 5. Sway etkisi görünmüyorsa `TAC_stress_swayVar`a ACE'nin gerçek değişken adını yaz ve `stressDebug` çıktısını gönder.
 
 > Not: ACE gelişmiş yorgunluk sway çarpanını belirli aralıklarla okur; etki ilk anda saniyenin kesri kadar gecikebilir.
+
+## Özellik 5 – Mermi yakın geçiş (crack) + tam ekran efekti + HUD kapatma
+
+Ses hızından (343 m/s) hızlı bir mermi oyuncunun kafasından **2-3 m** yakından geçerse 1-2 sn'lik şok dalgası efekti:
+
+- **Tam ekran bulanıklık:** `DynamicBlur` PP efekti.
+- **Kenar kararması (vignette):** ekran kenarlarından içe doğru şeffaflaşan 10 kademeli koyu bantlar (display 46 üzerinde geçici kontroller, efekt bitince silinir).
+- **HUD kapanır:** `showHUD false`. Efektten önceki HUD durumu (`shownHUD`) saklanır ve efekt bitince **aynen** geri yüklenir (HUD'u zaten gizleyen bir mission varsa bozulmaz).
+- **Zaman çizelgesi:** ilk ~%40 tam şiddet, kalanı sönümlenir. Efekt arada yeniden tetiklenirse eski zamanlayıcılar geçersiz sayılır (jeton), HUD iki kez kaydedilmez.
+
+**Tetikleme koşulları (hepsi):** modül açık ve oyuncu hayatta · mermi `Tetik mesafesi` (3 m) içinden geçti · hız `Minimum hız`
+(343 m/s) üstünde (hız olaydaki **gerçek mermi nesnesinden**, alınamazsa config `typicalSpeed`) · atıcı dost değil · bekleme süresi (3 sn) doldu.
+Olay 4. özellikteki `Suppressed` dinleyicisinden gelir (`TAC_suppressed`); ek maliyet yoktur, döngü yoktur.
+
+### CBA ayarları (`... > TAC - Gerçekçilik Paketi > Mermi yakın geçiş (crack)`)
+
+| Ayar | Varsayılan |
+|------|-----------|
+| `TAC_crack_enabled` | açık |
+| `TAC_crack_dist` (tetik mesafesi, m) | 3 |
+| `TAC_crack_minSpeed` (m/s) | 343 |
+| `TAC_crack_duration` (sn) | 1.6 |
+| `TAC_crack_blur` (bulanıklık) | 1.2 |
+| `TAC_crack_vignette` (kenar kararması) | 0.85 |
+| `TAC_crack_hideHud` | açık |
+| `TAC_crack_cooldown` (sn) | 3 |
+| `TAC_crack_friendly` (dost atışı) | kapalı |
+| `TAC_crack_debug` (test göstergesi) | kapalı, kişisel |
+
+Hepsi global ve `cba_settings.sqf` ile `force` edilebilir (`TAC_crack_debug` hariç).
+
+### MP mantığı (crack)
+
+Tamamen yerel oyuncuda; ağa hiçbir şey yayınlanmaz, sunucuya yük sıfır. Yapay zekâ için kod çalışmaz.
+
+### Test adımları
+
+1. Debug konsolunda (**Yerel çalıştır**): `call TAC_fnc_crackStart`. Blur + vignette + HUD kapanması ~1.6 sn sürüp HUD geri gelmeli.
+2. Gerçek geçişi taklit: `["TAC_suppressed", [ACE_player, 1.5, objNull, "B_762x51_Ball", 800]] call CBA_fnc_localEvent`. Hız 300 yap: tetiklenmemeli. Mesafeyi 5 yap: tetiklenmemeli.
+3. `Test göstergesi`ni aç: her mermi geçişi için `hız / mesafe / TETİKLENDİ veya atlandı: neden` yazar.
+4. Gerçek test: Zeus ile bir AI'ya oyuncunun çok yakınından ateş ettir. Bekleme süresi (3 sn) içinde ikinci efekt çıkmamalı.
+5. `call TAC_fnc_crackDebug` ile durum raporu al (efekt takılı kalırsa `[-1] call TAC_fnc_crackEnd` ile zorla temizle).
+
+> Not: ACE gibi arayüz modlarının kendi öğeleri `showHUD`'a bağlı değilse ekranda kalabilir. HUD'u geri yükleyen kod `shownHUD` değerini birebir kullanır.
 
 ## Yeni özellik ekleme
 
