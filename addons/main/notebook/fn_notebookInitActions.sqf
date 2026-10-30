@@ -1,32 +1,19 @@
 /*
-    Fonksiyon: TAC_fnc_notebookInit
-    Çalışma yeri: İstemci (yalnızca LOCAL oyuncu)
+    Fonksiyon: TAC_fnc_notebookInitActions
+    Çalışma yeri: İstemci (postInit)
 
-    Oyuncuya ACE self-interaction menüsüne şu ağacı ekler:
+    ACE self-interaction menüsüne şu ağacı ekler:
         Taktiksel Not Defteri
             ├─ Not Al
             └─ Notları Oku
 
-    Tekrar çağrılması güvenlidir (unit üzerindeki bayrak ile korunur): hem
-    initPlayerLocal.sqf hem onPlayerRespawn.sqf çağırabilir.
+    Eylemler tek bir kez, SINIFA (CAManBase, kalıtımla tüm askerler) eklenir. Self-interaction
+    menüsü yalnızca oyuncunun kontrol ettiği birim için açıldığından respawn / JIP / selectPlayer
+    sonrası eylemleri yeniden eklemeye gerek yoktur.
 
-    Parametreler:
-        0: OBJECT - eylemlerin ekleneceği oyuncu birimi
-
+    Parametreler: yok
     Dönüş: yok
 */
-
-params [["_unit", objNull, [objNull]]];
-
-if (isNull _unit) exitWith {};
-
-if (isNil "ace_interact_menu_fnc_createAction") exitWith {
-    diag_log "[TAC] HATA: ACE3 interaction menüsü bulunamadı.";
-};
-
-// ACE eylemleri OBJEYE bağlıdır; respawn'da yeni obje gelir. Aynı obje için çift ekleme yapma.
-if (_unit getVariable ["TAC_notebook_actionsAdded", false]) exitWith {};
-_unit setVariable ["TAC_notebook_actionsAdded", true];
 
 // Kök eylem: yalnızca gerekli eşya varken ve oyuncu ayaktayken görünür.
 // Koşul kodu ACE menüsü açıkken her karede çalışır -> sadece ucuz kontroller.
@@ -45,7 +32,7 @@ private _rootAction = [
     }
 ] call ace_interact_menu_fnc_createAction;
 
-[_unit, 1, ["ACE_SelfActions"], _rootAction] call ace_interact_menu_fnc_addActionToObject;
+["CAManBase", 1, ["ACE_SelfActions"], _rootAction, true] call ace_interact_menu_fnc_addActionToClass;
 
 // Not Al: yazma sürerken tekrar basılmasın.
 private _addAction = [
@@ -62,7 +49,7 @@ private _addAction = [
     }
 ] call ace_interact_menu_fnc_createAction;
 
-[_unit, 1, ["ACE_SelfActions", "TAC_notebook"], _addAction] call ace_interact_menu_fnc_addActionToObject;
+["CAManBase", 1, ["ACE_SelfActions", "TAC_notebook"], _addAction, true] call ace_interact_menu_fnc_addActionToClass;
 
 // Notları Oku
 private _readAction = [
@@ -75,4 +62,4 @@ private _readAction = [
     {true}
 ] call ace_interact_menu_fnc_createAction;
 
-[_unit, 1, ["ACE_SelfActions", "TAC_notebook"], _readAction] call ace_interact_menu_fnc_addActionToObject;
+["CAManBase", 1, ["ACE_SelfActions", "TAC_notebook"], _readAction, true] call ace_interact_menu_fnc_addActionToClass;

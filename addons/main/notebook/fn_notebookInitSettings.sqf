@@ -1,6 +1,6 @@
 /*
     Fonksiyon: TAC_fnc_notebookInitSettings
-    Çalışma yeri: TÜM makineler (preInit)
+    Çalışma yeri: TÜM makineler (XEH_preInit.sqf çağırır)
 
     CBA ayarlarını CBA_settings_fnc_init ile kaydeder (CBA_fnc_addSetting ile aynı fonksiyon).
     Sunucu da kaydetmek ZORUNDA: "global" ayarlar sunucudan istemcilere senkronlanır ve
@@ -15,10 +15,6 @@
         5: isGlobal - true: sunucu ayarı, istemcilere senkron + force edilebilir
                       false: her oyuncunun kendi tercihi
 */
-
-if (isNil "CBA_settings_fnc_init") exitWith {
-    diag_log "[TAC] HATA: CBA_A3 bulunamadı, Not Defteri ayarları kaydedilemedi.";
-};
 
 private _category = ["TAC - Gerçekçilik Paketi", "Taktiksel Not Defteri"];
 
