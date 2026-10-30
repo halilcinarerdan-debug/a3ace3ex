@@ -31,12 +31,17 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
     notebook/                            1. özellik
         CfgFunctions.hpp
         fn_notebookInitSettings.sqf      CBA ayarları (CBA_settings_fnc_init)
-        fn_notebookInitActions.sqf       ACE self-action ağacı (sınıfa eklenir)
+        fn_notebookInitActions.sqf       ACE self-action ağacı (sınıfa eklenir, moda göre)
         fn_notebookPostInit.sqf          CBA olay dinleyicileri
+        fn_notebookCanUse.sqf            menü görünme koşulu (eşya, hayatta, bilinç)
+        -- Basit mod --
         fn_notebookAddNote.sqf           "Not Al": anı yakala + ilerleme çubuğu
         fn_notebookStoreNote.sqf         yerel listeye yaz + CBA olayı
         fn_notebookShow.sqf              "Notları Oku": kaydırılabilir pencere
         fn_notebookFormatEntry.sqf       kayıt -> metin
+        -- Gelişmiş mod --
+        fn_notebookOpenPad.sqf           Notepad benzeri düz metin editörü
+        fn_notebookPadSave.sqf           metni yerel depoya yazar + karakter sayacı
 ```
 
 ## Mikero ile derleme
@@ -70,13 +75,28 @@ global ayarlar senkronlanmaz ve force çalışmaz.
 
 ## Özellik 1 – Taktiksel Not Defteri
 
-**ACE self-interaction** (varsayılan: `Ctrl + Sol Windows`) → `Taktiksel Not Defteri`:
+İki mod vardır; `TAC_notebook_mode` CBA ayarıyla seçilir (varsayılan: **Gelişmiş**) ve sunucudan zorlanabilir.
+Menü yalnızca oyuncunun elinde/üstünde `ItemCompass` (veya ayarlanan eşya) varsa görünür.
+
+### Gelişmiş mod – serbest yazı (Notepad)
+
+**ACE self-interaction** (varsayılan: `Ctrl + Sol Windows`) → `Not Defteri` tek tıkla düz bir metin editörü açar.
+Oyuncu istediğini yazar; süslü arayüz yok: bir yazı kutusu, başlıkta karakter sayacı, iki düğme.
+
+- Metin her tuş bırakılışında yerel olarak saklanır. `ESC` veya `KAYDET VE KAPAT` ile kapanır; yeniden açınca kaldığın yerden devam edersin.
+- `ZAMAN / KONUM EKLE`: metnin sonuna `[30.10 14:32 | Grid 123456 | 087° | 142 m ASL] ` ekler (basit moddaki otomatik kayıt).
+- Pencere modaldır: yazarken WASD vb. oyunu etkilemez.
+- Maksimum uzunluk `TAC_notebook_maxChars` ile sınırlıdır (varsayılan 5000 karakter), aşan kısım kesilir.
+
+### Basit mod – otomatik kayıt
+
+`Taktiksel Not Defteri` alt menüsü:
 
 - **Not Al**: o anki oyun içi tarih/saat, grid koordinatı, yön (derece) ve irtifayı kaydeder.
   Ayarlardaki süre kadar ACE ilerleme çubuğu gösterir (varsayılan 2 sn).
 - **Notları Oku**: kayıtları en yeni üstte olacak şekilde pencerede gösterir. `TEMİZLE` hepsini siler, `KAPAT`/`ESC` kapatır.
 
-Menü yalnızca oyuncunun elinde/üstünde `ItemCompass` (veya ayarlanan eşya) varsa görünür.
+Bu mod, test edilip çalıştığı doğrulanan ilk sürümün (commit `f542715`) aynısıdır.
 
 ### CBA ayarları (`Options > Addon Options > TAC - Gerçekçilik Paketi`)
 
@@ -84,15 +104,18 @@ Menü yalnızca oyuncunun elinde/üstünde `ItemCompass` (veya ayarlanan eşya) 
 |------|-----------|--------|
 | `TAC_notebook_enabled` | açık | global (force edilebilir) |
 | `TAC_notebook_itemClass` | `ItemCompass` | global |
-| `TAC_notebook_maxEntries` | 40 (5–100) | global |
-| `TAC_notebook_writeTime` | 2 sn (0–10) | global |
-| `TAC_notebook_clearOnDeath` | kapalı | global |
-| `TAC_notebook_notify` | açık | kişisel (istemci) |
+| `TAC_notebook_mode` | 1 = Gelişmiş (0 = Basit) | global |
+| `TAC_notebook_maxChars` | 5000 (500–20000), yalnız Gelişmiş | global |
+| `TAC_notebook_maxEntries` | 40 (5–100), yalnız Basit | global |
+| `TAC_notebook_writeTime` | 2 sn (0–10), yalnız Basit | global |
+| `TAC_notebook_clearOnDeath` | kapalı (iki modda da geçerli) | global |
+| `TAC_notebook_notify` | açık, yalnız Basit | kişisel (istemci) |
 
 Sunucudan zorlamak için sunucunun `userconfig/cba_settings.sqf` dosyasını (veya mission köküne `cba_settings.sqf`) kullan:
 
 ```sqf
 force force TAC_notebook_enabled = true;
+force force TAC_notebook_mode = 1;
 force force TAC_notebook_itemClass = "ItemCompass";
 force force TAC_notebook_writeTime = 3;
 force force TAC_notebook_clearOnDeath = true;
@@ -104,7 +127,8 @@ force force TAC_notebook_clearOnDeath = true;
 - **Eylemler ve veri**: tamamen **istemci tarafı** (`XEH_postInit` içinde `hasInterface` kontrolü). ACE menüsü yerel arayüzdür; notlar yalnızca o oyuncunun `missionNamespace`'inde durur ve ağa **yayınlanmaz**. Sunucuya yük sıfır; döngü, `waitUntil` ya da `onEachFrame` yok.
 - **Respawn / JIP**: eylemler `CAManBase` sınıfına bir kez eklenir (ACE kalıtımla tüm askerlere uygular), self-menü zaten yalnızca oyuncunun kendi birimi için açılır. Bu yüzden respawn, JIP, `selectPlayer` sonrası eylemleri yeniden eklemek gerekmez.
   `Ölünce notlar silinsin` ayarı CBA `"unit"` oyuncu olayıyla işler (eski birim ölüyse, respawn sayılır).
-- Notlar bağlantı kopunca sıfırlanır (kalıcılık gerekirse sonraki adımda eklenebilir).
+- Gelişmiş modda yazılan metin de aynı şekilde yalnızca istemcide (`TAC_notebook_text`) durur, ağa yayınlanmaz.
+- Notlar/metin bağlantı kopunca sıfırlanır (kalıcılık gerekirse sonraki adımda eklenebilir).
 
 ### Test adımları
 
@@ -114,13 +138,19 @@ Mission dosyası gerekmez; mod her mission'da çalışır.
 2. Eden'de bir oyuncu birimi koy ve `Play Scenario`. Debug konsolunda (yerel çalıştır) yükleme kontrolü:
    - `isClass (configFile >> "CfgPatches" >> "tac_main")` → `true`
    - `isNil "TAC_fnc_notebookShow"` → `false`
-3. `Ctrl + Sol Windows` → **Taktiksel Not Defteri** → **Not Al** → ilerleme çubuğu → onay mesajı. **Notları Oku** ile kaydı gör. Ham veri: `TAC_notebook_entries`.
-4. Eşya kontrolü: `player unlinkItem "ItemCompass"` → menü kaybolmalı; `player linkItem "ItemCompass"` → geri gelmeli.
-5. Respawn: Eden'de `Play Scenario in Multiplayer` ile, oyuncu birimi özelliklerinde / mission ayarlarında respawn aç, konsolda `player setDamage 1`.
-   Yeniden doğunca menü yine görünmeli ve notlar duruyor olmalı. `Ölünce notlar silinsin` ayarını açıp tekrar dene: defter boş gelmeli.
-6. Gerçek MP (host veya dedicated + en az 2 istemci): A oyuncusu not alınca B'nin defteri boş kalmalı (notlar kişiye özel).
-   `cba_settings.sqf` ile `force` ettiğin ayar istemcide kilitli görünmeli.
-7. Hata varsa `%LOCALAPPDATA%\Arma 3\*.rpt` içinde script hatalarına ve `TAC_` geçen satırlara bak (`-showScriptErrors` ile başlat).
+3. **Gelişmiş mod** (varsayılan): `Ctrl + Sol Windows` → **Not Defteri**. Editör açılır; bir şeyler yaz, `ZAMAN / KONUM EKLE`'ye bas,
+   `ESC` ile kapat, tekrar aç: metin duruyor olmalı. Ham veri: `TAC_notebook_text`.
+   Yazarken karakterin hareket etmediğini ve başlıktaki sayacın arttığını kontrol et.
+   Sınır testi: debug konsolunda `TAC_notebook_maxChars = 500;` yapıp 500'den fazla yazmayı dene, fazlası kesilmeli.
+4. **Basit mod**: `Options > Addon Options > TAC` içinde `Not defteri modu`nu Basit yap (ayar anında uygulanır).
+   `Taktiksel Not Defteri` → **Not Al** → ilerleme çubuğu → onay mesajı. **Notları Oku** ile kaydı gör. Ham veri: `TAC_notebook_entries`.
+5. Eşya kontrolü: `player unlinkItem "ItemCompass"` → menü kaybolmalı; `player linkItem "ItemCompass"` → geri gelmeli.
+6. Respawn: Eden'de `Play Scenario in Multiplayer` ile, oyuncu birimi özelliklerinde / mission ayarlarında respawn aç, konsolda `player setDamage 1`.
+   Yeniden doğunca menü yine görünmeli ve notlar/metin duruyor olmalı. `Ölünce notlar silinsin` ayarını açıp tekrar dene: defter boş gelmeli.
+   Editör açıkken ölürsen pencere kapanmalı.
+7. Gerçek MP (host veya dedicated + en az 2 istemci): A oyuncusu yazınca B'nin defteri boş kalmalı (notlar kişiye özel).
+   `cba_settings.sqf` ile `force` ettiğin ayar (örn. `TAC_notebook_mode`) istemcide kilitli görünmeli.
+8. Hata varsa `%LOCALAPPDATA%\Arma 3\*.rpt` içinde script hatalarına ve `TAC_` geçen satırlara bak (`-showScriptErrors` ile başlat).
 
 > Not: Menü ikonları vanilla `ui_f` yollarıdır. Biri bulunamazsa yalnızca ikon boş kalır ve RPT'ye uyarı düşer; işlev etkilenmez.
 > Script değişikliği sonrası PBO'yu yeniden derle; oyun açıkken PBO değiştirilemez.

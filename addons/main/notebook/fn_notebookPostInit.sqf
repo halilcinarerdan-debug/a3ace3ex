@@ -32,7 +32,15 @@ call TAC_fnc_notebookInitActions;
 ["unit", {
     params ["_newUnit", "_oldUnit"];
 
+    // Gelişmiş modda editör açık kalmış olabilir: yazılan metin zaten kayıtlı, pencereyi kapat.
+    private _pad = findDisplay 91700;
+    if (!isNull _pad) then {
+        [_pad] call TAC_fnc_notebookPadSave;
+        _pad closeDisplay 2;
+    };
+
     if (TAC_notebook_clearOnDeath && {!isNull _oldUnit} && {!alive _oldUnit}) then {
         missionNamespace setVariable ["TAC_notebook_entries", []];
+        missionNamespace setVariable ["TAC_notebook_text", ""];
     };
 }] call CBA_fnc_addPlayerEventHandler;

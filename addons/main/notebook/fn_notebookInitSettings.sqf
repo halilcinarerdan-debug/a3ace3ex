@@ -37,9 +37,27 @@ private _category = ["TAC - Gerçekçilik Paketi", "Taktiksel Not Defteri"];
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_notebook_mode",
+    "LIST",
+    ["Not defteri modu", "Basit: 'Not Al' / 'Notları Oku' (otomatik zaman + koordinat). Gelişmiş: oyuncu Notepad gibi serbest metin yazar."],
+    _category,
+    [[0, 1], ["Basit (zaman + koordinat)", "Gelişmiş (serbest yazı)"], 1],
+    true
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_notebook_maxChars",
+    "SLIDER",
+    ["[Gelişmiş] Maksimum karakter", "Serbest yazı modunda not defterine yazılabilecek toplam karakter. Aşılırsa fazlası kesilir."],
+    _category,
+    [500, 20000, 5000, 0],
+    true
+] call CBA_settings_fnc_init;
+
+[
     "TAC_notebook_maxEntries",
     "SLIDER",
-    ["Maksimum not sayısı", "Aşılırsa en eski notlar silinir."],
+    ["[Basit] Maksimum not sayısı", "Aşılırsa en eski notlar silinir."],
     _category,
     [5, 100, 40, 0],
     true
@@ -48,7 +66,7 @@ private _category = ["TAC - Gerçekçilik Paketi", "Taktiksel Not Defteri"];
 [
     "TAC_notebook_writeTime",
     "SLIDER",
-    ["Not yazma süresi (sn)", "ACE ilerleme çubuğu süresi. 0 = anında."],
+    ["[Basit] Not yazma süresi (sn)", "ACE ilerleme çubuğu süresi. 0 = anında."],
     _category,
     [0, 10, 2, 1],
     true

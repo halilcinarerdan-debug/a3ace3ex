@@ -2,8 +2,10 @@
     Fonksiyon: TAC_fnc_notebookInitActions
     Çalışma yeri: İstemci (postInit)
 
-    ACE self-interaction menüsüne şu ağacı ekler:
-        Taktiksel Not Defteri
+    ACE self-interaction menüsüne, "Not defteri modu" ayarına göre şunlardan biri görünür:
+
+      BASİT (0)                          GELİŞMİŞ (1)
+        Taktiksel Not Defteri              Not Defteri   (tek tık -> Notepad benzeri editör)
             ├─ Not Al
             └─ Notları Oku
 
@@ -15,8 +17,11 @@
     Dönüş: yok
 */
 
-// Kök eylem: yalnızca gerekli eşya varken ve oyuncu ayaktayken görünür.
-// Koşul kodu ACE menüsü açıkken her karede çalışır -> sadece ucuz kontroller.
+// ----------------------------------------------------------------------------
+// BASİT MOD
+// ----------------------------------------------------------------------------
+
+// Kök eylem. Koşul kodu ACE menüsü açıkken her karede çalışır -> sadece ucuz kontroller.
 private _rootAction = [
     "TAC_notebook",
     "Taktiksel Not Defteri",
@@ -24,11 +29,7 @@ private _rootAction = [
     {},
     {
         params ["_target", "_player"];
-
-        TAC_notebook_enabled
-        && {alive _player}
-        && {!(_player getVariable ["ACE_isUnconscious", false])}
-        && {(TAC_notebook_itemClass in assignedItems _player) || {TAC_notebook_itemClass in items _player}}
+        TAC_notebook_mode == 0 && {[_player] call TAC_fnc_notebookCanUse}
     }
 ] call ace_interact_menu_fnc_createAction;
 
@@ -63,3 +64,23 @@ private _readAction = [
 ] call ace_interact_menu_fnc_createAction;
 
 ["CAManBase", 1, ["ACE_SelfActions", "TAC_notebook"], _readAction, true] call ace_interact_menu_fnc_addActionToClass;
+
+// ----------------------------------------------------------------------------
+// GELİŞMİŞ MOD: serbest yazı editörü
+// ----------------------------------------------------------------------------
+
+// ACE menüsü seçim anında kendi diyaloğunu kapatır; yeni diyalog bir sonraki karede açılsın.
+private _padAction = [
+    "TAC_notebook_pad",
+    "Not Defteri",
+    "\a3\ui_f\data\igui\cfg\simpletasks\types\documents_ca.paa",
+    {
+        [{call TAC_fnc_notebookOpenPad}] call CBA_fnc_execNextFrame;
+    },
+    {
+        params ["_target", "_player"];
+        TAC_notebook_mode == 1 && {[_player] call TAC_fnc_notebookCanUse}
+    }
+] call ace_interact_menu_fnc_createAction;
+
+["CAManBase", 1, ["ACE_SelfActions"], _padAction, true] call ace_interact_menu_fnc_addActionToClass;

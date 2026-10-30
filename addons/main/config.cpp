@@ -18,10 +18,47 @@ class CfgPatches
         weapons[] = {};
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu"};
-        version = 0.1;
-        versionStr = "0.1.0";
-        versionAr[] = {0,1,0};
+        version = 0.2;
+        versionStr = "0.2.0";
+        versionAr[] = {0,2,0};
     };
+};
+
+// ----------------------------------------------------------------------------
+//  Not Defteri - Gelismis mod: duz metin editoru (Notepad gibi)
+//  Kendi basina duran, vanilla sinifa bagimli olmayan iki sinif:
+//    TAC_RscNotepadEdit : cok satirli yazi kutusu (style 16 = ST_MULTI)
+//    TAC_NotepadDialog  : bos diyalog, kontroller scriptte (ctrlCreate) kurulur
+// ----------------------------------------------------------------------------
+class TAC_RscNotepadEdit
+{
+    idc = -1;
+    type = 2;
+    style = 16;
+    x = 0;
+    y = 0;
+    w = 0.3;
+    h = 0.1;
+    font = "PuristaMedium";
+    sizeEx = 0.04;
+    lineSpacing = 1;
+    shadow = 0;
+    colorBackground[] = {0.08,0.08,0.08,1};
+    colorText[] = {0.92,0.92,0.92,1};
+    colorSelection[] = {0.25,0.45,0.85,1};
+    colorDisabled[] = {1,1,1,0.25};
+    autocomplete = "";
+    text = "";
+    canModify = 1;
+};
+
+class TAC_NotepadDialog
+{
+    idd = 91700;
+    movingEnable = 0;
+    enableSimulation = 1;
+    class controlsBackground {};
+    class controls {};
 };
 
 class CfgFunctions
