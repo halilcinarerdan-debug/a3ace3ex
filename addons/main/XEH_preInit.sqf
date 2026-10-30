@@ -13,3 +13,6 @@ call TAC_fnc_nvgInitSettings;
 
 // 3. Kalibreye göre dinamik recoil
 call TAC_fnc_recoilInitSettings;
+
+// 4. Baskı altında artan sway
+call TAC_fnc_stressInitSettings;

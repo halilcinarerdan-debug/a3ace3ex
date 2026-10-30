@@ -11,7 +11,7 @@ Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey
 | 1 | Taktiksel Not Defteri (ACE etkileşimli) | ✅ hazır |
 | 2 | Gelişmiş NVG pili ve efektleri | ✅ hazır (test bekliyor) |
 | 3 | Kalibreye göre dinamik recoil | ✅ hazır (test bekliyor) |
-| 4 | Baskı altında artan sway | ⏳ |
+| 4 | Baskı altında artan sway | ✅ hazır (test bekliyor) |
 | 5 | Mermi yakın geçiş (crack) + ekran efekti + HUD kapatma | ⏳ |
 | 6 | Aiming deadzone / silah inertiası | ⏳ |
 
@@ -70,6 +70,16 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
         fn_recoilParseOverrides.sqf      istisna tablosunu çözer
         fn_recoilRefresh.sqf             ayar değişince yeniden hesapla
         fn_recoilDebug.sqf               teşhis (call TAC_fnc_recoilDebug)
+    stress/                              4. özellik
+        CfgFunctions.hpp
+        fn_stressInitSettings.sqf        CBA ayarları
+        fn_stressPostInit.sqf            "TAC_suppressed" dinleyicisi + CBA "unit" olayı
+        fn_stressAttach.sqf              oyuncuya "Suppressed" EH bağlar -> TAC_suppressed olayı
+        fn_stressOnSuppressed.sqf        mermi geçişi -> stres seviyesi artışı
+        fn_stressResolveVar.sqf          sway değişkenini bulur (ace_common_swayFactor vb.)
+        fn_stressTick.sqf                seviyeyi düşürür, çarpanı uygular (yalnızca stres varken)
+        fn_stressReset.sqf               temel değeri geri yazar, döngüyü kaldırır
+        fn_stressDebug.sqf               teşhis (call TAC_fnc_stressDebug)
 ```
 
 ## Mikero ile derleme
@@ -371,6 +381,51 @@ ağa hiçbir şey yayınlanmaz, sunucuya yük sıfırdır. Döngü yok, her şey
 3. Aynı silahla `Genel ölçek`i 0.1 ve 3 yapıp recoil farkını hisset; `Maksimum çarpan`ı 1 yapınca recoil'in vanilla'ya döndüğünü doğrula.
 4. Şarjör türü değiştir (ör. normal -> AP): çarpan bir sonraki atışta yeni mühimmata göre güncellenmeli.
 5. Roketatar / araç silahı: çarpan 1 olmalı. Respawn: yeni bedende çarpan hemen yeniden uygulanmalı.
+
+## Özellik 4 – Baskı altında artan sway
+
+Oyuncunun yakınından mermi geçince **stres seviyesi** (0..1) yükselir, ateş kesilince **doğrusal** olarak
+sıfıra iner (varsayılan 15 sn). Sway çarpanı seviyeye göre artar ve **nabız gibi** hafifçe dalgalanır:
+
+`çarpan = 1 + (maksimum - 1) · seviye · (1 + nabız · sin(2π · 1.4 · t))`
+
+- **Algılama:** vanilla `Suppressed` olayı (mermi oyuncunun yanından geçince, mermiye en yakın mesafeyle tetiklenir).
+  Yalnızca oyuncuya bağlıdır. Olay genel bir CBA yerel olayına çevrilir (`TAC_suppressed`); 5. özellik de bunu dinleyecek.
+- **Stres eşiği:** mermi `Stres eşiği: mermi mesafesi` (varsayılan 12 m) içinden geçmeli. Artış mesafeyle azalır:
+  `artış = mermi_başına_artış · (1 - 0.6 · mesafe / eşik)`. Dost atışları varsayılan olarak sayılmaz.
+- **Uygulama:** sway değişkeni otomatik bulunur: `ace_common_swayFactor`, yoksa `ace_advanced_fatigue_swayFactor`,
+  o da yoksa vanilla `setCustomAimCoef`. Stres başlarken temel değer kaydedilir, bitince geri yazılır.
+  Döngü (0.1 sn PFH) **yalnızca stres varken** çalışır.
+
+### CBA ayarları (`... > TAC - Gerçekçilik Paketi > Baskı altında sway`)
+
+| Ayar | Varsayılan |
+|------|-----------|
+| `TAC_stress_enabled` | açık |
+| `TAC_stress_maxMult` (maks. sway çarpanı) | 3.0 |
+| `TAC_stress_range` (eşik mesafe, m) | 12 |
+| `TAC_stress_gain` (mermi başına artış) | 0.30 |
+| `TAC_stress_decay` (sönüm süresi, sn) | 15 |
+| `TAC_stress_pulse` (nabız dalgalanması) | 0.15 |
+| `TAC_stress_friendly` (dost atışı da say) | kapalı |
+| `TAC_stress_swayVar` (sway değişkeni) | `auto` |
+| `TAC_stress_debug` (test göstergesi) | kapalı, kişisel |
+
+Hepsi global ve `cba_settings.sqf` ile `force` edilebilir (`TAC_stress_debug` hariç).
+
+### MP mantığı (stres)
+
+Her şey yerel oyuncuda; ağa hiçbir şey yayınlanmaz, sunucuya yük sıfır. Yapay zekâ için kod çalışmaz.
+
+### Test adımları
+
+1. `Test göstergesi`ni aç. Debug konsolunda (**Yerel çalıştır**) `call TAC_fnc_stressDebug`: `Bulunan sway degiskeni` dolu olmalı.
+2. Yapay stres: `["TAC_suppressed", [ACE_player, 2, objNull, ""]] call CBA_fnc_localEvent` (birkaç kez çalıştır): seviye yükselip ~15 sn'de sıfırlanmalı, silah belirgin sallanmalı.
+3. Gerçek test: Zeus ile bir AI'ya oyuncunun yakınından ateş ettir; mermi geçince sway artmalı. Uzak (12 m üstü) geçişler etki etmemeli.
+4. Bitince `Bulunan sway degiskeni`nin değeri eski haline dönmeli. Respawn'da stres sıfırlanmalı.
+5. Sway etkisi görünmüyorsa `TAC_stress_swayVar`a ACE'nin gerçek değişken adını yaz ve `stressDebug` çıktısını gönder.
+
+> Not: ACE gelişmiş yorgunluk sway çarpanını belirli aralıklarla okur; etki ilk anda saniyenin kesri kadar gecikebilir.
 
 ## Yeni özellik ekleme
 

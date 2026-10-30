@@ -18,9 +18,9 @@ class CfgPatches
         weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium"};
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu"};
-        version = 0.4;
-        versionStr = "0.4.0";
-        versionAr[] = {0,4,0};
+        version = 0.5;
+        versionStr = "0.5.0";
+        versionAr[] = {0,5,0};
     };
 };
 
@@ -75,6 +75,9 @@ class CfgFunctions
 
         // 3. Kaliberye gore dinamik recoil
         #include "recoil\CfgFunctions.hpp"
+
+        // 4. Baski altinda artan sway
+        #include "stress\CfgFunctions.hpp"
     };
 };
 
