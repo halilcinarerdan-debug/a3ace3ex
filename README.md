@@ -354,7 +354,7 @@ Mühimmatın **kinetik enerjisine** göre 5 kategori; her kategori için **tek b
   her atışta o anki mühimmatla (`Fired`, **yalnızca oyuncuda**; yapay zekâ atışları kod çalıştırmaz).
   Mühimmat değişmediyse atış başına tek karşılaştırma yapılır.
 - **Yanlış sınıflanan mühimmat:** `Kategori istisnaları` ayarına `mühimmat=kategori` yaz
-  (`B_762x51_Ball=4; rhs_ammo_556x45_M855A1_Ball=2`). `0` = o mühimmatta recoil değişmesin.
+  (`B_762x51_Ball=4, rhs_ammo_556x45_M855A1_Ball=2`). `0` = o mühimmatta recoil değişmesin.
 
 ### CBA ayarları (`Options > Addon Options > TAC - Gerçekçilik Paketi > Recoil`)
 

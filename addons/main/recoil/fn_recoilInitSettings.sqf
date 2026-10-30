@@ -100,7 +100,7 @@ private _multipliers = [
 [
     "TAC_recoil_overrides",
     "EDITBOX",
-    ["Kategori istisnaları (mühimmat=kategori; ...)", "Yanlış sınıflanan mühimmatı elle ata. Kategori 1-5, 0 = bu mühimmatta recoil değişmesin. Örn: B_762x51_Ball=4; rhs_ammo_556x45_M855A1_Ball=2"],
+    ["Kategori istisnaları (mühimmat=kategori, ...)", "Yanlış sınıflanan mühimmatı elle ata. Kategori 1-5, 0 = bu mühimmatta recoil değişmesin. Örn: B_762x51_Ball=4, rhs_ammo_556x45_M855A1_Ball=2"],
     _category,
     "",
     true,
