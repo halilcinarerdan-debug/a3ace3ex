@@ -11,6 +11,10 @@
         [] call TAC_fnc_crackStart
     Gerçek bir geçişi taklit etmek için:
         ["TAC_suppressed", [ACE_player, 1.5, objNull, "B_762x51_Ball", 800]] call CBA_fnc_localEvent
+    Patlama taklidi (uzaklik m, [etki mesafesi], [engelli mi]):
+        [5] call TAC_fnc_crackBlast
+        [0] call TAC_fnc_crackBlast
+    Gercek test: yakina gercek el bombasi at (vanilla ve ACE Gelismis Firlatma ile ayri ayri dene)
 
     Parametreler: yok
     Dönüş: STRING - rapor
@@ -21,6 +25,8 @@ private _lines = [
     format ["Surum (yuklu PBO): %1", getText (configFile >> "CfgPatches" >> "tac_main" >> "versionStr")],
     format ["Aktif: %1 | tetik mesafe: %2 m | min hiz: %3 m/s | sure: %4 sn | bekleme: %5 sn | dost: %6", TAC_crack_enabled, TAC_crack_dist, TAC_crack_minSpeed, TAC_crack_duration, TAC_crack_cooldown, TAC_crack_friendly],
     format ["Blur: %1 | vignette: %2 | HUD gizle: %3", TAC_crack_blur, TAC_crack_vignette, TAC_crack_hideHud],
+    format ["Patlama: %1 | etki mesafesi: %2 m | sure: %3 sn | onbellekteki mermi sinifi: %4", TAC_crack_blast, TAC_crack_blastDist, TAC_crack_blastDuration, count TAC_crack_ammoCache],
+    format ["Patlama olaylari bagli (Explosion/Fired/FiredNear): %1", ((ACE_player getVariable ["TAC_crack_ehExplosion", -1]) >= 0) && {(ACE_player getVariable ["TAC_crack_ehFired", -1]) >= 0} && {(ACE_player getVariable ["TAC_crack_ehFiredNear", -1]) >= 0}],
     format ["Efekt suruyor: blur %1 | vignette kontrol sayisi %2 | HUD gizli %3", (missionNamespace getVariable ["TAC_crack_ppBlur", -1]) >= 0, count (missionNamespace getVariable ["TAC_crack_ctrls", []]), missionNamespace getVariable ["TAC_crack_hudHidden", false]],
     format ["Anlik HUD (shownHUD): %1", shownHUD],
     format ["Mission ekrani (display 46): %1", !isNull (findDisplay 46)],

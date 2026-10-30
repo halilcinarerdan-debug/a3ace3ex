@@ -12,7 +12,7 @@ Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey
 | 2 | Gelişmiş NVG pili ve efektleri | ✅ hazır (test bekliyor) |
 | 3 | Kalibreye göre dinamik recoil | ✅ hazır (test bekliyor) |
 | 4 | Baskı altında artan sway | ✅ hazır (test bekliyor) |
-| 5 | Mermi yakın geçiş (crack) + ekran efekti + HUD kapatma | ✅ hazır (test bekliyor) |
+| 5 | Mermi yakın geçiş (crack) + patlama + ekran efekti + HUD kapatma | ✅ hazır (test bekliyor) |
 | 6 | Aiming deadzone / silah inertiası | ⏳ |
 
 Her özelliğin kendi CBA "aktif" ayarı vardır; parça parça test ederken diğerlerini kapatabilirsin.
@@ -83,7 +83,10 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
     crack/                               5. özellik
         CfgFunctions.hpp
         fn_crackInitSettings.sqf         CBA ayarları
-        fn_crackPostInit.sqf             "TAC_suppressed" dinleyicisi + CBA "unit" olayı
+        fn_crackPostInit.sqf             "TAC_suppressed" dinleyicisi + CBA "unit" olayı + ACE firlatma olayi
+        fn_crackAttach.sqf               oyuncuya Explosion / Fired / FiredNear baglar
+        fn_crackTrack.sqf                patlayici mermiyi izler, patlama noktasini bulur
+        fn_crackBlast.sqf                mesafe + engel -> siddet, efekti baslatir
         fn_crackOnSuppressed.sqf         koşullar: mesafe, hız (>343 m/s), dost, bekleme
         fn_crackStart.sqf                blur + vignette + HUD gizleme, zamanlayıcılar
         fn_crackEnd.sqf                  temizlik + HUD'u geri yükleme
@@ -440,7 +443,7 @@ Her şey yerel oyuncuda; ağa hiçbir şey yayınlanmaz, sunucuya yük sıfır. 
 Ses hızından (343 m/s) hızlı bir mermi oyuncunun kafasından **2-3 m** yakından geçerse 1-2 sn'lik şok dalgası efekti:
 
 - **Tam ekran bulanıklık:** `DynamicBlur` PP efekti.
-- **Kenar kararması (vignette):** ekran kenarlarından içe doğru şeffaflaşan 10 kademeli koyu bantlar (display 46 üzerinde geçici kontroller, efekt bitince silinir).
+- **Kenar kararması (vignette):** ekran kenarlarından (genişlikte %16, yükseklikte %26) içe doğru şeffaflaşan 12 kademeli koyu bantlar; orta bölge temiz kalır (display 46 üzerinde geçici kontroller, efekt bitince silinir).
 - **HUD kapanır:** `showHUD false`. Efektten önceki HUD durumu (`shownHUD`) saklanır ve efekt bitince **aynen** geri yüklenir (HUD'u zaten gizleyen bir mission varsa bozulmaz).
 - **Zaman çizelgesi:** ilk ~%40 tam şiddet, kalanı sönümlenir. Efekt arada yeniden tetiklenirse eski zamanlayıcılar geçersiz sayılır (jeton), HUD iki kez kaydedilmez.
 
@@ -456,14 +459,33 @@ Olay 4. özellikteki `Suppressed` dinleyicisinden gelir (`TAC_suppressed`); ek m
 | `TAC_crack_dist` (tetik mesafesi, m) | 3 |
 | `TAC_crack_minSpeed` (m/s) | 343 |
 | `TAC_crack_duration` (sn) | 1.6 |
-| `TAC_crack_blur` (bulanıklık) | 1.2 |
-| `TAC_crack_vignette` (kenar kararması) | 0.85 |
+| `TAC_crack_blur` (bulanıklık) | 2.5 |
+| `TAC_crack_vignette` (kenar kararması) | 0.7 |
+| `TAC_crack_blast` (patlama efekti) | açık |
+| `TAC_crack_blastDist` (patlama etki mesafesi, m) | 25 |
+| `TAC_crack_blastDuration` (patlama efekt süresi, sn) | 3.5 |
 | `TAC_crack_hideHud` | açık |
 | `TAC_crack_cooldown` (sn) | 3 |
 | `TAC_crack_friendly` (dost atışı) | kapalı |
 | `TAC_crack_debug` (test göstergesi) | kapalı, kişisel |
 
 Hepsi global ve `cba_settings.sqf` ile `force` edilebilir (`TAC_crack_debug` hariç).
+
+### Patlama senaryosu (el bombası, 40mm, roket, havan/top)
+
+Aynı efekt (blur + vignette + HUD gizleme) yakın patlamalarda da çalışır. Şiddet mesafeyle **doğrusal** azalır
+(0 m = tam, etki mesafesi = 0), arada engel (duvar, araç, zemin) varsa **yarıya** iner; süre = `patlama süresi * (0.5 + 0.5 * şiddet)`.
+İki yol vardır:
+
+- **Hasar yolu:** oyuncuya bağlı vanilla `Explosion` olayı (patlamadan hasar aldı) -> şiddet 1.
+- **Mesafe yolu:** patlayıcı mermi (config `indirectHit >= 5` ve `indirectHitRange >= 2`) izlenir; yok olduğu son konum patlama noktasıdır.
+  Mermi kaynakları: oyuncunun kendi `Fired` olayı, çevredekilerin `FiredNear` olayı (~69 m) ve **ACE Gelişmiş Fırlatma**'nın
+  `ace_throwableThrown` olayı (ACE gerçek bombayı kendi yarattığı için). Ek maliyet: her yakın atışta tek hashmap araması (kurşun
+  hemen elenir); kare-başı işleyici yalnızca havada patlayıcı varken çalışır ve kendini kaldırır.
+- Etki mesafesi mermi büyüklüğüne göre ölçeklenir: `ayar * clamp(indirectHitRange / 8, 0.5, 3)`.
+- ACE'nin sildiği vanilla bomba (0.4 sn'den kısa ömürlü `GrenadeCore`) patlama sayılmaz.
+- Aynı patlama iki yoldan gelirse 0.5 sn içinde tek efekt (güçlü olan kazanır).
+- Çok uzak topçu isabetleri (FiredNear 69 m dışı) yalnızca hasar yoluyla yakalanır.
 
 ### MP mantığı (crack)
 
@@ -475,7 +497,8 @@ Tamamen yerel oyuncuda; ağa hiçbir şey yayınlanmaz, sunucuya yük sıfır. Y
 2. Gerçek geçişi taklit: `["TAC_suppressed", [ACE_player, 1.5, objNull, "B_762x51_Ball", 800]] call CBA_fnc_localEvent`. Hız 300 yap: tetiklenmemeli. Mesafeyi 5 yap: tetiklenmemeli.
 3. `Test göstergesi`ni aç: her mermi geçişi için `hız / mesafe / TETİKLENDİ veya atlandı: neden` yazar.
 4. Gerçek test: Zeus ile bir AI'ya oyuncunun çok yakınından ateş ettir. Bekleme süresi (3 sn) içinde ikinci efekt çıkmamalı.
-5. `call TAC_fnc_crackDebug` ile durum raporu al (efekt takılı kalırsa `[-1] call TAC_fnc_crackEnd` ile zorla temizle).
+5. **Patlama:** `[5] call TAC_fnc_crackBlast` (5 m uzakta patlama taklidi), `[0] call TAC_fnc_crackBlast` (doğrudan). Sonra gerçek test: yakına el bombası at (vanilla ve ACE Gelişmiş Fırlatma ile ayrı ayrı), 40mm/roket ile yakın bir duvara ateş et. `Test göstergesi` açıkken `PATLAMA | mesafe | etki mesafesi | şiddet` yazılır; duvar arkasında "(engelli)" görünmeli.
+6. `call TAC_fnc_crackDebug` ile durum raporu al (efekt takılı kalırsa `[-1] call TAC_fnc_crackEnd` ile zorla temizle).
 
 > Not: ACE gibi arayüz modlarının kendi öğeleri `showHUD`'a bağlı değilse ekranda kalabilir. HUD'u geri yükleyen kod `shownHUD` değerini birebir kullanır.
 

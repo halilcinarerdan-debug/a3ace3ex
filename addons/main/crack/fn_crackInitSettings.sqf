@@ -54,7 +54,7 @@ private _category = ["TAC - Gerçekçilik Paketi", "Mermi yakın geçiş (crack)
     "SLIDER",
     ["Bulanıklık şiddeti", "Tam ekran bulanıklık (DynamicBlur). 0 = kapalı."],
     _category,
-    [0, 5, 1.2, 2],
+    [0, 5, 2.5, 2],
     true
 ] call CBA_settings_fnc_init;
 
@@ -63,7 +63,34 @@ private _category = ["TAC - Gerçekçilik Paketi", "Mermi yakın geçiş (crack)
     "SLIDER",
     ["Kenar kararması (vignette) şiddeti", "Ekran kenarlarının kararma yoğunluğu (0..1). 0 = kapalı."],
     _category,
-    [0, 1, 0.85, 2],
+    [0, 1, 0.7, 2],
+    true
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_crack_blast",
+    "CHECKBOX",
+    ["Patlama efekti aktif", "El bombası, 40mm, roket, havan/top mermisi gibi yakın patlamalarda ve patlamadan hasar alınca aynı şok dalgası efekti (blur + vignette + HUD) uygulanır."],
+    _category,
+    true,
+    true
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_crack_blastDist",
+    "SLIDER",
+    ["Patlama etki mesafesi (m)", "Standart el bombası için temel mesafe; büyük mermiler (config indirectHitRange) 3 katına kadar, küçükler yarısına kadar ölçeklenir. Şiddet mesafeyle azalır, arada engel varsa yarıya iner."],
+    _category,
+    [5, 80, 25, 0],
+    true
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_crack_blastDuration",
+    "SLIDER",
+    ["Patlama efekti süresi (sn)", "En güçlü (bitişik) patlamanın efekt süresi; uzak patlamalarda kısalır."],
+    _category,
+    [1, 10, 3.5, 1],
     true
 ] call CBA_settings_fnc_init;
 

@@ -18,9 +18,9 @@ class CfgPatches
         weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium"};
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu"};
-        version = 0.6;
-        versionStr = "0.6.3";
-        versionAr[] = {0,6,3};
+        version = 0.7;
+        versionStr = "0.7.0";
+        versionAr[] = {0,7,0};
     };
 };
 

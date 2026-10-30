@@ -6,7 +6,10 @@ class crack
     class crackPostInit {};
 
     class crackOnSuppressed {};
+    class crackAttach {};
     class crackStart {};
+    class crackBlast {};
+    class crackTrack {};
     class crackEnd {};
 
     // Teshis (debug konsolu: call TAC_fnc_crackDebug)
