@@ -443,7 +443,7 @@ Her şey yerel oyuncuda; ağa hiçbir şey yayınlanmaz, sunucuya yük sıfır. 
 Ses hızından (343 m/s) hızlı bir mermi oyuncunun kafasından **2-3 m** yakından geçerse 1-2 sn'lik şok dalgası efekti:
 
 - **Tam ekran bulanıklık:** `DynamicBlur` PP efekti.
-- **Kenar kararması (vignette):** ekran kenarlarından (genişlikte %16, yükseklikte %26) içe doğru şeffaflaşan 12 kademeli koyu bantlar; orta bölge temiz kalır (display 46 üzerinde geçici kontroller, efekt bitince silinir).
+- **Kenar kararması (vignette):** ekran kenarlarından (genişlikte %20, yükseklikte %32) içe doğru `smoothstep` eğrisiyle şeffaflaşan, **üst üste binen 32 katman** (kenara doğru opaklık birikir: bant dikişi yok, köşeler doğal olarak daha koyu); orta bölge temiz kalır (display 46 üzerinde geçici kontroller, efekt bitince silinir).
 - **HUD kapanır:** `showHUD false`. Efektten önceki HUD durumu (`shownHUD`) saklanır ve efekt bitince **aynen** geri yüklenir (HUD'u zaten gizleyen bir mission varsa bozulmaz).
 - **Zaman çizelgesi:** ilk ~%40 tam şiddet, kalanı sönümlenir. Efekt arada yeniden tetiklenirse eski zamanlayıcılar geçersiz sayılır (jeton), HUD iki kez kaydedilmez.
 

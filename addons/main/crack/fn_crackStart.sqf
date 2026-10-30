@@ -4,8 +4,9 @@
 
     Şok dalgası efektini başlatır (debug konsolundan elle de çağrılabilir: [] call TAC_fnc_crackStart):
       - tam ekran bulanıklık (DynamicBlur PP efekti)
-      - kenar kararması (vignette): ekran kenarlarında içe doğru şeffaflaşan 12 kademeli koyu bantlar
-        (display 46 üzerinde geçici kontroller; efekt bitince silinir). Orta bölge temiz kalır.
+      - kenar kararması (vignette): ekran kenarlarında içe doğru yumuşakça (smoothstep) şeffaflaşan, üst
+        üste binen 32 katman (128 şerit; display 46 üzerinde geçici kontroller, efekt bitince silinir).
+        Orta bölge temiz kalır, köşeler doğal olarak daha koyudur.
       - tüm HUD'u gizler (showHUD false); orijinal HUD durumu (shownHUD) saklanır ve bitince geri yüklenir
     Süre: ilk ~%40 tam şiddet, kalan sönümlenir. Zamanlayıcılar bir "jeton" taşır: efekt arada
     yeniden tetiklenirse eski zamanlayıcılar geçersiz sayılır.
@@ -72,19 +73,25 @@ private _vignette = TAC_crack_vignette * _power;
 
 if (!isNull _display && {_vignette > 0}) then {
     private _controls = [];
-    private _rings = 12;
-    // Kenardan icerye derinlik: genislikte %16, yukseklikte %26 (her yan). Orta bolge temiz.
-    private _stepX = (safeZoneW * 0.16) / _rings;
-    private _stepY = (safeZoneH * 0.26) / _rings;
+    private _layers = 32;
+    // Kenardan icerye derinlik: genislikte %20, yukseklikte %32 (her yan). Orta bolge temiz.
+    private _stepX = (safeZoneW * 0.20) / _layers;
+    private _stepY = (safeZoneH * 0.32) / _layers;
 
-    for "_i" from 0 to (_rings - 1) do {
-        private _alpha = _vignette * ((1 - (_i / _rings)) ^ 2.2);
-        private _px = safeZoneX + (_i * _stepX);
-        private _py = safeZoneY + (_i * _stepY);
-        private _pw = safeZoneW - (2 * _i * _stepX);
-        private _ph = safeZoneH - (2 * _i * _stepY);
+    // Ust uste binen katmanlar: katman j kenardan (j+1) adim derinlige kadar uzanir (4 serit).
+    // Bir piksel kendisinden daha derin tum katmanlarla kaplanir, yani opaklik kenara dogru
+    // birikir; bant dikisi / halka kenari olmaz, kose dogal olarak daha koyu olur (gercek vignette gibi).
+    // Hedef toplam kararma profili A(t) = vignette * smoothstep (kenarda en yuksek, merkeze yumusak sifir).
+    // Katman alfasi: (1 - a_j) = (1 - A_j) / (1 - A_(j+1))  ->  toplam tam olarak A_j olur.
+    for "_j" from 0 to (_layers - 1) do {
+        private _t0 = _j / _layers;
+        private _t1 = (_j + 1) / _layers;
+        private _a0 = _vignette * (((1 - _t0) ^ 2) * (1 + (2 * _t0)));
+        private _a1 = _vignette * (((1 - _t1) ^ 2) * (1 + (2 * _t1)));
+        private _alpha = 1 - ((1 - _a0) / (1 - _a1));
+        private _dx = (_j + 1) * _stepX;
+        private _dy = (_j + 1) * _stepY;
 
-        // Halka = 4 serit (ust, alt, sol, sag); bantlar birbiriyle ust uste binmez.
         {
             private _control = _display ctrlCreate ["RscText", -1];
             _control ctrlSetPosition _x;
@@ -95,10 +102,10 @@ if (!isNull _display && {_vignette > 0}) then {
             _control ctrlCommit 0.08;
             _controls pushBack _control;
         } forEach [
-            [_px, _py, _pw, _stepY],
-            [_px, _py + _ph - _stepY, _pw, _stepY],
-            [_px, _py + _stepY, _stepX, _ph - (2 * _stepY)],
-            [_px + _pw - _stepX, _py + _stepY, _stepX, _ph - (2 * _stepY)]
+            [safeZoneX, safeZoneY, safeZoneW, _dy],
+            [safeZoneX, safeZoneY + safeZoneH - _dy, safeZoneW, _dy],
+            [safeZoneX, safeZoneY, _dx, safeZoneH],
+            [safeZoneX + safeZoneW - _dx, safeZoneY, _dx, safeZoneH]
         ];
     };
 
