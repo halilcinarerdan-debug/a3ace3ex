@@ -41,8 +41,8 @@ _newUnit setVariable ["TAC_crack_ehExplosion", _newUnit addEventHandler ["Explos
 
 // Fired: [unit, weapon, muzzle, mode, ammo, magazine, projectile, gunner]
 _newUnit setVariable ["TAC_crack_ehFired", _newUnit addEventHandler ["Fired", {
-    params ["", "", "", "", "_ammo", "", "_projectile"];
-    [_projectile, _ammo] call TAC_fnc_crackTrack;
+    params ["_unit", "", "", "", "_ammo", "", "_projectile"];
+    [_projectile, _ammo, _unit] call TAC_fnc_crackTrack;
 }]];
 
 // FiredNear: [unit, firer, distance, weapon, muzzle, mode, ammo, gunner]  (mermi nesnesi verilmez)
@@ -56,5 +56,5 @@ _newUnit setVariable ["TAC_crack_ehFiredNear", _newUnit addEventHandler ["FiredN
     if (!isNil "_info" && {!(_info select 0)}) exitWith {};
 
     private _projectile = _firer nearestObject _ammo;
-    [_projectile, _ammo] call TAC_fnc_crackTrack;
+    [_projectile, _ammo, _firer] call TAC_fnc_crackTrack;
 }]];

@@ -26,12 +26,15 @@ if (isNil "TAC_crack_ammoCache") then {TAC_crack_ammoCache = createHashMap};
     [_newUnit, _oldUnit] call TAC_fnc_crackAttach;
 }, true] call CBA_fnc_addPlayerEventHandler;
 
-// ACE Gelismis Firlatma: [unit, projectile]. Olay yoksa/adi farkliysa sessizce hicbir sey olmaz.
-["ace_throwableThrown", {
-    params ["", "_projectile"];
-    if (isNull _projectile) exitWith {};
+// ACE Gelismis Firlatma: [unit, projectile]. Olay adi surume gore degisebildiginden ikisi de dinlenir;
+// olmayan olay sessizce hicbir sey yapmaz. (Asil guvence: crackTrack'in cevre taramasi.)
+{
+    [_x, {
+        params ["", "_projectile"];
+        if (!(_projectile isEqualType objNull) || {isNull _projectile}) exitWith {};
 
-    [_projectile, typeOf _projectile] call TAC_fnc_crackTrack;
-}] call CBA_fnc_addEventHandler;
+        [_projectile, typeOf _projectile] call TAC_fnc_crackTrack;
+    }] call CBA_fnc_addEventHandler;
+} forEach ["ace_throwableThrown", "ace_advanced_throwing_throwableThrown"];
 
 diag_log "[TAC][CRACK] hazir";

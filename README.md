@@ -478,12 +478,13 @@ Aynı efekt (blur + vignette + HUD gizleme) yakın patlamalarda da çalışır. 
 İki yol vardır:
 
 - **Hasar yolu:** oyuncuya bağlı vanilla `Explosion` olayı (patlamadan hasar aldı) -> şiddet 1.
-- **Mesafe yolu:** patlayıcı mermi (config `indirectHit >= 5` ve `indirectHitRange >= 2`) izlenir; yok olduğu son konum patlama noktasıdır.
+- **Mesafe yolu:** patlayıcı mermi (config `indirectHit >= 5` ve `indirectHitRange >= 2`, ya da `explosive >= 0.5`) izlenir; yok olduğu son konum patlama noktasıdır.
   Mermi kaynakları: oyuncunun kendi `Fired` olayı, çevredekilerin `FiredNear` olayı (~69 m) ve **ACE Gelişmiş Fırlatma**'nın
   `ace_throwableThrown` olayı (ACE gerçek bombayı kendi yarattığı için). Ek maliyet: her yakın atışta tek hashmap araması (kurşun
   hemen elenir); kare-başı işleyici yalnızca havada patlayıcı varken çalışır ve kendini kaldırır.
 - Etki mesafesi mermi büyüklüğüne göre ölçeklenir: `ayar * clamp(indirectHitRange / 8, 0.5, 3)`.
-- ACE'nin sildiği vanilla bomba (0.4 sn'den kısa ömürlü `GrenadeCore`) patlama sayılmaz.
+- ACE'nin sildiği vanilla bomba (0.4 sn'den kısa ömürlü `GrenadeCore`) patlama sayılmaz. ACE olayının adından bağımsız olarak, atılan el bombasından 0.15 sn sonra atanın çevresinde aynı sınıftan nesne aranır ve o izlenir.
+- `Test göstergesi` açıkken zincir ekrana yazılır: `mermi sınıfı ... patlayıcı: true/false` -> `patlayıcı izleniyor` -> `... patladı | mesafe | etki mesafesi` -> `PATLAMA | şiddet`. Hangi adımda kesildiği görülür.
 - Aynı patlama iki yoldan gelirse 0.5 sn içinde tek efekt (güçlü olan kazanır).
 - Çok uzak topçu isabetleri (FiredNear 69 m dışı) yalnızca hasar yoluyla yakalanır.
 
