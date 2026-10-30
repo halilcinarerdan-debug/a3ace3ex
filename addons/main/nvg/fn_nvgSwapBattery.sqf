@@ -11,7 +11,8 @@
     çubuğu herhangi bir nedenle hiç bitmese bile süre dolunca kendiliğinden temizlenir, eylem
     sonsuza kadar gizli kalmaz.
 
-    Her adım RPT'ye "[TAC][NVG]" önekiyle yazılır.
+    Her adım RPT'ye "[TAC][NVG]" önekiyle yazılır ve son sonuç TAC_nvg_lastSwap değişkenine
+    kaydedilir (call TAC_fnc_nvgDebug bunu gösterir).
 
     Parametreler:
         0: OBJECT - oyuncu birimi
@@ -35,6 +36,7 @@ diag_log format [
 ];
 
 if (_class isEqualTo "") exitWith {
+    missionNamespace setVariable ["TAC_nvg_lastSwap", format ["t=%1 | BASLAMADI: envanterde tablodaki pil yok", round time]];
     ["Envanterde NVG bataryası yok.", true] call TAC_fnc_nvgNotify;
 };
 
@@ -43,10 +45,12 @@ if (currentVisionMode _unit == 1) then {
 };
 
 if (TAC_nvg_swapTime <= 0) exitWith {
+    missionNamespace setVariable ["TAC_nvg_lastSwap", format ["t=%1 | anlik degistirme basladi (%2)", round time, _class]];
     [_unit] call TAC_fnc_nvgSwapFinish;
 };
 
 _unit setVariable ["TAC_nvg_swapUntil", time + TAC_nvg_swapTime + 3];
+missionNamespace setVariable ["TAC_nvg_lastSwap", format ["t=%1 | ilerleme cubugu basladi (%2, %3 sn)", round time, _class, TAC_nvg_swapTime]];
 
 [
     TAC_nvg_swapTime,
@@ -55,12 +59,14 @@ _unit setVariable ["TAC_nvg_swapUntil", time + TAC_nvg_swapTime + 3];
         params ["_args"];
         _args params ["_unit"];
 
+        diag_log "[TAC][NVG] ilerleme cubugu bitti, SwapFinish cagriliyor";
         [_unit] call TAC_fnc_nvgSwapFinish;
     },
     {
         params ["_args"];
 
         (_args select 0) setVariable ["TAC_nvg_swapUntil", 0];
+        missionNamespace setVariable ["TAC_nvg_lastSwap", format ["t=%1 | IPTAL: ilerleme cubugu kesildi", round time]];
         diag_log "[TAC][NVG] pil degistirme iptal edildi / kesildi";
     },
     "NVG pili değiştiriliyor...",

@@ -33,6 +33,8 @@ private _tacItems = (items _unit) select {((toLower _x) find "tac_") == 0};
 
 private _lines = [
     "== TAC NVG DEBUG ==",
+    format ["Surum (yuklu PBO): %1", getText (configFile >> "CfgPatches" >> "tac_main" >> "versionStr")],
+    format ["Son pil degistirme: %1", missionNamespace getVariable ["TAC_nvg_lastSwap", "(henuz denenmedi)"]],
     format ["Eylem gorunmeli (hepsi true olmali): %1", _cEnabled && _cAlive && _cAwake && _cNotBusy && _cHmd && _cBattery],
     format ["  sistem aktif: %1 | hayatta: %2 | bilinci acik: %3", _cEnabled, _cAlive, _cAwake],
     format ["  mesgul degil: %1 (time %2 / swapUntil %3)", _cNotBusy, round time, round _swapUntil],
