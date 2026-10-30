@@ -9,7 +9,7 @@ Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey
 | # | Özellik | Durum |
 |---|---------|-------|
 | 1 | Taktiksel Not Defteri (ACE etkileşimli) | ✅ hazır |
-| 2 | Gelişmiş NVG pili ve efektleri | ⏳ |
+| 2 | Gelişmiş NVG pili ve efektleri | ✅ hazır (test bekliyor) |
 | 3 | Kalibreye göre dinamik recoil | ⏳ |
 | 4 | Baskı altında artan sway | ⏳ |
 | 5 | Mermi yakın geçiş (crack) + ekran efekti + HUD kapatma | ⏳ |
@@ -42,6 +42,22 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
         -- Gelişmiş mod --
         fn_notebookOpenPad.sqf           Notepad benzeri düz metin editörü
         fn_notebookPadSave.sqf           metni yerel depoya yazar + karakter sayacı
+    nvg/                                 2. özellik
+        CfgFunctions.hpp
+        CfgWeapons.hpp                   TAC_NVGBattery, TAC_NVGBattery_Lithium (envanter eşyaları)
+        fn_nvgInitSettings.sqf           CBA ayarları
+        fn_nvgPostInit.sqf               "NVG Pil Değiştir" eylemi + CBA oyuncu olayları
+        fn_nvgOnVisionMode.sqf           NVG açıldı/kapandı -> tüketimi başlat/durdur
+        fn_nvgStart.sqf / fn_nvgStop.sqf PFH'yi başlatır/durdurur (yalnızca NVG açıkken)
+        fn_nvgTick.sqf                   şarjı düşürür, efekt şiddetini hesaplar, test göstergesi
+        fn_nvgApplyEffects.sqf           parazit (FilmGrain) + kararma/flicker (ColorCorrections)
+        fn_nvgClearEffects.sqf           efektleri yok eder
+        fn_nvgParseBatteryTable.sqf      "Pil tablosu" ayarını çözer (classname -> saat)
+        fn_nvgGetHours.sqf               pil sınıfının ömrünü verir
+        fn_nvgFindBattery.sqf            envanterde tablodaki ilk pili bulur
+        fn_nvgSwapBattery.sqf            "NVG Pil Değiştir": cihazı kapat + ilerleme çubuğu
+        fn_nvgSwapFinish.sqf             pili düş, şarjı %100 yap, sınıfı kaydet
+        fn_nvgNotify.sqf                 bildirim yardımcısı
 ```
 
 ## Mikero ile derleme
@@ -155,9 +171,112 @@ Mission dosyası gerekmez; mod her mission'da çalışır.
 > Not: Menü ikonları vanilla `ui_f` yollarıdır. Biri bulunamazsa yalnızca ikon boş kalır ve RPT'ye uyarı düşer; işlev etkilenmez.
 > Script değişikliği sonrası PBO'yu yeniden derle; oyun açıkken PBO değiştirilemez.
 
+## Özellik 2 – Gelişmiş NVG Pili
+
+NVG açıkken pil azalır; %20'nin altında görüntüde **parazit** ve **kararma/flicker** başlar, %0'da cihaz kapanır.
+Pil, envanterdeki **NVG Bataryası** eşyasıyla ACE self-menüsünden değiştirilir.
+
+### Nasıl çalışır
+
+- **Şarj** yüzde olarak (100 → 0) birimin üzerinde yerel tutulur (`TAC_nvg_charge`). Respawn'da yeni beden otomatik %100 başlar. Mission başında herkes dolu pille başlar.
+- **Tüketim yalnızca NVG açıkken** (görüş modu 1 ve `hmd` dolu) işler. CBA `"visionMode"` oyuncu olayı döngüyü başlatır/durdurur; döngü (0.25 sn'lik PFH) sadece NVG açıkken vardır, kapalıyken sıfır maliyet.
+- **Pil ömrü (gerçek dakika)** = `pil saati × (1 pil saati = kaç dk)`. Varsayılan: 40 sa × 1 dk = **40 dakika** NVG kullanımı.
+- **Düşük pil:** şarj eşiğin (varsayılan %20) altına inince `şiddet = 1 − şarj/eşik` (eşikte 0, şarj 0'da 1).
+  Şiddet arttıkça parazit (FilmGrain) güçlenir, kalıcı kararma artar ve ani sönmeler (flicker) sıklaşıp derinleşir.
+- **Pil bitince** (%0) NVG kapanır ve yeni pil takılana kadar açılmaz.
+- **NVG Pil Değiştir** (ACE self-menü): NVG takılıyken ve envanterde tablodaki bir pil varken görünür. Cihaz kapatılır, ilerleme çubuğu dolar, eski pil atılır, yenisi envanterden düşer, şarj %100 olur.
+
+### Pil eşyaları ve sınıf bazlı ömür
+
+| Eşya | Varsayılan ömür |
+|------|-----------------|
+| `TAC_NVGBattery` – NVG Bataryası (AA) | 40 saat |
+| `TAC_NVGBattery_Lithium` – NVG Bataryası (AA Lityum) | 60 saat |
+
+Ömürler eşyanın içinde değil, CBA ayarındaki **Pil tablosu**ndadır (`TAC_nvg_batteryTable`), böylece sunucudan zorlanabilir:
+
+```
+TAC_NVGBattery=40; TAC_NVGBattery_Lithium=60; baskaMod_Pil=25
+```
+
+- Biçim: `classname=gerçek saat`, girişler `;` ile ayrılır. Başka modların eşyaları da yazılabilir.
+- **Sıra öncelik sırasıdır:** pil değiştirirken envanterde bulunan *ilk* pil kullanılır.
+- Takılı pilin sınıfı birimde saklanır; tüketim hızı o sınıfın ömrüne göre belirlenir. Tabloda olmayan veya başlangıçtaki pil için **Varsayılan pil ömrü** geçerlidir.
+- Geçersiz girişler (sayı değil, saat ≤ 0) atlanır. Tablo boşsa `TAC_NVGBattery` varsayılan kullanılır.
+
+Pili almak için: Arsenal/loadout veya `player addItem "TAC_NVGBattery"`. Mission'a pil koymak için Eden'de sandık envanterine eşya ekleyebilir veya loadout'a yazabilirsin.
+
+### CBA ayarları (`Options > Addon Options > TAC - Gerçekçilik Paketi > NVG Pili`)
+
+| Ayar | Varsayılan | Kapsam |
+|------|-----------|--------|
+| `TAC_nvg_enabled` | açık | global |
+| `TAC_nvg_batteryHours` | 40 sa (1–100): başlangıç/tabloda olmayan pil | global |
+| `TAC_nvg_batteryTable` | `TAC_NVGBattery=40; TAC_NVGBattery_Lithium=60` | global |
+| `TAC_nvg_minutesPerHour` | 1 (0.1–60): 1 pil saati = kaç gerçek dk | global |
+| `TAC_nvg_lowThreshold` | %20 | global |
+| `TAC_nvg_noiseMax` | 0.8 (0–2) | global |
+| `TAC_nvg_flickerMax` | 0.7 (0–1) | global |
+| `TAC_nvg_swapTime` | 3 sn (0–15) | global |
+| `TAC_nvg_testMode` | kapalı | global |
+| `TAC_nvg_testSpeed` | ×60 (1–600) | global |
+| `TAC_nvg_notify` | açık | kişisel (istemci) |
+
+Sunucudan zorlamak için `cba_settings.sqf`:
+
+```sqf
+force force TAC_nvg_enabled = true;
+force force TAC_nvg_batteryTable = "TAC_NVGBattery=40; TAC_NVGBattery_Lithium=60";
+force force TAC_nvg_minutesPerHour = 1;
+force force TAC_nvg_lowThreshold = 20;
+force force TAC_nvg_testMode = false;
+```
+
+### Test modu
+
+`TAC_nvg_testMode` açıkken pil ömrü `TAC_nvg_testSpeed`'e bölünür; **sınıflar arası fark korunur**.
+×60 ile standart pil 40 sn, lityum 60 sn sürer. NVG açıkken ekranda şu bilgi görünür ve yerinde güncellenir:
+
+```
+[TEST] NVG pili
+Şarj: 63.4%
+Pil: TAC_NVGBattery
+Ömür: 40 sn (x60)
+Kalan: 25 sn
+```
+
+Üretimde (ve sunucuda) test modunu kapalı bırak.
+
+### Test adımları
+
+1. Eden'de `Play Scenario`. Debug konsolunda (yerel çalıştır):
+   ```sqf
+   player linkItem "NVGoggles"; player addItem "TAC_NVGBattery"; player addItem "TAC_NVGBattery_Lithium";
+   ```
+2. Addon Options'ta **Test modu**nu aç (×60). `N` ile NVG'yi aç: "NVG pili: 100%" bildirimi ve test göstergesi gelmeli, şarj düşmeli.
+3. Şarj %20'nin altına inince "NVG pili zayıf" uyarısı, parazit ve kararma/flicker başlamalı; %0'da NVG kapanmalı. `N` ile tekrar açmayı dene: açılmamalı ("NVG pili bitmiş").
+4. `Ctrl + Sol Windows` → **NVG Pil Değiştir** → ilerleme çubuğu → şarj %100, envanterden bir pil düşmeli, efektler kaybolmalı. Hangi pilin takıldığını test göstergesindeki `Pil:` satırından gör.
+5. **Sınıf bazlı ömür:** envanterden `TAC_NVGBattery`'yi at (`player removeItem "TAC_NVGBattery"`), lityumu tak ve ömrün 60 sn göründüğünü doğrula. Tablodaki sayıyı değiştirip (`TAC_NVGBattery=20; ...`) ömrün değiştiğini gör. Tablodaki sıranın önceliği: iki pil varken ilk yazılan takılır.
+6. Hızlı manuel kontrol: `ACE_player setVariable ["TAC_nvg_charge", 22];` ile şarjı doğrudan ayarlayıp eşiği test et. Şarjı okumak için: `ACE_player getVariable ["TAC_nvg_charge", 100]`.
+7. Test modunu kapatıp `TAC_nvg_minutesPerHour`'u küçültmek de (örn. 0.1) gerçek formülü hızlı doğrular.
+8. Respawn: `player setDamage 1`; yeni bedende şarj %100 olmalı, efektler temizlenmeli.
+9. MP: efektler ve şarj kişiye özeldir; A oyuncusunun NVG'si B'yi etkilemez. Sunucuda `cba_settings.sqf` ile `force` ettiğin değerler istemcide kilitli görünmeli.
+
+### MP mantığı (NVG)
+
+- Ayarlar `XEH_preInit` ile tüm makinelerde kaydedilir; pil tablosu değişince CBA her makinede çözümleyiciyi çalıştırır.
+- Şarj, takılı pil, efektler ve döngü **tamamen istemcidedir**; ağa hiçbir şey yayınlanmaz. Sunucuya yük sıfır.
+- `TAC_NVGBattery*` eşyaları `config.cpp`'dedir: **sunucuda da yüklü olmaları gerekir** (envanter eşyaları iki tarafta da bilinmeli).
+
+### Notlar
+
+- Tüketim, **görüş modu 1** olduğu sürece işler. `hmd` boşsa (NVG takılı değilse) işlemez; silah üstü NV optiği de görüş modu 1 verebilir.
+- Parazit ve kararma için ACE'nin `ace_nightvision_noiseScaling` değerini sürmek yerine kendi PP katmanlarımı (FilmGrain + ColorCorrections) kullandım. ACE'nin iç fonksiyonunu tahminle çağırmak yanlış parametrede RPT hatası/sessiz başarısızlık riski taşır. Efektler ACE'nin kendi NVG efektlerinin **üstüne** biner.
+- `picture` yolu (`itemacc_ca.paa`) vanilla arsenal ikonudur. pboProject "dosya bulunamadı" derse A3 verisini P: sürücüsüne aç veya `CfgWeapons.hpp` içindeki `picture` satırını sil.
+
 ## Yeni özellik ekleme
 
-1. `addons/main/<özellik>/` klasörü aç; `fn_*.sqf` dosyalarını ve bir `CfgFunctions.hpp` ekle (`notebook/` örnek).
-2. `config.cpp` içindeki `CfgFunctions > TAC` bloğuna `#include "<özellik>\CfgFunctions.hpp"` satırını ekle.
+1. `addons/main/<özellik>/` klasörü aç; `fn_*.sqf` dosyalarını ve bir `CfgFunctions.hpp` ekle (`notebook/`, `nvg/` örnek). Envanter eşyası gerekiyorsa `CfgWeapons.hpp` de ekle.
+2. `config.cpp` içindeki `CfgFunctions > TAC` bloğuna `#include "<özellik>\CfgFunctions.hpp"` satırını ekle (eşya varsa `CfgWeapons` bloğuna da).
 3. Ayarlar için `XEH_preInit.sqf`'e, istemci kurulumu için `XEH_postInit.sqf`'e modülün giriş fonksiyonunu ekle.
 4. Her modülün kendi `TAC_<özellik>_enabled` CBA ayarı olsun.

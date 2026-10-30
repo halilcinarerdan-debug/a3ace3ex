@@ -7,3 +7,6 @@
 
 // 1. Taktiksel Not Defteri
 call TAC_fnc_notebookInitSettings;
+
+// 2. Gelişmiş NVG Pili
+call TAC_fnc_nvgInitSettings;

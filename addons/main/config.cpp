@@ -15,12 +15,12 @@ class CfgPatches
         author = "TAC";
         url = "";
         units[] = {};
-        weapons[] = {};
+        weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium"};
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu"};
-        version = 0.2;
-        versionStr = "0.2.0";
-        versionAr[] = {0,2,0};
+        version = 0.3;
+        versionStr = "0.3.0";
+        versionAr[] = {0,3,0};
     };
 };
 
@@ -69,7 +69,20 @@ class CfgFunctions
 
         // 1. Taktiksel Not Defteri
         #include "notebook\CfgFunctions.hpp"
+
+        // 2. Gelismis NVG Pili
+        #include "nvg\CfgFunctions.hpp"
     };
+};
+
+// Envanter esyalari. CBA_MiscItem: CBA'nin genel esya taban sinifi (cba_main).
+class CfgWeapons
+{
+    class CBA_MiscItem;
+    class CBA_MiscItem_ItemInfo;
+
+    // 2. Gelismis NVG Pili
+    #include "nvg\CfgWeapons.hpp"
 };
 
 // CBA XEH: tum makinelerde (sunucu, istemci, HC) mod yuklenince calisir.

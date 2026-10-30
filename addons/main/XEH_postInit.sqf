@@ -10,3 +10,6 @@ if (!hasInterface) exitWith {};
 
 // 1. Taktiksel Not Defteri
 call TAC_fnc_notebookPostInit;
+
+// 2. Gelişmiş NVG Pili
+call TAC_fnc_nvgPostInit;
