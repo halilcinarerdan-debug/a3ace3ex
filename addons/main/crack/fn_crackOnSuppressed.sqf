@@ -47,5 +47,5 @@ if (TAC_crack_debug) then {
 };
 
 if (_reason isEqualTo "") then {
-    call TAC_fnc_crackStart;
+    [] call TAC_fnc_crackStart;
 };

@@ -2,7 +2,7 @@
     Fonksiyon: TAC_fnc_crackStart
     Çalışma yeri: İstemci
 
-    Şok dalgası efektini başlatır (debug konsolundan elle de çağrılabilir: call TAC_fnc_crackStart):
+    Şok dalgası efektini başlatır (debug konsolundan elle de çağrılabilir: [] call TAC_fnc_crackStart):
       - tam ekran bulanıklık (DynamicBlur PP efekti)
       - kenar kararması (vignette): ekran kenarlarında içe doğru şeffaflaşan 10 kademeli koyu bantlar
         (display 46 üzerinde geçici kontroller; efekt bitince silinir)
@@ -16,7 +16,10 @@
     Dönüş: yok
 */
 
-params [["_duration", -1, [0]]];
+// Elle/yanlis cagrida (ornegin unary "call" ile _this miras kalirsa) sayi olmayan arguman yok sayilir.
+private _duration = -1;
+if (_this isEqualType 0) then {_duration = _this};
+if (_this isEqualType [] && {count _this > 0} && {(_this select 0) isEqualType 0}) then {_duration = _this select 0};
 
 if (_duration < 0) then {_duration = TAC_crack_duration};
 

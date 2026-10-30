@@ -8,7 +8,7 @@
     Kullanım:
         call TAC_fnc_crackDebug
     Efekti elle denemek için (debug konsolu):
-        call TAC_fnc_crackStart
+        [] call TAC_fnc_crackStart
     Gerçek bir geçişi taklit etmek için:
         ["TAC_suppressed", [ACE_player, 1.5, objNull, "B_762x51_Ball", 800]] call CBA_fnc_localEvent
 
