@@ -19,8 +19,8 @@ class CfgPatches
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu"};
         version = 0.3;
-        versionStr = "0.3.0";
-        versionAr[] = {0,3,0};
+        versionStr = "0.3.1";
+        versionAr[] = {0,3,1};
     };
 };
 

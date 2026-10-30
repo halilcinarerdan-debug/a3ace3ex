@@ -32,7 +32,7 @@ private _swapAction = [
         TAC_nvg_enabled
         && {alive _player}
         && {!(_player getVariable ["ACE_isUnconscious", false])}
-        && {!(_player getVariable ["TAC_nvg_swapping", false])}
+        && {time >= (_player getVariable ["TAC_nvg_swapUntil", 0])}
         && {!((hmd _player) isEqualTo "")}
         && {!(([_player] call TAC_fnc_nvgFindBattery) isEqualTo "")}
     }
@@ -54,3 +54,22 @@ private _swapAction = [
 ["unit", {
     call TAC_fnc_nvgStop;
 }] call CBA_fnc_addPlayerEventHandler;
+
+// ----------------------------------------------------------------------------
+// 4. Açılış raporu (RPT): pil sınıfları config'te var mı, tablo nasıl çözüldü
+// ----------------------------------------------------------------------------
+if (isNil "TAC_nvg_batteryList") then {
+    [TAC_nvg_batteryTable] call TAC_fnc_nvgParseBatteryTable;
+};
+
+{
+    _x params ["_class", "_hours"];
+
+    diag_log format [
+        "[TAC][NVG] hazir | pil '%1': config %2 (scope %3) | omur %4 saat",
+        _class,
+        isClass (configFile >> "CfgWeapons" >> _class),
+        getNumber (configFile >> "CfgWeapons" >> _class >> "scope"),
+        _hours
+    ];
+} forEach TAC_nvg_batteryList;

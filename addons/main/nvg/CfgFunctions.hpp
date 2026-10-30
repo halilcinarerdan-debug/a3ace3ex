@@ -24,4 +24,7 @@ class nvg
     // Pil degistirme
     class nvgSwapBattery {};
     class nvgSwapFinish {};
+
+    // Teshis (debug konsolu: call TAC_fnc_nvgDebug)
+    class nvgDebug {};
 };
