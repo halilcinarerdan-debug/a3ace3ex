@@ -34,14 +34,14 @@ private _category = ["TAC - Gerçekçilik Paketi", "NVG Pili"];
     true
 ] call CBA_settings_fnc_init;
 
-// classname=saat çiftleri, ';' ile ayrılır. Sıra = öncelik: pil değiştirirken envanterde bulunan
+// classname=saat çiftleri, ',' ile ayrılır (';' CBA ayar dosyasında komut ayracı: import'u bozar). Sıra = öncelik: pil değiştirirken envanterde bulunan
 // ilk pil kullanılır. Başka modların eşyaları da yazılabilir.
 [
     "TAC_nvg_batteryTable",
     "EDITBOX",
-    ["Pil tablosu (classname=saat; ...)", "Her pil türünün gerçek hayattaki ömrü (saat). Örn: TAC_NVGBattery=40; TAC_NVGBattery_Lithium=60. Sıra öncelik sırasıdır."],
+    ["Pil tablosu (classname=saat, ...)", "Her pil türünün gerçek hayattaki ömrü (saat). Örn: TAC_NVGBattery=40, TAC_NVGBattery_Lithium=60. Sıra öncelik sırasıdır."],
     _category,
-    "TAC_NVGBattery=40; TAC_NVGBattery_Lithium=60",
+    "TAC_NVGBattery=40, TAC_NVGBattery_Lithium=60",
     true,
     {
         params ["_value"];

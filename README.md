@@ -226,10 +226,10 @@ Pil, envanterdeki **NVG Bataryası** eşyasıyla ACE self-menüsünden değişti
 Ömürler eşyanın içinde değil, CBA ayarındaki **Pil tablosu**ndadır (`TAC_nvg_batteryTable`), böylece sunucudan zorlanabilir:
 
 ```
-TAC_NVGBattery=40; TAC_NVGBattery_Lithium=60; baskaMod_Pil=25
+TAC_NVGBattery=40, TAC_NVGBattery_Lithium=60, baskaMod_Pil=25
 ```
 
-- Biçim: `classname=gerçek saat`, girişler `;` ile ayrılır. Başka modların eşyaları da yazılabilir.
+- Biçim: `classname=gerçek saat`, girişler `,` ile ayrılır (`;` kullanma: CBA ayar dosyasında komut ayracıdır, import bozulur). Başka modların eşyaları da yazılabilir.
 - **Sıra öncelik sırasıdır:** pil değiştirirken envanterde bulunan *ilk* pil kullanılır.
 - Takılı pilin sınıfı birimde saklanır; tüketim hızı o sınıfın ömrüne göre belirlenir. Tabloda olmayan veya başlangıçtaki pil için **Varsayılan pil ömrü** geçerlidir.
 - Geçersiz girişler (sayı değil, saat ≤ 0) atlanır. Tablo boşsa `TAC_NVGBattery` varsayılan kullanılır.
@@ -242,7 +242,7 @@ Pili almak için: Arsenal/loadout veya `player addItem "TAC_NVGBattery"`. Missio
 |------|-----------|--------|
 | `TAC_nvg_enabled` | açık | global |
 | `TAC_nvg_batteryHours` | 40 sa (1–100): başlangıç/tabloda olmayan pil | global |
-| `TAC_nvg_batteryTable` | `TAC_NVGBattery=40; TAC_NVGBattery_Lithium=60` | global |
+| `TAC_nvg_batteryTable` | `TAC_NVGBattery=40, TAC_NVGBattery_Lithium=60` | global |
 | `TAC_nvg_minutesPerHour` | 1 (0.1–60): 1 pil saati = kaç gerçek dk | global |
 | `TAC_nvg_lowThreshold` | %20 | global |
 | `TAC_nvg_noiseMax` | 0.8 (0–2) | global |
@@ -256,7 +256,7 @@ Sunucudan zorlamak için `cba_settings.sqf`:
 
 ```sqf
 force force TAC_nvg_enabled = true;
-force force TAC_nvg_batteryTable = "TAC_NVGBattery=40; TAC_NVGBattery_Lithium=60";
+force force TAC_nvg_batteryTable = "TAC_NVGBattery=40, TAC_NVGBattery_Lithium=60";
 force force TAC_nvg_minutesPerHour = 1;
 force force TAC_nvg_lowThreshold = 20;
 force force TAC_nvg_testMode = false;
@@ -286,7 +286,7 @@ Kalan: 25 sn
 2. Addon Options'ta **Test modu**nu aç (×60). `N` ile NVG'yi aç: "NVG pili: 100%" bildirimi ve test göstergesi gelmeli, şarj düşmeli.
 3. Şarj %20'nin altına inince "NVG pili zayıf" uyarısı, parazit ve kararma/flicker başlamalı; %0'da NVG kapanmalı. `N` ile tekrar açmayı dene: açılmamalı ("NVG pili bitmiş").
 4. `Ctrl + Sol Windows` → **NVG Pil Değiştir** → ilerleme çubuğu → şarj %100, envanterden bir pil düşmeli, efektler kaybolmalı. Hangi pilin takıldığını test göstergesindeki `Pil:` satırından gör.
-5. **Sınıf bazlı ömür:** envanterden `TAC_NVGBattery`'yi at (`player removeItem "TAC_NVGBattery"`), lityumu tak ve ömrün 60 sn göründüğünü doğrula. Tablodaki sayıyı değiştirip (`TAC_NVGBattery=20; ...`) ömrün değiştiğini gör. Tablodaki sıranın önceliği: iki pil varken ilk yazılan takılır.
+5. **Sınıf bazlı ömür:** envanterden `TAC_NVGBattery`'yi at (`player removeItem "TAC_NVGBattery"`), lityumu tak ve ömrün 60 sn göründüğünü doğrula. Tablodaki sayıyı değiştirip (`TAC_NVGBattery=20, ...`) ömrün değiştiğini gör. Tablodaki sıranın önceliği: iki pil varken ilk yazılan takılır.
 6. Hızlı manuel kontrol: `ACE_player setVariable ["TAC_nvg_charge", 22];` ile şarjı doğrudan ayarlayıp eşiği test et. Şarjı okumak için: `ACE_player getVariable ["TAC_nvg_charge", 100]`.
 7. Test modunu kapatıp `TAC_nvg_minutesPerHour`'u küçültmek de (örn. 0.1) gerçek formülü hızlı doğrular.
 8. Respawn: `player setDamage 1`; yeni bedende şarj %100 olmalı, efektler temizlenmeli.

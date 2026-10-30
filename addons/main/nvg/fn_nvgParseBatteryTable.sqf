@@ -2,9 +2,10 @@
     Fonksiyon: TAC_fnc_nvgParseBatteryTable
     Çalışma yeri: İstemci + sunucu (ayar kaydında ve her değişimde CBA çağırır)
 
-    "Pil tablosu" ayarını ("classname=saat; classname=saat; ...") çözer ve iki global üretir:
+    "Pil tablosu" ayarını ("classname=saat, classname=saat, ...") çözer ve iki global üretir:
         TAC_nvg_batteryList : [[classname, saat], ...]   tablo sırasıyla (öncelik sırası)
         TAC_nvg_batteryMap  : HashMap  küçük_harf_classname -> saat
+    Ayraç ","dır. ";" CBA ayar dosyasının (export/import) komut ayracı olduğu için kullanılmaz; eski kayıtlar için hâlâ kabul edilir.
     Geçersiz girişler (sayı değil, saat <= 0, eksik '=') atlanır; tekrarlarda ilk giriş geçerlidir.
     Hiç geçerli giriş yoksa varsayılan pil olarak TAC_NVGBattery kullanılır.
 
@@ -33,7 +34,7 @@ private _map = createHashMap;
             _list pushBack [_class, _hours];
         };
     };
-} forEach (_table splitString ";");
+} forEach (_table splitString ",;");
 
 if (_list isEqualTo []) then {
     private _default = missionNamespace getVariable ["TAC_nvg_batteryHours", 40];
