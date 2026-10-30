@@ -13,3 +13,6 @@ call TAC_fnc_notebookPostInit;
 
 // 2. Gelişmiş NVG Pili
 call TAC_fnc_nvgPostInit;
+
+// 3. Kalibreye göre dinamik recoil
+call TAC_fnc_recoilPostInit;

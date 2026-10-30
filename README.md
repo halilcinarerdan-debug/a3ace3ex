@@ -10,7 +10,7 @@ Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey
 |---|---------|-------|
 | 1 | Taktiksel Not Defteri (ACE etkileşimli) | ✅ hazır |
 | 2 | Gelişmiş NVG pili ve efektleri | ✅ hazır (test bekliyor) |
-| 3 | Kalibreye göre dinamik recoil | ⏳ |
+| 3 | Kalibreye göre dinamik recoil | ✅ hazır (test bekliyor) |
 | 4 | Baskı altında artan sway | ⏳ |
 | 5 | Mermi yakın geçiş (crack) + ekran efekti + HUD kapatma | ⏳ |
 | 6 | Aiming deadzone / silah inertiası | ⏳ |
@@ -58,6 +58,18 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
         fn_nvgSwapBattery.sqf            "NVG Pil Değiştir": cihazı kapat + ilerleme çubuğu
         fn_nvgSwapFinish.sqf             pili düş, şarjı %100 yap, sınıfı kaydet
         fn_nvgNotify.sqf                 bildirim yardımcısı
+        fn_nvgDebug.sqf                  teşhis (call TAC_fnc_nvgDebug)
+    recoil/                              3. özellik
+        CfgFunctions.hpp
+        fn_recoilInitSettings.sqf        CBA ayarları (kategoriler, çarpanlar, tavan)
+        fn_recoilPostInit.sqf            CBA oyuncu olayları (unit/weapon/muzzle/vehicle)
+        fn_recoilAttach.sqf              oyuncuya Fired/Reloaded dinleyicisi bağlar
+        fn_recoilUpdate.sqf              mühimmattan çarpanı hesaplar, setUnitRecoilCoefficient
+        fn_recoilGetCategory.sqf         enerji -> kategori (istisna tablosu dahil)
+        fn_recoilGetEnergy.sqf           mühimmat -> kinetik enerji (önbellekli)
+        fn_recoilParseOverrides.sqf      istisna tablosunu çözer
+        fn_recoilRefresh.sqf             ayar değişince yeniden hesapla
+        fn_recoilDebug.sqf               teşhis (call TAC_fnc_recoilDebug)
 ```
 
 ## Mikero ile derleme
@@ -301,6 +313,64 @@ Pil çıkarılamazsa şarj **yenilenmez** ve ekranda "NVG bataryası envanterden
 - Tüketim, **görüş modu 1** olduğu sürece işler. `hmd` boşsa (NVG takılı değilse) işlemez; silah üstü NV optiği de görüş modu 1 verebilir.
 - Parazit ve kararma için ACE'nin `ace_nightvision_noiseScaling` değerini sürmek yerine kendi PP katmanlarımı (FilmGrain + ColorCorrections) kullandım. ACE'nin iç fonksiyonunu tahminle çağırmak yanlış parametrede RPT hatası/sessiz başarısızlık riski taşır. Efektler ACE'nin kendi NVG efektlerinin **üstüne** biner.
 - `picture` yolu (`itemacc_ca.paa`) vanilla arsenal ikonudur. pboProject "dosya bulunamadı" derse A3 verisini P: sürücüsüne aç veya `CfgWeapons.hpp` içindeki `picture` satırını sil.
+
+## Özellik 3 – Kalibreye göre dinamik recoil
+
+Mühimmatın **kinetik enerjisine** göre 5 kategori; her kategori için **tek bir çarpan**. Çarpan silahın
+**mevcut recoil'inin üstüne** biner (config + ACE + A3RO değerleri korunur; `setUnitRecoilCoefficient`).
+
+| Kat. | Sınıf | Enerji (varsayılan) | Tipik mühimmat | Çarpan |
+|------|-------|---------------------|----------------|--------|
+| 1 | Tabanca / PDW | < 1000 J | 9mm, .45, 5.7 | x1.2 |
+| 2 | Hafif | 1000–1950 J | 5.56, 5.45, 5.8 | x1.5 |
+| 3 | Orta | 1950–3000 J | 7.62x39, 6.5 | x1.9 |
+| 4 | Ağır | 3000–5500 J | 7.62x51, 7.62x54R | x2.4 |
+| 5 | Aşırı | >= 5500 J | .338, .50 | x2.9 |
+
+- **Enerji:** `E = 0.5 · kütle · hız²`; kütle `CfgAmmo >> ACE_bulletMass` (grain), hız `typicalSpeed`.
+  ACE kütlesi yoksa `hit² · 20` ile tahmin edilir. Roket, bomba atar, havan gibi **mermi olmayan** mühimmatta
+  ve araç silahlarında recoil'e dokunulmaz.
+- **Ekrana girmesin:** son çarpan **Maksimum çarpan** (varsayılan 3.0) ile sınırlanır. Silah kameraya giriyorsa
+  tavanı düşür; his yetersizse kategori çarpanlarını yükselt.
+- **Güncelleme:** silah / namlu / araç değişince (CBA oyuncu olayları), şarjör değişince (`Reloaded`) ve
+  her atışta o anki mühimmatla (`Fired`, **yalnızca oyuncuda**; yapay zekâ atışları kod çalıştırmaz).
+  Mühimmat değişmediyse atış başına tek karşılaştırma yapılır.
+- **Yanlış sınıflanan mühimmat:** `Kategori istisnaları` ayarına `mühimmat=kategori` yaz
+  (`B_762x51_Ball=4; rhs_ammo_556x45_M855A1_Ball=2`). `0` = o mühimmatta recoil değişmesin.
+
+### CBA ayarları (`Options > Addon Options > TAC - Gerçekçilik Paketi > Recoil`)
+
+| Ayar | Varsayılan |
+|------|-----------|
+| `TAC_recoil_enabled` | açık |
+| `TAC_recoil_scale` (genel ölçek) | 1.0 |
+| `TAC_recoil_maxCoef` (tavan) | 3.0 |
+| `TAC_recoil_t1..t4` (kategori sınırları, J) | 1000 / 1950 / 3000 / 5500 |
+| `TAC_recoil_m1..m5` (kategori çarpanları) | 1.2 / 1.5 / 1.9 / 2.4 / 2.9 |
+| `TAC_recoil_overrides` | boş |
+| `TAC_recoil_debug` (test göstergesi) | kapalı, kişisel |
+
+Sunucudan zorlamak için `cba_settings.sqf`:
+
+```sqf
+force force TAC_recoil_enabled = true;
+force force TAC_recoil_maxCoef = 3;
+force force TAC_recoil_m2 = 1.5;
+force force TAC_recoil_m4 = 2.4;
+```
+
+### MP mantığı (recoil)
+
+Ayarlar tüm makinelerde kaydedilir (global, `force` edilebilir). Çarpan **yalnızca yerel oyuncuda** uygulanır;
+ağa hiçbir şey yayınlanmaz, sunucuya yük sıfırdır. Döngü yok, her şey olay tabanlı.
+
+### Test adımları
+
+1. `Test göstergesi`ni aç. Farklı silahlara geç (5.56, 7.62x39, 7.62x51, .338 vb.): ekranda mühimmat, enerji, kategori ve çarpan görünmeli.
+2. Debug konsolunda (**Yerel çalıştır**): `call TAC_fnc_recoilDebug`. `Motorun uyguladigi katsayi` kategori çarpanıyla uyuşmalı.
+3. Aynı silahla `Genel ölçek`i 0.1 ve 3 yapıp recoil farkını hisset; `Maksimum çarpan`ı 1 yapınca recoil'in vanilla'ya döndüğünü doğrula.
+4. Şarjör türü değiştir (ör. normal -> AP): çarpan bir sonraki atışta yeni mühimmata göre güncellenmeli.
+5. Roketatar / araç silahı: çarpan 1 olmalı. Respawn: yeni bedende çarpan hemen yeniden uygulanmalı.
 
 ## Yeni özellik ekleme
 

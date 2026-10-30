@@ -18,9 +18,9 @@ class CfgPatches
         weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium"};
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu"};
-        version = 0.3;
-        versionStr = "0.3.2";
-        versionAr[] = {0,3,2};
+        version = 0.4;
+        versionStr = "0.4.0";
+        versionAr[] = {0,4,0};
     };
 };
 
@@ -72,6 +72,9 @@ class CfgFunctions
 
         // 2. Gelismis NVG Pili
         #include "nvg\CfgFunctions.hpp"
+
+        // 3. Kaliberye gore dinamik recoil
+        #include "recoil\CfgFunctions.hpp"
     };
 };
 
