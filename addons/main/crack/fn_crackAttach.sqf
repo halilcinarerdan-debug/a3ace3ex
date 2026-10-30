@@ -55,6 +55,6 @@ _newUnit setVariable ["TAC_crack_ehFiredNear", _newUnit addEventHandler ["FiredN
     private _info = TAC_crack_ammoCache get _ammo;
     if (!isNil "_info" && {!(_info select 0)}) exitWith {};
 
-    private _projectile = _firer nearestObject _ammo;
+    private _projectile = nearestObject [_firer, _ammo];
     [_projectile, _ammo, _firer] call TAC_fnc_crackTrack;
 }]];
