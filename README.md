@@ -443,7 +443,7 @@ Her şey yerel oyuncuda; ağa hiçbir şey yayınlanmaz, sunucuya yük sıfır. 
 Ses hızından (343 m/s) hızlı bir mermi oyuncunun kafasından **2-3 m** yakından geçerse 1-2 sn'lik şok dalgası efekti:
 
 - **Tam ekran bulanıklık:** `DynamicBlur` PP efekti.
-- **Kenar kararması (vignette):** ekran kenarlarından (genişlikte %20, yükseklikte %32) içe doğru `smoothstep` eğrisiyle şeffaflaşan, **üst üste binen 32 katman** (kenara doğru opaklık birikir: bant dikişi yok, köşeler doğal olarak daha koyu); orta bölge temiz kalır (display 46 üzerinde geçici kontroller, efekt bitince silinir).
+- **Kenar kararması (vignette):** ekran kenarlarından (genişlikte %20, yükseklikte %32) içe doğru `smoothstep` eğrisiyle şeffaflaşan, **üst üste binen katmanlar (ayar: varsayılan 48)** (kenara doğru opaklık birikir: bant dikişi yok, köşeler doğal olarak daha koyu); orta bölge temiz kalır (display 46 üzerinde kalıcı kontroller: ilk tetiklemede bir kez kurulur, sonra yalnızca gizlenip gösterilir; blur PP efekti de kalıcıdır ve bitince kapatılır, silinmez; yaratıp silmek takılma yapıyordu).
 - **HUD kapanır:** `showHUD false`. Efektten önceki HUD durumu (`shownHUD`) saklanır ve efekt bitince **aynen** geri yüklenir (HUD'u zaten gizleyen bir mission varsa bozulmaz).
 - **Zaman çizelgesi:** ilk ~%40 tam şiddet, kalanı sönümlenir. Efekt arada yeniden tetiklenirse eski zamanlayıcılar geçersiz sayılır (jeton), HUD iki kez kaydedilmez.
 
@@ -461,6 +461,7 @@ Olay 4. özellikteki `Suppressed` dinleyicisinden gelir (`TAC_suppressed`); ek m
 | `TAC_crack_duration` (sn) | 1.6 |
 | `TAC_crack_blur` (bulanıklık) | 2.5 |
 | `TAC_crack_vignette` (kenar kararması) | 0.7 |
+| `TAC_crack_layers` (vignette katman sayısı, 16-96) | 48, kişisel |
 | `TAC_crack_blast` (patlama efekti) | açık |
 | `TAC_crack_blastDist` (patlama etki mesafesi, m) | 25 |
 | `TAC_crack_blastDuration` (patlama efekt süresi, sn) | 3.5 |

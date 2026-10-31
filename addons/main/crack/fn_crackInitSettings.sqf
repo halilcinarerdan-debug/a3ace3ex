@@ -95,6 +95,15 @@ private _category = ["TAC - Gerçekçilik Paketi", "Mermi yakın geçiş (crack)
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_crack_layers",
+    "SLIDER",
+    ["Vignette kalitesi (katman sayısı)", "Yüksek = daha yumuşak geçiş (bantlaşma azalır) ama daha çok ekran kontrolü. Blur ile birleşince kare kare görünüyorsa artır, takılma olursa azalt. (Kişisel tercih)"],
+    _category,
+    [16, 96, 48, 0],
+    false
+] call CBA_settings_fnc_init;
+
+[
     "TAC_crack_hideHud",
     "CHECKBOX",
     ["Efekt sırasında HUD'u kapat", "Efekt süresince tüm HUD öğeleri gizlenir, bitince eski haline döner."],

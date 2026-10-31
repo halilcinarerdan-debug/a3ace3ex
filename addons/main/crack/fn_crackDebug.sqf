@@ -27,7 +27,7 @@ private _lines = [
     format ["Blur: %1 | vignette: %2 | HUD gizle: %3", TAC_crack_blur, TAC_crack_vignette, TAC_crack_hideHud],
     format ["Patlama: %1 | etki mesafesi: %2 m | sure: %3 sn | onbellekteki mermi sinifi: %4", TAC_crack_blast, TAC_crack_blastDist, TAC_crack_blastDuration, count TAC_crack_ammoCache],
     format ["Patlama olaylari bagli (Explosion/Fired/FiredNear): %1", ((ACE_player getVariable ["TAC_crack_ehExplosion", -1]) >= 0) && {(ACE_player getVariable ["TAC_crack_ehFired", -1]) >= 0} && {(ACE_player getVariable ["TAC_crack_ehFiredNear", -1]) >= 0}],
-    format ["Efekt suruyor: blur %1 | vignette kontrol sayisi %2 | HUD gizli %3", (missionNamespace getVariable ["TAC_crack_ppBlur", -1]) >= 0, count (missionNamespace getVariable ["TAC_crack_ctrls", []]), missionNamespace getVariable ["TAC_crack_hudHidden", false]],
+    format ["Efekt suruyor: %1 | blur handle %2 | vignette kontrol sayisi %3 (katman ayari %4) | HUD gizli %5", missionNamespace getVariable ["TAC_crack_active", false], missionNamespace getVariable ["TAC_crack_ppBlur", -1], count (missionNamespace getVariable ["TAC_crack_ctrls", []]), TAC_crack_layers, missionNamespace getVariable ["TAC_crack_hudHidden", false]],
     format ["Anlik HUD (shownHUD): %1", shownHUD],
     format ["Mission ekrani (display 46): %1", !isNull (findDisplay 46)],
     format ["Son tetik zamani: %1 (time %2)", missionNamespace getVariable ["TAC_crack_last", "-"], round time]
