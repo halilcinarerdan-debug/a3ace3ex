@@ -13,7 +13,7 @@ Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey
 | 3 | Kalibreye göre dinamik recoil | ✅ hazır (test bekliyor) |
 | 4 | Baskı altında artan sway | ✅ hazır (test bekliyor) |
 | 5 | Mermi yakın geçiş (crack) + patlama + ekran efekti + HUD kapatma | ✅ hazır (test bekliyor) |
-| 6 | Sağ tık zoom kaldırma (No Zoom): demir nişan + silahsız çıplak göz | ✅ hazır (test bekliyor) |
+| 6 | Aiming deadzone / silah inertiası | ⏳ |
 
 Her özelliğin kendi CBA "aktif" ayarı vardır; parça parça test ederken diğerlerini kapatabilirsin.
 
@@ -91,17 +91,6 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
         fn_crackStart.sqf                blur + vignette + HUD gizleme, zamanlayıcılar
         fn_crackEnd.sqf                  temizlik + HUD'u geri yükleme
         fn_crackDebug.sqf                teşhis (call TAC_fnc_crackDebug)
-    zoom/                                6. özellik
-        CfgFunctions.hpp
-        defines.hpp                      TAC_ZOOM_FOV (0.7): tüm silahlar için min = max = init
-        CfgWeapons.hpp                   Rifle / Pistol / Launcher / UGL taban sınıf yamaları (config)
-        overrides.hpp                    TAC_fnc_zoomScan çıktısı: kendi zoom değerini tanımlayan RHS/mod silahları
-        required.hpp                     TAC_fnc_zoomScan çıktısı: bu silahların bağlı olduğu CfgPatches adları
-        fn_zoomInitSettings.sqf          CBA ayarları
-        fn_zoomPostInit.sqf              display 46: sağ tık / zoom tuşu engeli (silahsız)
-        fn_zoomIsBlocked.sqf             "şu an engellenmeli mi" koşulu
-        fn_zoomDebug.sqf                 elindeki silahın zoom config'i + takılı optik
-        fn_zoomScan.sqf                  RHS/mod silahları için overrides.hpp + required.hpp üretir
 ```
 
 ## Mikero ile derleme
@@ -513,62 +502,6 @@ Tamamen yerel oyuncuda; ağa hiçbir şey yayınlanmaz, sunucuya yük sıfır. Y
 6. `call TAC_fnc_crackDebug` ile durum raporu al (efekt takılı kalırsa `[-1] call TAC_fnc_crackEnd` ile zorla temizle).
 
 > Not: ACE gibi arayüz modlarının kendi öğeleri `showHUD`'a bağlı değilse ekranda kalabilir. HUD'u geri yükleyen kod `shownHUD` değerini birebir kullanır.
-
-## Özellik 6 – Sağ tık zoom kaldırma (No Zoom)
-
-İstek: optiksiz (demir nişan) silahla sağ tık yapınca gelen **ekstra zoom** olmasın; silahsızken sağ tıkla **çıplak gözle zoom** yapılamasın;
-RHS ve onun geliştirme modlarında da çalışsın; isteğe bağlı kapatılabilsin. Referans: Steam Workshop "Weapon Sights No Zoom Overhaul"
-(yalnızca vanilla silahları kapsıyor) ve GitHub'daki Cambusta/Ironsight (vanilla + CUP; aynı taban sınıf yaklaşımı).
-
-Iki parça vardır:
-
-| Parça | Ne yapar | Nerede | Kapatma |
-|-------|----------|--------|---------|
-| **Config yaması** | Silah taban sınıflarında `opticsZoomMin = opticsZoomMax = opticsZoomInit = TAC_ZOOM_FOV (0.7)`: RMB ile ekstra zoom yok, zoom tuşu/tekeri bir şey yapmaz | `zoom/CfgWeapons.hpp` (+ `overrides.hpp`) | **Derleme anında**: `config.cpp` içindeki `#define TAC_NOZOOM_IRONSIGHTS` satırını yorum yap, yeniden derle. Engine config'i oyun içinde değiştirilemez, bu yüzden CBA ayarı yoktur |
-| **Çıplak göz** | Elde silah yokken (`currentWeapon` boş, yaya) sağ tık ve `optics / opticsTemp / zoomTemp / zoomIn / zoomOut` tuşları engellenir | `fn_zoomPostInit.sqf` (display 46 dinleyicisi) | **Oyun içi**: CBA `Silahsızken çıplak göz zoom'unu engelle` (`TAC_zoom_blockBare`, sunucudan zorlanabilir) |
-
-Dürbün (`currentWeapon` = Binocular) ve optikli nişan **etkilenmez**: optiğin kendi `OpticsModes` değerleri geçerlidir.
-
-### RHS ve diğer modların silahları (bir kereye mahsus kurulum)
-
-Taban sınıf yaması yalnızca zoom değerini **kendisi tanımlamayan** silahlara miras geçer. Çoğu RHS silahı ve ara sınıf kendi değerini tanımlar;
-bunları bulup yamalayan araç `TAC_fnc_zoomScan`'dir. Bu araç oyundaki gerçek config'i okuduğu için RHS'in iç yapısını bilmeme gerek kalmaz.
-
-1. Oyunu RHS + kullandığın tüm silah modlarıyla başlat (TAC dahil, 0.8.0), editörde bir yere gir.
-2. Debug konsolu (**Yerel çalıştır**): `[] call TAC_fnc_zoomScan` -> kaç sınıf bulunduğunu ve hangi modlara bağlı olduğunu söyler.
-3. `[0] call TAC_fnc_zoomScan` -> panoya `class X: Parent { ... };` bloklarını kopyalar. Bunu `addons/main/zoom/overrides.hpp` dosyasının **içine yapıştır** (içeriği değiştir).
-   Pano uzun gelirse RPT'de `[TAC][ZOOM-SCAN]` önekli satırlar aynı içeriktir.
-4. `[1] call TAC_fnc_zoomScan` -> panoya tek satır `#define TAC_ZOOM_REQ_ADDONS , "rhs_...", ...` kopyalar. Bunu `addons/main/zoom/required.hpp` içine yapıştır
-   (TAC `requiredAddons` listesine bu modlar eklenir: yamanın RHS'ten **sonra** yüklenmesi gerekir; sonuç olarak TAC, bu modlar olmadan açılmaz).
-5. PBO'yu yeniden derle. Mod ekleyip çıkardığında 2-5'i tekrarla.
-
-> Neden `requiredAddons`? Config yaması ancak hedef sınıf yüklenmişse anlamlıdır; bağımlılık olmadan RHS'ten önce yüklenip sınıfı bozabilir.
-> RHS'siz çalışmasını istersen `overrides.hpp` ve `required.hpp`'yi varsayılan boş haline bırak: yalnızca vanilla taban sınıflar yamalanır.
-
-### CBA ayarları (`... > TAC - Gerçekçilik Paketi > Sağ tık zoom (No Zoom)`)
-
-| Ayar | Varsayılan |
-|------|-----------|
-| `TAC_zoom_blockBare` (silahsız çıplak göz zoom engeli) | açık, global |
-| `TAC_zoom_debug` (test göstergesi) | kapalı, kişisel |
-
-`TAC_ZOOM_FOV` (`zoom/defines.hpp`) varsayılan **0.7**'dir (Ironsight'ın kullandığı değer). Zoom hissediyorsan 0.75-0.8 dene, yeniden derle.
-
-### MP mantığı (zoom)
-
-Config yaması her makinede aynıdır (mod yüklü olmalı). Çıplak göz engeli tamamen yerel oyuncuda, girdi seviyesinde çalışır; ağa bir şey yayınlanmaz,
-sunucuya yük sıfırdır, AI için kod çalışmaz. Döngü yoktur: dinleyiciler yalnızca tuş/fare basışında çalışır.
-
-### Test adımları
-
-1. Silahsız (envanterden silahı çıkar veya `removeAllWeapons player`) sağ tıkla: zoom **olmamalı**. `Test göstergesi` açıkken ekrana "engellendi" yazar. Silahı geri al: RMB normal nişan alır.
-2. Optiksiz tüfek (ör. bir RHS iron sight) ile RMB: ekstra zoom olmamalı; fare tekeri de bir şey yapmamalı. Bir pompalı, tabanca ve RPG-7 ile de dene.
-3. Optikli silah: optiğin kendi zoom'u çalışmalı (bu yama dokunmaz).
-4. Dürbün (RMB): zoom çalışmalı.
-5. `call TAC_fnc_zoomDebug` ile elindeki silahın config değerlerini gör: `min/max/init` = 0.7 olmalı. "Sınıfın KENDİ tanımladığı zoom alanları" satırı doluysa o silah taban yamadan etkilenmez: `TAC_fnc_zoomScan` ile `overrides.hpp`'ye ekle.
-6. Çıplak göz zoom'u hâlâ yapılıyorsa: debug göstergesi "engellendi" yazıyor ama zoom oluyorsa motor bu girdiyi dinleyiciden bağımsız işliyor demektir; bana bildir (başka yol denenecek).
-
-> Not: `weapon on back / holstered` durumu ACE ile `currentWeapon = ""` olur ve çıplak göz sayılır. Araç içindeki yolcu/sürücü zoom'u kapsam dışıdır (araçlar ayrı config sınıflarıdır; Weapon Sights No Zoom Overhaul da bunları kapsamaz).
 
 ## Yeni özellik ekleme
 
