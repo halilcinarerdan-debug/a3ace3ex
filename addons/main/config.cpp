@@ -7,6 +7,14 @@
 //  NOT: config.cpp'yi ASCII tut (Mikero rapify icin en guvenlisi).
 // ============================================================================
 
+// ----------------------------------------------------------------------------
+//  6. ozellik (sag tik zoom / No Zoom) config kismi. Kapatmak icin alttaki satiri yorum yap:
+//  silah taban siniflarinin opticsZoom yamasi (zoom\CfgWeapons.hpp) derlenmez.
+// ----------------------------------------------------------------------------
+#include "zoom\defines.hpp"
+#include "zoom\required.hpp"
+#define TAC_NOZOOM_IRONSIGHTS
+
 class CfgPatches
 {
     class tac_main
@@ -17,10 +25,10 @@ class CfgPatches
         units[] = {};
         weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium"};
         requiredVersion = 0.1;
-        requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu"};
-        version = 0.7;
-        versionStr = "0.7.3";
-        versionAr[] = {0,7,3};
+        requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu", "A3_Data_F", "A3_Weapons_F" TAC_ZOOM_REQ_ADDONS};
+        version = 0.8;
+        versionStr = "0.8.0";
+        versionAr[] = {0,8,0};
     };
 };
 
@@ -81,6 +89,9 @@ class CfgFunctions
 
         // 5. Mermi yakin gecis (crack) + ekran efekti + HUD
         #include "crack\CfgFunctions.hpp"
+
+        // 6. Sag tik zoom (No Zoom)
+        #include "zoom\CfgFunctions.hpp"
     };
 };
 
@@ -92,6 +103,11 @@ class CfgWeapons
 
     // 2. Gelismis NVG Pili
     #include "nvg\CfgWeapons.hpp"
+
+    // 6. Sag tik zoom (No Zoom): iron sight zoom kaldirma (derleme anindaki #define ile kapanir)
+#ifdef TAC_NOZOOM_IRONSIGHTS
+    #include "zoom\CfgWeapons.hpp"
+#endif
 };
 
 // CBA XEH: tum makinelerde (sunucu, istemci, HC) mod yuklenince calisir.

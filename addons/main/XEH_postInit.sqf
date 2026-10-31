@@ -22,3 +22,6 @@ call TAC_fnc_stressPostInit;
 
 // 5. Mermi yakın geçiş (crack)
 call TAC_fnc_crackPostInit;
+
+// 6. Sağ tık zoom (No Zoom): silahsız çıplak göz zoom engeli
+call TAC_fnc_zoomPostInit;

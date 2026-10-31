@@ -19,3 +19,6 @@ call TAC_fnc_stressInitSettings;
 
 // 5. Mermi yakın geçiş (crack)
 call TAC_fnc_crackInitSettings;
+
+// 6. Sağ tık zoom (No Zoom)
+call TAC_fnc_zoomInitSettings;
