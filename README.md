@@ -730,8 +730,8 @@ ACE ile namlu değiştirilirken (kendin ya da yardımcı) çıkarılan **namlunu
 
 ## Özellik 8 – Optik: buğulanma ve kirlenme
 
-Yalnızca **kapalı lensli (büyütmeli) optikler** (config: `ItemInfo >> OpticsModes` altında `useModelOptics = 1`: ACOG, RCO, tarama dürbünleri...) etkilenir.
-Kırmızı nokta / holografik nişangahlar (açık lens) ve demir nişan etkilenmez. Etki **yalnızca optikten bakarken** görünür: görüntü bulanır ve kontrast düşer.
+Yalnızca **2D resimli büyütmeli dürbünler** etkilenir (ACOG, RCO, tarama dürbünleri...). Config ölçütü: `ItemInfo >> OpticsModes` altında en az bir mod `useModelOptics = 1` **ve** büyütme >= 1.5
+(`opticsZoomMin <= 0.16`; Arma'da 0.25 = 1x). Kırmızı nokta, holografik ve diğer 1x nişangahlar (bazıları `useModelOptics = 1` kullansa da), 3D (PiP) dürbünler ve demir nişan **etkilenmez**. Etki **yalnızca optikten bakarken** görünür: görüntü bulanır ve kontrast düşer.
 Yine **oyuncuya bildirim yok**; durum "Silahı incele" kartında gözlem diliyle okunur.
 
 ### Model (silah başına: buğu 0-100 ve kir 0-100)
