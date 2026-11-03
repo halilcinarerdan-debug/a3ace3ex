@@ -17,7 +17,7 @@ Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey
 | 7 | MG: gerçekçi yedek namlu ağırlığı + sıcak namlu değiştirme yanığı (ısı eldiveni) | ✅ hazır (test bekliyor) |
 | 7a | MG: RHS ve CUP Minimi için hafif namlu (opsiyonel compat PBO'lar) | ✅ hazır (test bekliyor) |
 | 7b | MG: besleme kapağı / kayış adımı | ⏳ |
-| 8 | Optik: buğulanma, kirlenme | ⏳ |
+| 8 | Optik: buğulanma ve kirlenme (kapalı lensli optikler) | ✅ hazır (test bekliyor) |
 | 9 | Roket atar / RPG: hazırlık, ateşlenmeme, misfire prosedürü | ⏳ |
 
 Her özelliğin kendi CBA "aktif" ayarı vardır; parça parça test ederken diğerlerini kapatabilirsin.
@@ -110,6 +110,13 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
         fn_mgInitSettings.sqf            CBA ayarları (yanık)
         fn_mgInit.sqf                    ACE namlu değiştirme olayına sunucu dinleyicisi + istemci olayı
         fn_mgBurn.sqf                    sıcak namlu yanığı
+    optic/                               8. özellik
+        CfgFunctions.hpp / CfgWeapons.hpp  Lens Bezi eşyası
+        fn_optInitSettings.sqf           CBA ayarları
+        fn_optPostInit.sqf               "cameraView" / "weapon" / "unit" olayları + ACE "Optiği sil"
+        fn_optRefresh / optStart / optStop / optTick   optikten bakarken çalışan döngü (0.5 sn PFH)
+        fn_optApply.sqf / optClearEffects.sqf          DynamicBlur + ColorCorrections (kalıcı PP)
+        fn_optIsSealed / optGetState / optActive / optInspectLines / optWipe
 addons/compat_rhs/                       -> tac_compat_rhs.pbo (OPSİYONEL; RHS Minimi ailesine hafif namlu)
 addons/compat_cup/                       -> tac_compat_cup.pbo (OPSİYONEL; CUP Minimi / M249 ailesine hafif namlu)
 ```
@@ -720,6 +727,56 @@ ACE ile namlu değiştirilirken (kendin ya da yardımcı) çıkarılan **namlunu
 7. `call TAC_fnc_wpnDebug` ile MG kategorisini, Silahı incele ile yedek namlu satırını doğrula.
 
 > Sonraki adım (7b): besleme kapağı / kayış adımı.
+
+## Özellik 8 – Optik: buğulanma ve kirlenme
+
+Yalnızca **kapalı lensli (büyütmeli) optikler** (config: `ItemInfo >> OpticsModes` altında `useModelOptics = 1`: ACOG, RCO, tarama dürbünleri...) etkilenir.
+Kırmızı nokta / holografik nişangahlar (açık lens) ve demir nişan etkilenmez. Etki **yalnızca optikten bakarken** görünür: görüntü bulanır ve kontrast düşer.
+Yine **oyuncuya bildirim yok**; durum "Silahı incele" kartında gözlem diliyle okunur.
+
+### Model (silah başına: buğu 0-100 ve kir 0-100)
+
+| Değer | Nasıl artar | Nasıl azalır |
+|-------|-------------|--------------|
+| **Buğu** | optikten bakarken, soğukta ve ıslakta: `hız x fogF`, `fogF = min(1, 0.7 x soğuk + 0.6 x ıslaklık)`; soğuk = `(10 - sıcaklık)/15` (10 °C ve üstü 0, -5 °C altı 1), ıslaklık = yağmur ya da sığ su | koşul yoksa bakarken saniyede 0.8; **bakmıyorken** saniyede 1.5 (bakışın başında hesaplanır); optiği silince 0 |
+| **Kir** | atış başına `0.05 x ortam çarpanı` (silah bakımındaki aynı ortam çarpanı: yağmur, tozda yatma); yağmurda optikten bakarken saniyede 0.15 x yağmur | optiği silince %70 azalır; **Silahı temizle** (tam temizlik) kiri %5'e, buğuyu 0'a indirir |
+
+Etki seviyesi `min(1, (buğu + 0.6 x kir)/100)`: bulanıklık `En fazla bulanıklık x seviye^1.3` (DynamicBlur), kontrast düşüşü `0.3 x pus ayarı x seviye` (ColorCorrections).
+Sıcaklık vanilla `ambientTemperature` ile okunur (ACE hava durumu gerekmez).
+
+### ACE self-menü > Silah Bakımı
+
+- **Optiği sil:** 4 sn (bakım süresi çarpanı kadar), `Lens Bezi` (`TAC_LensCloth`, tükenmez) ister. Buğu 0, kir %70 azalır.
+- **Silahı incele** kartına satır eklenir: `Optik lensi: temiz | buğu: yok` (silahçı yüzdeleri de görür).
+
+### CBA ayarları (`... > TAC - Gerçekçilik Paketi > Optik (buğu / kir)`)
+
+| Ayar | Varsayılan |
+|------|-----------|
+| `TAC_opt_enabled` | açık |
+| `TAC_opt_fogRate` (saniyede % buğulanma) | 1.5 |
+| `TAC_opt_shotDirt` (atış başına % kir) | 0.05 |
+| `TAC_opt_rainDirt` (yağmurda saniyede % damlacık) | 0.15 |
+| `TAC_opt_blurMax` (en fazla bulanıklık) | 2, kişisel |
+| `TAC_opt_haze` (kontrast kaybı) | 0.3, kişisel |
+
+Test hızlandırması silah bakım sisteminin `Test modu` / `Test çarpanı` ayarını kullanır (x20).
+
+### MP mantığı (optik)
+
+Tamamen yerel oyuncuda: durum birimin üzerinde, görsel etki yalnızca oyuncunun ekranında. Ağa hiçbir şey yayınlanmaz, sunucuya yük sıfır, yapay zekâ için kod çalışmaz.
+Döngü yalnızca kapalı lensli optikten bakarken vardır (CBA `cameraView` olayı başlatıp durdurur); bakmıyorken sıfır maliyet. PP efektleri bir kez yaratılıp kalıcı tutulur.
+Durum "birim + silah sınıfı" başınadır; silah yere atılınca optik durumu silah bakımı gibi **taşınmaz** (buğu zaten geçici, kir ise silmeyle kolay temizlenir).
+
+### Test adımları
+
+1. Kapalı lensli optikli bir silah al (ör. vanilla `arifle_MX_F` + `optic_Hamr` ya da RHS ACOG) ve `player addItem "TAC_LensCloth"`. Silah Bakımı Test modunu aç (x20).
+2. **Soğuk / yağmur:** Debug konsolunda `0 setRain 1; setDate [2026,1,1,6,0]` ya da yeterince soğuk bir harita/saat dene. Nişan alıp optikten bak: birkaç saniyede görüntü bulanmalı. Nişanı bırakıp biraz bekle: tekrar bakınca buğu azalmış olmalı.
+3. **Atışla kir:** Test modunda ~100 atış sonra optikten bak: hafif bulanıklık. Silah Bakımı > **Silahı incele**: `Optik lensi: lekeli`.
+4. **Optiği sil:** menüden sil, buğu gitmeli, kir azalmalı. **Silahı temizle** ile kir ~%5'e inmeli.
+5. **Kırmızı nokta / demir nişan:** hiçbir bulanıklık olmamalı, incele kartında optik satırı çıkmamalı.
+6. Ayarlardan `En fazla bulanıklık`'ı 0 yap: bulanıklık kalkar, kontrast hâlâ düşer. `Kontrast kaybı`nı 0 yap: görüntü bozulmaz.
+7. **Dikkat edilecekler (görsel):** `ColorCorrections` optiğin siyah çerçevesini hafif grileştirebilir; rahatsız ederse `Kontrast kaybı`'nı düşür. Bulanıklık tüm ekranı etkiler (reticle dahil).
 
 ## Yeni özellik ekleme
 

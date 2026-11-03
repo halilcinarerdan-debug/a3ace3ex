@@ -15,7 +15,7 @@
         2: NUMBER - süre (sn)
         3: CODE   - bitiş kodu, parametre: [unit, args]
         4: ARRAY  - bitiş koduna aktarılan argümanlar; ilk eleman hedef silah classname
-        5: STRING - (isteğe bağlı) ses/hareket türü: "clean", "lube", "clearJam", "parts"
+        5: STRING - (isteğe bağlı) ses/hareket türü: "clean", "lube", "clearJam", "parts", "lens" (lens: hareket yok)
 
     Dönüş: yok
 */
@@ -34,7 +34,7 @@ if (_duration <= 0) exitWith {
 _unit setVariable ["TAC_wpn_busyUntil", time + _duration + 3];
 
 [_unit, _kind, "start", _weapon] call TAC_fnc_wpnFx;
-[_unit, _weapon] call TAC_fnc_wpnGesture;
+if !(_kind isEqualTo "lens") then {[_unit, _weapon] call TAC_fnc_wpnGesture};
 
 [
     _duration,

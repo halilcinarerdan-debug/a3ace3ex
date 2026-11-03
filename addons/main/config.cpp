@@ -15,13 +15,13 @@ class CfgPatches
         author = "TAC";
         url = "";
         units[] = {};
-        weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium", "TAC_NVGBattery_p75", "TAC_NVGBattery_p50", "TAC_NVGBattery_p25", "TAC_NVGBattery_p10", "TAC_NVGBattery_Lithium_p75", "TAC_NVGBattery_Lithium_p50", "TAC_NVGBattery_Lithium_p25", "TAC_NVGBattery_Lithium_p10", "TAC_NVGBattery_Dead", "TAC_WeaponCleaningKit", "TAC_WeaponOil", "TAC_WeaponSpareParts", "TAC_HeatGlove"};
+        weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium", "TAC_NVGBattery_p75", "TAC_NVGBattery_p50", "TAC_NVGBattery_p25", "TAC_NVGBattery_p10", "TAC_NVGBattery_Lithium_p75", "TAC_NVGBattery_Lithium_p50", "TAC_NVGBattery_Lithium_p25", "TAC_NVGBattery_Lithium_p10", "TAC_NVGBattery_Dead", "TAC_WeaponCleaningKit", "TAC_WeaponOil", "TAC_WeaponSpareParts", "TAC_HeatGlove", "TAC_LensCloth"};
         magazines[] = {"TAC_SpareBarrel_Light", "TAC_SpareBarrel_Heavy"};
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu", "ace_overheating"};
-        version = 0.10;
-        versionStr = "0.10.0";
-        versionAr[] = {0,10,0};
+        version = 0.11;
+        versionStr = "0.11.0";
+        versionAr[] = {0,11,0};
     };
 };
 
@@ -88,6 +88,9 @@ class CfgFunctions
 
         // 7. Makineli tufek: gercekci yedek namlu + sicak namlu yanigi
         #include "mg\CfgFunctions.hpp"
+
+        // 8. Optik: bugulanma ve kirlenme
+        #include "optic\CfgFunctions.hpp"
     };
 };
 
@@ -105,6 +108,9 @@ class CfgWeapons
 
     // 7. Makineli tufek: yedek namlu atamalari + isi eldiveni
     #include "mg\CfgWeapons.hpp"
+
+    // 8. Optik: lens bezi
+    #include "optic\CfgWeapons.hpp"
 };
 
 // 7. Makineli tufek: gercekci yedek namlu agirliklari (ACE_SpareBarrel yamasi dahil)

@@ -28,3 +28,6 @@ call TAC_fnc_crackPostInit;
 
 // 6. Silah bakım ve arıza
 call TAC_fnc_wpnPostInit;
+
+// 8. Optik (buğu / kir): silah bakım menüsünden sonra
+call TAC_fnc_optPostInit;

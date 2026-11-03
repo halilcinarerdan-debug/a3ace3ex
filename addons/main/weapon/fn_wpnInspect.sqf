@@ -84,6 +84,9 @@ if (getNumber (configFile >> "CfgWeapons" >> _weapon >> "ace_overheating_allowSw
     _lines pushBack format ["Yedek namlu: %1 (her biri ~%2 kg)", _count, (round (_kg * 10)) / 10];
 };
 
+// Kapali lensli optik: lens kiri ve bugu
+_lines append ([_unit, _weapon, [_unit] call TAC_fnc_wpnIsArmorer] call TAC_fnc_optInspectLines);
+
 if (_jammedNow) then {
     _lines pushBack "<t color='#ff8844'>Şu an arızalı</t>";
 };

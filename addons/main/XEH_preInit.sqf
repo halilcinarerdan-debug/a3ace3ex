@@ -25,3 +25,6 @@ call TAC_fnc_wpnInitSettings;
 
 // 7. Makineli tüfek (namlu)
 call TAC_fnc_mgInitSettings;
+
+// 8. Optik (buğu / kir)
+call TAC_fnc_optInitSettings;

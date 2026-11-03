@@ -5,6 +5,7 @@
     "Silahı temizle": ilerleme çubuğu (kategori süresi x ayar çarpanı: tüfek 25 sn, MG 45 sn,
     tabanca 15 sn). Bitince kir %5'e iner, son temizlikten atış sayacı sıfırlanır ve temizlik
     yağı da alır: yağ en fazla %12 kalır (temizledikten sonra yağlamak gerekir).
+    Birincil silahta optik lensi de silinir (buğu 0, kir en fazla %5).
     Silah Bakım Kiti gerekir ("Bakım malzemesi gerekli" açıksa; kit tükenmez).
 
     Parametreler:
@@ -30,6 +31,14 @@ private _time = (_cat select 2) * TAC_wpn_cleanTimeMult;
     _state set [0, (_state select 0) min 5];
     _state set [1, (_state select 1) min 12];
     _state set [3, 0];
+
+    // Tam temizlikte optik lensi de silinir.
+    if (_weapon isEqualTo (primaryWeapon _unit)) then {
+        private _optState = [_unit, _weapon] call TAC_fnc_optGetState;
+
+        _optState set [0, 0];
+        _optState set [1, (_optState select 1) min 5];
+    };
 
     [format ["%1 temizlendi.", getText (configFile >> "CfgWeapons" >> _weapon >> "displayName")]] call ace_common_fnc_displayTextStructured;
 }, [_weapon], "clean"] call TAC_fnc_wpnRun;

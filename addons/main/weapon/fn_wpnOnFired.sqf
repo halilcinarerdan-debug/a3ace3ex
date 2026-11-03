@@ -6,6 +6,7 @@
       1. Silah kategorisi (tüfek / MG / tabanca) takip ediliyor mu? Bomba, roket, fırlatıcı: atla.
       2. Kir artar:  oran/1000 x kategori çarpanı x ortam x susturucu (x yağ aşırıysa tozda 1.3)
          Yağ azalır: oran/1000.  Aşınma: +1 atış.  (Test modunda hepsi test çarpanıyla hızlanır.)
+      2b. Kapalı lensli optik takılıysa lens kiri de artar (TAC_fnc_optGetState).
       3. Arıza ihtimali (TAC_fnc_wpnJamChance) ile zar atılır. Arıza çıkarsa tür, nedene göre
          ağırlıklandırılır (kir -> besleme/çıkarma, düşük yağ ve aşınma -> kovan çıkarma, ufak sabit
          pay -> kusurlu mühimmat) ve ACE'nin arıza sistemine verilir. Silah, ACE'nin kendi
@@ -34,8 +35,13 @@ private _accel = if (TAC_wpn_testMode) then {TAC_wpn_testMult} else {1};
 _state params ["_dirt", "_lube", "_wear", "_since"];
 
 // Susturucu: gaz geri tepmesi kirlenmeyi artirir
+private _optic = "";
 private _suppressor = switch (_weapon) do {
-    case (primaryWeapon _unit): {(primaryWeaponItems _unit) select 0};
+    case (primaryWeapon _unit): {
+        private _items = primaryWeaponItems _unit;
+        _optic = _items select 2;
+        _items select 0
+    };
     case (handgunWeapon _unit): {(handgunItems _unit) select 0};
     default {""};
 };
@@ -53,6 +59,13 @@ _state set [0, _dirt];
 _state set [1, _lube];
 _state set [2, _wear];
 _state set [3, _since];
+
+// Kapali lensli optikte atisla lens kirlenir (ortam carpani yagmur/toz icin aynidir).
+if (TAC_opt_enabled && {!(_optic isEqualTo "")} && {[_optic] call TAC_fnc_optIsSealed}) then {
+    private _optState = [_unit, _weapon] call TAC_fnc_optGetState;
+
+    _optState set [1, ((_optState select 1) + (TAC_opt_shotDirt * _env * _accel)) min 100];
+};
 
 // --- Ariza ------------------------------------------------------------------
 if (isNil "ace_overheating_fnc_jamWeapon") exitWith {};
