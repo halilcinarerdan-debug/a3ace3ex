@@ -23,18 +23,18 @@ private _category = ["TAC - Gerçekçilik Paketi", "Makineli tüfek (namlu)"];
 [
     "TAC_mg_burnTemp",
     "SLIDER",
-    ["Yanık sıcaklık eşiği (°C)", "Çıkarılan namlunun ACE sıcaklığı bu değerin üstündeyse yanık oluşur. Gerçekte ~60 °C'de deri yanar. Test göstergesini açıp namlu değiştirince ACE'nin verdiği gerçek sıcaklığı görebilirsin."],
+    ["Yanık sıcaklık eşiği (°C)", "Çıkarılan namlunun ACE sıcaklığı bu değerin üstündeyse yanık oluşur. Gerçekte ~60 °C'de deri yanar; ACE namluları kısa ateşte hızla 100-200 °C'yi geçer."],
     _category,
-    [50, 500, 100, 0],
+    [50, 500, 150, 0],
     true
 ] call CBA_settings_fnc_init;
 
 [
     "TAC_mg_burnDamage",
     "SLIDER",
-    ["Maksimum yanık hasarı", "Eşiğin 350 °C üstündeki sıcaklıkta verilen hasar (ACE tıbbı, sağ kol). Eşikte bunun %50'si. ACE tıbbı menüsünde sağ kolda termal yanık yarası olarak görünür."],
+    ["Maksimum yanık hasarı", "Eşiğin 350 °C üstündeki sıcaklıkta verilen hasar (ACE tıbbı, sağ kol). Eşikte bunun %30'u. Hasar sıcaklıkla doğrusal artar."],
     _category,
-    [0, 1, 0.6, 2],
+    [0, 1, 0.35, 2],
     true
 ] call CBA_settings_fnc_init;
 

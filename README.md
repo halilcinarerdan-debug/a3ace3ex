@@ -669,19 +669,18 @@ ACE'nin yedek namlusu tüm MG'ler için tek tip ve 25 birimdi (~1.1 kg). Arma k�
 
 ACE ile namlu değiştirilirken (kendin ya da yardımcı) çıkarılan **namlunun sıcaklığı** eşiğin üstündeyse ve namluyu tutan oyuncuda **Isı Eldiveni** (`TAC_HeatGlove`) envanterde **yoksa** sağ kolda yanık oluşur.
 
-- Hasar: `maksimum x (0.5 + 0.5 x clamp((sıcaklık - eşik) / 350, 0, 1))`. ACE tıbbı varsa `ace_medical_fnc_addDamageToUnit` ("RightArm", "burn"), yoksa vanilla `HitHands`.
+- Hasar: `maksimum x (0.3 + 0.7 x clamp((sıcaklık - eşik) / 350, 0, 1))`. ACE tıbbı varsa `ace_medical_fnc_addDamageToUnit` ("RightArm", "burn"), yoksa vanilla `HitHands`.
 - **Oyuncuya bildirim yok**: acı ve yara ACE tıbbından görünür.
 - Eldiven tükenmez; envanterde bulunması yeterli.
-- MP: ACE'nin sunucu olayına (`ace_overheating_loadCoolestSpareBarrel`) sunucuda dinleyici bağlanır, her namlu değiştirmede namluyu tutan oyuncuya olay gönderilir; eşik / eldiven kontrolü ve hasar yalnızca onun makinesinde (yerel birim) yapılır.
-- Yanık yarası ACE tıbbı menüsünde (Muayene > sağ kol) "termal yanık" olarak görünür; küçük hasar küçük bir yara oluşturur. Hızlı deneme: debug konsolunda `["TAC_mg_hotBarrel", [ACE_player, 300]] call CBA_fnc_localEvent`.
+- MP: ACE'nin sunucu olayına (`ace_overheating_loadCoolestSpareBarrel`) sunucuda dinleyici bağlanır, sıcaklık eşiğin üstündeyse namluyu tutan oyuncuya olay gönderilir; hasar yalnızca onun makinesinde (yerel birim) uygulanır.
 
 ### CBA ayarları (`... > TAC - Gerçekçilik Paketi > Makineli tüfek (namlu)`)
 
 | Ayar | Varsayılan |
 |------|-----------|
 | `TAC_mg_burn` | açık |
-| `TAC_mg_burnTemp` (°C eşiği) | 100 |
-| `TAC_mg_burnDamage` (azami hasar) | 0.6 |
+| `TAC_mg_burnTemp` (°C eşiği) | 150 |
+| `TAC_mg_burnDamage` (azami hasar) | 0.35 |
 | `TAC_mg_debug` (test göstergesi) | kapalı, kişisel |
 
 ### Test adımları
@@ -693,8 +692,7 @@ ACE ile namlu değiştirilirken (kendin ya da yardımcı) çıkarılan **namlunu
    ```
    Envanterde yedek namlunun ağırlığına bak (~1.9 kg). Navid/SPMG ile `TAC_SpareBarrel_Heavy`, Zafir/RHS MG'siyle `ACE_SpareBarrel` dene.
 2. Test göstergesini aç. Sıcak ateşle namluyu ısıt (ACE'nin sıcaklık eylemiyle kontrol edebilirsin: ACE self-menü > Namlu sıcaklığı).
-3. Namlu değiştir (ACE self-menü > Namlu değiştir, ya da yardımcıyla). Test göstergesi her değiştirmede `sicaklik / esik / eldiven / hasar / SONUC` yazar (yanık olmasa bile). Eldivensiz, eşiğin üstünde `YANIK UYGULANDI` yazmalı ve ACE tıbbı menüsünde sağ kolda termal yanık görünmeli.
-   Hiçbir satır çıkmıyorsa olay hiç gelmiyor demektir (ACE sürümü olay adını değiştirmiş olabilir): bana bildir. Sıcaklık eşiğin altındaysa daha çok ateş et ya da `TAC_mg_burnTemp`'i düşür.
+3. Namlu değiştir (ACE self-menü > Namlu değiştir, ya da yardımcıyla). Eldivensiz sıcak değiştirince sağ kolda yanık oluşmalı; ekranda `sicaklik / esik / eldiven / hasar` yazmalı.
 4. `player addItem "TAC_HeatGlove"` ile eldiven ekle, tekrar dene: yanık olmamalı.
 5. Soğuk namluyu (eşiğin altında) değiştir: yanık olmamalı.
 6. Zafir/RHS MG'si (atanmamış): orta namlu (`ACE_SpareBarrel`, ~2.7 kg) kullanılmalı.
