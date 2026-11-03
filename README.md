@@ -882,6 +882,18 @@ Güdümsüz roket (omuz atarı, tek kullanımlık) hedefe çarpıp **patlamayabi
 ACE'de bunun hazır bir karşılığı bulamadım: ACE'nin "Dud" kavramı yalnızca silahın hazneye aldığı kusurlu mermi arızasıdır (silah arıza türü), roketin hedefte patlamaması değil. Ayrıca ACE Explosives yalnızca elle kurulan patlayıcıları kapsar. (Tüm ACE'yi taramadım.)
 UXO ile etkileşim (imha vb.) şimdilik yok; silmek için Zeus veya `deleteVehicle`.
 
+### Güdümlü füze: pil ve soğutma (Javelin, Titan, Stinger, Igla...)
+
+Yalnızca **güdümlü** kategori (tek kullanımlık NLAW hariç). Gerçek sistemlerin (Javelin CLU, Stinger BCU) mantığı, döngüsüz (tembel hesap):
+
+1. **Atışa hazırla** (6 sn) sistemi açar: pil sayılmaya başlar, arayıcı **soğumaya** girer (`TAC_rkt_cooldown`, varsayılan 12 sn; > 25 °C sıcakta en fazla %50 uzar).
+2. Soğuyana kadar tetik yalnızca tık sesi verir. Soğuduktan sonra **soğutucu** `TAC_rkt_coolantTime` (180 sn) dayanır; ateşlenmezse arayıcı **ısınır**: sistem kapanır, hazırlık sıfırlanır, yeniden "Atışa hazırla" (yeni soğuma) gerekir.
+3. **Pil:** sistem açık kaldıkça boşalır (`TAC_rkt_batteryMinutes`, varsayılan 30 dk açık kalma = %100). Pil boşsa füze ateşlenmez; sistem de açılmaz. Atış, reload, mühimmat çıkarma veya fırlatıcıyı bırakma sistemi kapatır ve geçen süre kadar pil düşülür.
+4. **Pili değiştir:** ACE self-menü > Roketatar, yedek `TAC_MissileBattery` (Güdümlü Füze Pili) ister (5 sn). Pil %100 olur.
+5. Oyuncuya bildirim yok: İncele kartında "Sistem: kapalı / açık, arayıcı soğuyor (~N sn) / hazır (soğutucu ~N sn) / arayıcı ısındı" ve pil "dolu / yarı / zayıf / boş" yazar; silahçı yüzdeyi görür.
+CBA: `TAC_rkt_guided`, `TAC_rkt_cooldown`, `TAC_rkt_coolantTime`, `TAC_rkt_batteryMinutes`. Süreler gerçekten daha uzun / kısa olabilir; oyun temposuna göre ayarlandı (tahmin).
+Test: `player addWeapon "launch_I_Titan_F"` (ya da CUP Javelin) + `player addItem "TAC_MissileBattery"`; hazırla, soğuma bitmeden ateş etmeyi dene (tık), bekle, ateşle; 180 sn bekleyip ısındığını gör.
+
 ### Hava koşulları ve mühimmat nemi (ılımlı)
 
 Hava yalnızca atış anında değil, **zamanla** da mühimmatı etkiler. Tek bir 10 sn'lik PFH (fırlatıcı yoksa anında çıkar) taşınan roket / füze mühimmatının **nemini** (0-100) günceller:

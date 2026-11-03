@@ -28,6 +28,7 @@ if (_weapon isEqualTo "") exitWith {};
     private _state = [_unit, _weapon] call TAC_fnc_rktGetState;
     private _profile = [_weapon] call TAC_fnc_rktProfile;
 
+    [_state] call TAC_fnc_rktPowerOff;
     _state set [1, false];
     _state set [2, false];
     _state set [3, 0];

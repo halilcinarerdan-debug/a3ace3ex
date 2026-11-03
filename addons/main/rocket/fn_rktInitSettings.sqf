@@ -49,6 +49,42 @@ private _category = ["TAC - Gerçekçilik Paketi", "Roketatar / füze"];
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_rkt_guided",
+    "CHECKBOX",
+    ["Güdümlü füze: pil ve soğutma", "Güdümlü füze atarları (Javelin, Titan, Stinger, Igla...) için: 'Atışa hazırla' sistemi açar; arayıcı soğuyana kadar ateşlenmez, soğuduktan sonra soğutucu sınırlı süre dayanır, açık kaldıkça pil boşalır."],
+    _category,
+    true,
+    true
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_rkt_cooldown",
+    "SLIDER",
+    ["Arayıcı soğuma süresi (sn)", "Sistem açıldıktan sonra arayıcının ateşlemeye hazır olması için gereken süre. Sıcak havada (> 25 °C) en fazla %50 uzar."],
+    _category,
+    [0, 60, 12, 0],
+    true
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_rkt_coolantTime",
+    "SLIDER",
+    ["Soğutucu dayanma süresi (sn)", "Arayıcı soğuduktan sonra bu süre içinde ateşlenmezse ısınır; sistem 'Atışa hazırla' ile yeniden başlatılmalıdır (yeni soğuma)."],
+    _category,
+    [10, 600, 180, 0],
+    true
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_rkt_batteryMinutes",
+    "SLIDER",
+    ["Pil ömrü (açık kalma süresi, dk)", "Sistem açıkken tam pil bu kadar dakika dayanır. Pil boşken füze ateşlenmez; yedek pille 'Pili değiştir'."],
+    _category,
+    [1, 240, 30, 0],
+    true
+] call CBA_settings_fnc_init;
+
+[
     "TAC_rkt_waitTime",
     "SLIDER",
     ["Ateşlenmeme bekleme süresi (sn)", "Mühimmat ateşlenmezse (tık sesi), çıkarmadan önce beklenmesi gereken süre (gecikmeli ateşleme riski). Bekleme sırasında tetiğe tekrar basılırsa süre yeniden başlar."],

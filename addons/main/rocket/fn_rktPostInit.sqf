@@ -93,6 +93,28 @@ private _dry = [
 
 [TAC_fnc_rktTick, 10] call CBA_fnc_addPerFrameHandler;
 
+private _battery = [
+    "TAC_rkt_battery",
+    "Pili değiştir",
+    "",
+    {
+        params ["_target", "_player"];
+        [_player] call TAC_fnc_rktBattery;
+    },
+    {
+        params ["_target", "_player"];
+
+        private _weapon = secondaryWeapon _player;
+
+        TAC_rkt_guided
+        && {time >= (_player getVariable ["TAC_wpn_busyUntil", 0])}
+        && {(([_weapon] call TAC_fnc_rktProfile) select 0) isEqualTo "guided"}
+        && {[_player, "TAC_MissileBattery"] call TAC_fnc_wpnHasItem}
+    }
+] call ace_interact_menu_fnc_createAction;
+
+["CAManBase", 1, ["ACE_SelfActions", "TAC_rkt_menu"], _battery, true] call ace_interact_menu_fnc_addActionToClass;
+
 private _remove = [
     "TAC_rkt_remove",
     "Ateşlenmeyen mühimmatı çıkar",

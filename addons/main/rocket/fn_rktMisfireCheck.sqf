@@ -44,6 +44,24 @@ if (TAC_rkt_prepare && {!(_state select 5)}) exitWith {
     true
 };
 
+// Guduml firlatici: pil ve sogutma (hazirlik yapilmis olsa bile).
+private _guidedBlock = false;
+
+if (TAC_rkt_guided && {(([_weapon] call TAC_fnc_rktProfile) select 0) isEqualTo "guided"}) then {
+    private _reason = [_state] call TAC_fnc_rktGuidedCheck;
+
+    _guidedBlock = !(_reason isEqualTo "");
+
+    if (_guidedBlock && {TAC_rkt_debug}) then {
+        systemChat format ["[TAC roket] guduml: atis engellendi | neden: %1", _reason];
+    };
+};
+
+if (_guidedBlock) exitWith {
+    missionNamespace setVariable ["TAC_rkt_blockPrep", true];
+    true
+};
+
 if !(_state select 1) then {
     private _profile = [_weapon] call TAC_fnc_rktProfile;
     private _reusable = !((_profile select 0) isEqualTo "disposable");

@@ -14,6 +14,7 @@ if (!TAC_rkt_enabled || {!(_weapon isEqualTo (secondaryWeapon _unit))}) exitWith
 
 private _state = [_unit, _weapon] call TAC_fnc_rktGetState;
 
+[_state] call TAC_fnc_rktPowerOff;
 _state set [1, false];
 _state set [2, false];
 _state set [3, 0];

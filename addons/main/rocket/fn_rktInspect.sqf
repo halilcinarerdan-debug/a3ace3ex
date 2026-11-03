@@ -60,6 +60,19 @@ if !((_profile select 0) isEqualTo "disposable") then {
 private _moist = _unit getVariable ["TAC_rkt_moist", 0];
 _lines pushBack format ["Mühimmat: %1", if (_moist < 15) then {"kuru"} else {if (_moist < 40) then {"hafif nemli"} else {if (_moist < 70) then {"nemli"} else {"ıslak"}}}];
 
+if (TAC_rkt_guided && {(_profile select 0) isEqualTo "guided"}) then {
+    private _since = _state param [7, -1];
+    private _charge = (_state param [9, 100]) - (if (_since >= 0) then {((time - _since) / 60) / (TAC_rkt_batteryMinutes max 1) * 100} else {0});
+    private _readyAt = _state param [8, 0];
+
+    _lines pushBack format ["Sistem: %1", if (_since < 0) then {"kapalı"} else {
+        if (time < _readyAt) then {format ["açık, arayıcı soğuyor (~%1 sn)", ceil (_readyAt - time)]} else {
+            if (time > (_readyAt + TAC_rkt_coolantTime)) then {"açık, arayıcı ısındı (yeniden başlat)"} else {format ["hazır (soğutucu ~%1 sn)", ceil (_readyAt + TAC_rkt_coolantTime - time)]}
+        }
+    }];
+    _lines pushBack format ["Pil: %1", if (_charge <= 0) then {"boş"} else {if (_charge < 20) then {"zayıf"} else {if (_charge < 60) then {"yarı"} else {"dolu"}}}];
+};
+
 if (TAC_rkt_prepare && {(_unit ammo _weapon) > 0}) then {
     _lines pushBack format ["Atışa hazır: %1", ["hayır (hazırlanmadı)", "evet"] select (_state select 5)];
 };
@@ -73,6 +86,9 @@ if (_misfire) then {
 
 if ([_unit] call TAC_fnc_wpnIsArmorer) then {
     _lines pushBack "<t color='#88ccff'>Silahçı değerleri</t>";
+    if (TAC_rkt_guided && {(_profile select 0) isEqualTo "guided"}) then {
+        _lines pushBack format ["Güdümlü pil: %1%%", round (_state param [9, 100])];
+    };
     _lines pushBack format ["Taban ateşlenmeme: %1%% (%2) | atış %3 | ateşlenmeme sayısı %4", (round ((_profile select 1) * 1000)) / 10, _profile select 3, _shots, _count];
 };
 

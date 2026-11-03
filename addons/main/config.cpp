@@ -15,13 +15,13 @@ class CfgPatches
         author = "TAC";
         url = "";
         units[] = {};
-        weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium", "TAC_NVGBattery_p75", "TAC_NVGBattery_p50", "TAC_NVGBattery_p25", "TAC_NVGBattery_p10", "TAC_NVGBattery_Lithium_p75", "TAC_NVGBattery_Lithium_p50", "TAC_NVGBattery_Lithium_p25", "TAC_NVGBattery_Lithium_p10", "TAC_NVGBattery_Dead", "TAC_WeaponCleaningKit", "TAC_WeaponOil", "TAC_WeaponSpareParts", "TAC_HeatGlove", "TAC_LensCloth"};
+        weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium", "TAC_NVGBattery_p75", "TAC_NVGBattery_p50", "TAC_NVGBattery_p25", "TAC_NVGBattery_p10", "TAC_NVGBattery_Lithium_p75", "TAC_NVGBattery_Lithium_p50", "TAC_NVGBattery_Lithium_p25", "TAC_NVGBattery_Lithium_p10", "TAC_NVGBattery_Dead", "TAC_WeaponCleaningKit", "TAC_WeaponOil", "TAC_WeaponSpareParts", "TAC_HeatGlove", "TAC_LensCloth", "TAC_MissileBattery"};
         magazines[] = {"TAC_SpareBarrel_Light", "TAC_SpareBarrel_Heavy"};
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu", "ace_overheating"};
-        version = 0.16;
-        versionStr = "0.16.1";
-        versionAr[] = {0,16,1};
+        version = 0.17;
+        versionStr = "0.17.0";
+        versionAr[] = {0,17,0};
     };
 };
 
@@ -114,6 +114,9 @@ class CfgWeapons
 
     // 8. Optik: lens bezi
     #include "optic\CfgWeapons.hpp"
+
+    // 9. Roketatar: gudumlu fuze pili
+    #include "rocket\CfgWeapons.hpp"
 };
 
 // 7. Makineli tufek: gercekci yedek namlu agirliklari (ACE_SpareBarrel yamasi dahil)

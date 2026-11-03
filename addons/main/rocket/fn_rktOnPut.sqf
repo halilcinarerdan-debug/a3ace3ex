@@ -36,6 +36,7 @@ if (TAC_rkt_debug) then {
 
 private _stash = _container getVariable ["TAC_rkt_stash", []];
 
+[_state] call TAC_fnc_rktPowerOff;
 _stash pushBack [_key, +_state];
 _container setVariable ["TAC_rkt_stash", _stash, true];
 

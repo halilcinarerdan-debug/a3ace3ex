@@ -19,6 +19,9 @@ class rocket
     class rktOnPut {};
 
     class rktPrepare {};
+    class rktPowerOff {};
+    class rktGuidedCheck {};
+    class rktBattery {};
     class rktDry {};
     class rktTick {};
     class rktRemoveRound {};
