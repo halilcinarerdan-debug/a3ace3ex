@@ -17,3 +17,4 @@ private _state = [_unit, _weapon] call TAC_fnc_rktGetState;
 _state set [1, false];
 _state set [2, false];
 _state set [3, 0];
+_state set [5, false];

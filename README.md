@@ -863,6 +863,7 @@ aşınma = clamp(atış / 300, 0, 1)  (yeniden doldurulabilir ve güdümlü; tek
 
 - **Zar tetik çekilirken, bir yüklü mühimmat için bir kez atılır** (reload veya başarılı atışta sıfırlanır). Ateşlenmeme çıkarsa ACE'nin arıza sistemindeki mekanizmayla (`DefaultAction` dinleyicisi) **atış tamamen engellenir**: mermi hiç çıkmaz, ACE geri tepme alanı da oluşmaz, kuru tık sesi duyulur.
 - **Doktrin:** tık sesinden sonra **bekle** (varsayılan 30 sn; gecikmeli ateşleme riski). Bekleme sırasında tetiğe tekrar basılırsa süre yeniden başlar. Süre dolunca ACE self-menü > **Roketatar > Ateşlenmeyen mühimmatı çıkar** görünür (8 sn); tek kullanımlıkta fırlatıcı çıkarılır, diğerlerinde mühimmat atılır.
+- **Atış öncesi hazırlık** (`TAC_rkt_prepare`, açık): her yüklü mühimmat için ACE self-menü > Roketatar > **Atışa hazırla** yapılmadan fırlatıcı ateşlenmez; tetik yalnızca tık sesi verir (zar atılmaz, bekleme başlamaz). Süre türe göre: tek kullanımlık 3 sn (kapakları aç, tüpü uzat, pimleri çek), omuz atarı 5 sn (emniyet kapağı, itici / başlık kontrolü, horoz), güdümlü 6 sn (güç ver, sensörü başlat); silah bakımındaki süre çarpanıyla çarpılır. Reload, atış veya ateşlenmeyen mühimmatın çıkarılması hazırlığı sıfırlar. Yükleme sırası: yükle -> hazırla -> ateşle.
 - **Oyuncuya bildirim yok:** tık sesi ve menü görünürlüğü dışında bilgi verilmez; durum "Fırlatıcıyı / mühimmatı incele" kartında okunur.
 
 ### İncele kartı (config'ten, RHS / CUP / vanilla)
@@ -875,6 +876,7 @@ Silahçı ayrıca taban ihtimali, atış sayısını ve ateşlenmeme sayısını
 | Ayar | Varsayılan |
 |------|-----------|
 | `TAC_rkt_enabled` | açık |
+| `TAC_rkt_prepare` (atış öncesi hazırlık gerekli) | açık |
 | `TAC_rkt_scale` (ateşlenmeme ölçeği) | 1 |
 | `TAC_rkt_waitTime` (bekleme, sn) | 30 |
 | `TAC_rkt_table` (`classname=yüzde, ...`) | boş |
@@ -892,13 +894,13 @@ Tamamen yerel oyuncuda: zar ve durum birimde, ağa bir şey yayınlanmaz, sunucu
    player addWeapon "launch_RPG7_F"; player addSecondaryWeaponItem "RPG7_F";
    ```
    (ya da RHS `rhs_weap_rpg7`, `rhs_weap_m72a7`; CUP `CUP_launch_M72A6_Loaded`, `CUP_launch_Javelin`...).
-2. Fırlatıcıyı elinde seç ve ateş et: kuru tık gelmeli, mermi çıkmamalı, ekranda `ATESLENMEYECEK` yazmalı. Tetiğe tekrar bas: bekleme yeniden başlar.
+2. Fırlatıcıyı elinde seç, önce ateş etmeyi dene: yalnızca tık (hazırlık yok). Sonra ACE menü > Roketatar > **Atışa hazırla** (çubuk, hareket), tekrar ateş et: kuru tık gelmeli, mermi çıkmamalı, ekranda `ATESLENMEYECEK` yazmalı. Tetiğe tekrar bas: bekleme yeniden başlar.
 3. **Fırlatıcıyı / mühimmatı incele**: mühimmat bilgisi ve "Ateşlenmedi: bekle (~N sn)".
 4. Süre dolunca **Ateşlenmeyen mühimmatı çıkar**: tek kullanımlıkta fırlatıcı gitmeli, RPG-7 tipinde tüp boşalmalı. Yeni mühimmat yükle (`player addMagazine "RPG7_F"`) ve zar yeniden atılmalı.
 5. Test ihtimalini 0 yap: normal oranda (RPG-7 ~%2) ateş et. Soğuk (`setDate` ile kış gecesi) ve yağmurda ihtimal artmalı; `Test göstergesi` soğuk / ıslaklık / aşınma değerlerini yazar.
 6. `call TAC_fnc_rktDebug` profil, durum ve dinleyici kimliğini döker (`TAC_rkt_actionId` -1 ise dinleyici bağlanmamış demektir: bana bildir).
 
-> Kapsam dışı (şimdilik): atış öncesi hazırlama / horoz kurma adımları, gecikmeli ateşleme patlaması, araç / statik silah fırlatıcıları (ayrı silah sınıfları).
+> Kapsam dışı (şimdilik): gecikmeli ateşleme patlaması, araç / statik silah fırlatıcıları (ayrı silah sınıfları).
 
 ## Yeni özellik ekleme
 

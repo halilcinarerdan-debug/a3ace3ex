@@ -14,6 +14,9 @@ params ["", "_unit"];
 
 playSound3D ["a3\sounds_f\weapons\Other\dry9.wss", objNull, insideBuilding _unit >= 0.5, eyePos _unit, 1, 1, 15];
 
+// Hazirlanmadigi icin engellendiyse yalnizca tik (zar / bekleme yok).
+if (missionNamespace getVariable ["TAC_rkt_blockPrep", false]) exitWith {};
+
 private _weapon = secondaryWeapon _unit;
 private _state = [_unit, _weapon] call TAC_fnc_rktGetState;
 

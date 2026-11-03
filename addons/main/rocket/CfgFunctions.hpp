@@ -14,6 +14,7 @@ class rocket
     class rktOnFired {};
     class rktOnReloaded {};
 
+    class rktPrepare {};
     class rktRemoveRound {};
     class rktInspect {};
     class rktDebug {};

@@ -10,6 +10,7 @@
         soğuk = clamp((5 - sıcaklık °C) / 30, 0, 1)      ıslaklık = yağmur (0..1), sığ suda 1
         aşınma = clamp(atış / 300, 0, 1)  (yalnızca yeniden doldurulabilir ve güdümlü)
         test ayarı varsa p en az o kadar.  Üst sınır 0.5.
+    Önce hazırlık kontrolü: "Atışa hazırla" yapılmamışsa (ayar açıksa) atış engellenir, zar atılmaz.
     Hızlı çıkışlar: sistem kapalı, silah elde fırlatıcı değil, mermi yok, silah kullanılamıyor (CBA), ACE güvenlik açık.
 
     Parametreler (ACE koşulu): [hedef, birim]
@@ -32,6 +33,14 @@ if (
 ) exitWith {false};
 
 private _state = [_unit, _weapon] call TAC_fnc_rktGetState;
+
+// Hazirlanmamis firlatici atesleyemez (tetik sadece tik sesi verir, zar atilmaz, bekleme baslamaz).
+missionNamespace setVariable ["TAC_rkt_blockPrep", false];
+
+if (TAC_rkt_prepare && {!(_state select 5)}) exitWith {
+    missionNamespace setVariable ["TAC_rkt_blockPrep", true];
+    true
+};
 
 if !(_state select 1) then {
     private _profile = [_weapon] call TAC_fnc_rktProfile;

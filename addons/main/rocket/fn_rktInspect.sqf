@@ -57,6 +57,10 @@ if !((_profile select 0) isEqualTo "disposable") then {
     _lines pushBack format ["Tüp: %1", if (_wear < 0.25) then {"yeni gibi"} else {if (_wear < 0.7) then {"kullanılmış"} else {"yıpranmış"}}];
 };
 
+if (TAC_rkt_prepare && {(_unit ammo _weapon) > 0}) then {
+    _lines pushBack format ["Atışa hazır: %1", ["hayır (hazırlanmadı)", "evet"] select (_state select 5)];
+};
+
 if (_misfire) then {
     _lines pushBack format [
         "<t color='#ff8844'>Ateşlenmedi: %1</t>",

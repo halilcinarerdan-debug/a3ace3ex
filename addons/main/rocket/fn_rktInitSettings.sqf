@@ -22,6 +22,15 @@ private _category = ["TAC - Gerçekçilik Paketi", "Roketatar / füze"];
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_rkt_prepare",
+    "CHECKBOX",
+    ["Atış öncesi hazırlık gerekli", "Açıksa her yüklü mühimmat için ACE self-menü > Roketatar > Atışa hazırla yapılmadan fırlatıcı ateşlenmez (tetik yalnızca tık sesi verir). Süre türe göre: tek kullanımlık 3, omuz atarı 5, güdümlü 6 sn (bakım süresi çarpanı uygulanır). Yeniden yükleme veya atıştan sonra hazırlık sıfırlanır."],
+    _category,
+    true,
+    true
+] call CBA_settings_fnc_init;
+
+[
     "TAC_rkt_scale",
     "SLIDER",
     ["Ateşlenmeme ölçeği", "1 = yerleşik taban oranlar (RPG-7 tipi %2, tek kullanımlık %1-2, modern omuz atarı %0.8, güdümlü %2.5, Panzerfaust %5). Oyunu zorlaştırmak için artır."],

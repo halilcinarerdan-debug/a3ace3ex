@@ -5,7 +5,7 @@
     Roketatar sisteminin istemci kurulumu:
       1. CBA "unit" oyuncu olayı: Fired / Reloaded olayları ve ACE "DefaultAction" ateşlenmeme dinleyicisi
          yeni birime bağlanır (TAC_fnc_rktAttach).
-      2. ACE self-menü "Roketatar": İncele | Ateşlenmeyen mühimmatı çıkar (bekleme bittiyse görünür).
+      2. ACE self-menü "Roketatar": İncele | Atışa hazırla | Ateşlenmeyen mühimmatı çıkar (bekleme bittiyse görünür).
     Döngü yok.
 
     Parametreler: yok
@@ -49,6 +49,28 @@ private _inspect = [
 ] call ace_interact_menu_fnc_createAction;
 
 ["CAManBase", 1, ["ACE_SelfActions", "TAC_rkt_menu"], _inspect, true] call ace_interact_menu_fnc_addActionToClass;
+
+private _prepare = [
+    "TAC_rkt_prepare",
+    "Atışa hazırla",
+    "",
+    {
+        params ["_target", "_player"];
+        [_player] call TAC_fnc_rktPrepare;
+    },
+    {
+        params ["_target", "_player"];
+
+        private _weapon = secondaryWeapon _player;
+
+        TAC_rkt_prepare
+        && {time >= (_player getVariable ["TAC_wpn_busyUntil", 0])}
+        && {(_player ammo _weapon) > 0}
+        && {!(([_player, _weapon] call TAC_fnc_rktGetState) select 5)}
+    }
+] call ace_interact_menu_fnc_createAction;
+
+["CAManBase", 1, ["ACE_SelfActions", "TAC_rkt_menu"], _prepare, true] call ace_interact_menu_fnc_addActionToClass;
 
 private _remove = [
     "TAC_rkt_remove",

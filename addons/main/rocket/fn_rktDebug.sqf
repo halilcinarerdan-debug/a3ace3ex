@@ -27,7 +27,7 @@ if (_weapon isEqualTo "") then {
     _lines pushBack "Ikincil silah (firlatici) yok.";
 } else {
     _lines pushBack format ["Firlatici: %1 | profil [kategori, ihtimal, etiket, kalite]: %2", _weapon, [_weapon] call TAC_fnc_rktProfile];
-    _lines pushBack format ["Durum [atis, zar atildi, ateslenmeme, bekleme bitisi, ateslenmeme sayisi]: %1 (time %2)", [_unit, _weapon] call TAC_fnc_rktGetState, round time];
+    _lines pushBack format ["Durum [atis, zar atildi, ateslenmeme, bekleme bitisi, ateslenmeme sayisi, hazir]: %1 (time %2)", [_unit, _weapon] call TAC_fnc_rktGetState, round time];
     _lines pushBack format ["Mermi: %1 | elde: %2", _unit ammo _weapon, currentWeapon _unit];
 };
 
