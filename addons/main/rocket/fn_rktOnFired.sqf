@@ -9,7 +9,7 @@
     Dönüş: yok
 */
 
-params ["_unit", "_weapon"];
+params ["_unit", "_weapon", "", "", "_ammo", "", "_projectile"];
 
 if (!TAC_rkt_enabled || {!(_weapon isEqualTo (secondaryWeapon _unit))}) exitWith {};
 
@@ -20,3 +20,12 @@ _state set [1, false];
 _state set [2, false];
 _state set [3, 0];
 _state set [5, false];
+
+// Hedefte patlamama (dud): guduml olmayan roketlerde, ayni kosul carpaniyla (nem, soguk, sicak...).
+if (TAC_rkt_dudChance > 0 && {!isNull _projectile} && {!((([_weapon] call TAC_fnc_rktProfile) select 0) isEqualTo "guided")}) then {
+    if (random 1 < ((TAC_rkt_dudChance / 100) * (_state param [6, 1]) min 0.25)) then {
+        [_projectile, _ammo] call TAC_fnc_rktDudTrack;
+
+        if (TAC_rkt_debug) then {systemChat "[TAC roket] HEDEFTE PATLAMAYACAK (dud) - mermi izleniyor"};
+    };
+};

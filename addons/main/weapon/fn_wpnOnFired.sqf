@@ -75,6 +75,7 @@ if (_isMG && {TAC_mg_feedStep} && {!(_state param [7, true])}) exitWith {
     _state set [7, true];
 
     if !(_weapon in (_unit getVariable ["ace_overheating_jammedWeapons", []])) then {
+        missionNamespace setVariable ["TAC_wpn_ownJam", time];
         [_unit, _weapon, "feed"] call ace_overheating_fnc_jamWeapon;
 
         if (TAC_wpn_debug) then {systemChat "[TAC silah] ARIZA feed | besleme kapagi adimi atlandi"};
@@ -98,6 +99,7 @@ private _type = selectRandomWeighted [
     "dud", 0.3
 ];
 
+missionNamespace setVariable ["TAC_wpn_ownJam", time];
 [_unit, _weapon, _type] call ace_overheating_fnc_jamWeapon;
 
 if (TAC_wpn_debug) then {

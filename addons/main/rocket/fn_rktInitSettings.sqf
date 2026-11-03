@@ -40,6 +40,15 @@ private _category = ["TAC - Gerçekçilik Paketi", "Roketatar / füze"];
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_rkt_dudChance",
+    "SLIDER",
+    ["Hedefte patlamama ihtimali (%)", "Güdümsüz roketin hedefe çarpıp PATLAMAMA ihtimali (taban); nem, soğuk, sıcak gibi koşullar çarpar. Patlamayan mühimmat çarptığı yerde KALICI olarak yerde kalır (görev bitene veya Zeus silene kadar). 0 = kapalı."],
+    _category,
+    [0, 20, 1.5, 1],
+    true
+] call CBA_settings_fnc_init;
+
+[
     "TAC_rkt_waitTime",
     "SLIDER",
     ["Ateşlenmeme bekleme süresi (sn)", "Mühimmat ateşlenmezse (tık sesi), çıkarmadan önce beklenmesi gereken süre (gecikmeli ateşleme riski). Bekleme sırasında tetiğe tekrar basılırsa süre yeniden başlar."],

@@ -56,7 +56,10 @@ if !(_state select 1) then {
     private _moistF = ((_unit getVariable ["TAC_rkt_moist", 0]) / 100) * 0.8 * ([1, 0.5] select ((_profile select 0) isEqualTo "disposable"));
     private _heatF = (((((ambientTemperature select 0) - 35) / 15) max 0) min 1) * 0.3;
 
-    private _p = ((_profile select 1) * TAC_rkt_scale * (1 + (1.0 * _coldF) + (0.5 * _wetF) + _wearF + _moistF + _heatF)) min 0.5;
+    private _cond = 1 + (1.0 * _coldF) + (0.5 * _wetF) + _wearF + _moistF + _heatF;
+    _state set [6, _cond];   // hedefte patlamama (dud) zari da ayni kosul carpanini kullanir
+
+    private _p = ((_profile select 1) * TAC_rkt_scale * _cond) min 0.5;
     if (TAC_rkt_testChance > 0) then {_p = _p max (TAC_rkt_testChance / 100)};
 
     _state set [1, true];

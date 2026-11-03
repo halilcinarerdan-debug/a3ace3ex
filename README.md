@@ -874,6 +874,13 @@ sıcak = clamp((sıcaklık - 35) / 15, 0, 1) x 0.3
 - **Hareket ve ses:** hazırlık ve mühimmat çıkarma sırasında fırlatıcının kendi yükleme hareketi tekrarlanır (silah bakımıyla aynı mekanizma), başlangıçta kapak / emniyet tıkı, bitişte sürgü sesi çalar (yakındakiler de duyar; `TAC_wpn_fx` ile kapatılır). Hareket yalnızca fırlatıcı elde seçiliyken oynar.
 - **Oyuncuya bildirim yok:** tık sesi ve menü görünürlüğü dışında bilgi verilmez; durum "Fırlatıcıyı / mühimmatı incele" kartında okunur.
 
+### Hedefte patlamama (dud) ve kalıcı patlamamış mühimmat
+
+Güdümsüz roket (omuz atarı, tek kullanımlık) hedefe çarpıp **patlamayabilir** (`TAC_rkt_dudChance`, taban %1.5; nem, soğuk, sıcak aynı koşul çarpanıyla artırır). Roket havadayken izlenir; bir yüzeye çarpmadan hemen önce patlamadan silinir ve çarptığı noktada **kalıcı, donmuş bir patlamamış mühimmat (UXO)** yaratılır
+(sunucuda, `enableSimulationGlobal false`; görev bitene veya Zeus silene kadar kalır). Güdümlü füzeler kapsam dışı. Roket çarpmadan uçarsa bir şey olmaz.
+ACE'de bunun hazır bir karşılığı bulamadım: ACE'nin "Dud" kavramı yalnızca silahın hazneye aldığı kusurlu mermi arızasıdır (silah arıza türü), roketin hedefte patlamaması değil. Ayrıca ACE Explosives yalnızca elle kurulan patlayıcıları kapsar. (Tüm ACE'yi taramadım.)
+UXO ile etkileşim (imha vb.) şimdilik yok; silmek için Zeus veya `deleteVehicle`.
+
 ### Hava koşulları ve mühimmat nemi (ılımlı)
 
 Hava yalnızca atış anında değil, **zamanla** da mühimmatı etkiler. Tek bir 10 sn'lik PFH (fırlatıcı yoksa anında çıkar) taşınan roket / füze mühimmatının **nemini** (0-100) günceller:

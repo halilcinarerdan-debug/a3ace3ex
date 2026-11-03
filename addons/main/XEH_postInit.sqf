@@ -8,6 +8,9 @@
 // 7. Makineli tüfek: sıcak namlu yanığı olayları (sunucu + istemci bağlantısı; hasInterface kontrolünden önce)
 call TAC_fnc_mgInit;
 
+// 9. Roketatar: kalıcı patlamamış mühimmat (sunucu)
+call TAC_fnc_rktInit;
+
 // Her şey oyuncu arayüzüyle ilgili: sunucuda / headless client'ta yapacak iş yok.
 if (!hasInterface) exitWith {};
 

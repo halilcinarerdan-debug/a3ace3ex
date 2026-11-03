@@ -29,6 +29,15 @@ if (isNil "TAC_wpn_mgSet") then {[TAC_wpn_mgTable] call TAC_fnc_wpnParseMgTable}
 
     private _state = [_unit, _weapon] call TAC_fnc_wpnGetState;
 
+    // Test gostergesi: arizayi kim uretti? (bizim kir/yag/asinma sistemi mi, ACE'nin isi arizasi mi)
+    if (TAC_wpn_debug && {(time - (missionNamespace getVariable ["TAC_wpn_ownJam", -10])) > 0.5}) then {
+        systemChat format [
+            "[TAC silah] ARIZA %1 | KAYNAK: ACE (isi/diger) | namlu sicakligi %2",
+            _type,
+            round (_unit getVariable [format ["ace_overheating_%1_temp", _weapon], 0])
+        ];
+    };
+
     _state set [4, _type];
     _state set [5, time];
     _state set [6, (_state select 6) + 1];

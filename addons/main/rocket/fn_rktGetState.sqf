@@ -26,7 +26,7 @@ private _key = toLower _weapon;
 private _state = _all get _key;
 
 if (isNil "_state") then {
-    _state = [0, false, false, 0, 0, false];
+    _state = [0, false, false, 0, 0, false, 1];
     _all set [_key, _state];
 };
 

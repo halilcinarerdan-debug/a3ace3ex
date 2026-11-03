@@ -4,6 +4,8 @@ class rocket
 
     class rktInitSettings {};
     class rktPostInit {};
+    class rktInit {};
+    class rktDudTrack {};
     class rktAttach {};
 
     class rktProfile {};
