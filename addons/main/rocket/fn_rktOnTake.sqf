@@ -28,6 +28,16 @@ if (isNil "_all") then {
 private _stash = _container getVariable ["TAC_rkt_stash", []];
 private _index = _stash findIf {(_x select 0) isEqualTo _key};
 
+if (TAC_rkt_debug) then {
+    systemChat format [
+        "[TAC roket] ALINDI %1 | kap %2 | kapta kayit %3%4",
+        _item,
+        typeOf _container,
+        ["YOK -> sifirdan basliyor", "VAR -> devralindi"] select (_index >= 0),
+        if (_index >= 0) then {format [" (ATESLENMEME %1, zar atildi %2)", ((_stash select _index) select 1) select 2, ((_stash select _index) select 1) select 1]} else {""}
+    ];
+};
+
 if (_index < 0) then {
     _all deleteAt _key;
 } else {
