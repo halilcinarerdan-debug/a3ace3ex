@@ -892,6 +892,7 @@ Hava yalnızca atış anında değil, **zamanla** da mühimmatı etkiler. Tek bi
 | Kuru hava, bina içi veya araçta | - 0.1 / sn (~17 dk'da tamamen kurur) |
 
 Atış ihtimaline etkisi bilerek **ılımlı**: tam nemli mühimmat ihtimali yaklaşık **1.8 katına** çıkarır (tek kullanımlıkta 1.4); soğuk (< 5 °C) en fazla 2 kat, sıcak (> 35 °C) en fazla 1.3 kat; yağmurda atış anındaki ıslaklık 1.5 kat. Hepsi bir arada en kötü senaryoda ihtimal birkaç katına çıkar ama %2'lik bir RPG-7 %10'a dayanmaz.
+**Araç, mühimmat sandığı ve depodaki eşyalar hava koşullarından etkilenmez** (nem yalnızca oyuncunun taşıdığı fırlatıcı mühimmatında birikir; oradan alınan fırlatıcının nemi en fazla %10 olur, yerden alınanın sıfırlanmaz). Silahın kir / yağ / aşınması ve optik durumu da zaten yalnızca atış / bakışta değişir.
 Çare: ACE self-menü > Roketatar > **Mühimmatı kurula** (10 sn, Silah Bakım Kiti; nem %10'a iner). İncele kartında mühimmat "kuru / hafif nemli / nemli / ıslak" olarak okunur. Test modunda nem birikimi hızlanır.
 
 ### İncele kartı (config'ten, RHS / CUP / vanilla)

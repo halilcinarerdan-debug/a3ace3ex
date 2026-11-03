@@ -24,7 +24,7 @@ if (!isNull _oldUnit) then {
 
         if (_id >= 0) then {_oldUnit removeEventHandler [_event, _id]};
         _oldUnit setVariable [_var, -1];
-    } forEach [["Fired", "TAC_rkt_ehFired"], ["Reloaded", "TAC_rkt_ehReloaded"]];
+    } forEach [["Fired", "TAC_rkt_ehFired"], ["Reloaded", "TAC_rkt_ehReloaded"], ["Take", "TAC_rkt_ehTake"]];
 
     private _actionId = _oldUnit getVariable ["TAC_rkt_actionId", -1];
 
@@ -43,6 +43,10 @@ _newUnit setVariable ["TAC_rkt_ehFired", _newUnit addEventHandler ["Fired", {
 
 _newUnit setVariable ["TAC_rkt_ehReloaded", _newUnit addEventHandler ["Reloaded", {
     _this call TAC_fnc_rktOnReloaded;
+}]];
+
+_newUnit setVariable ["TAC_rkt_ehTake", _newUnit addEventHandler ["Take", {
+    _this call TAC_fnc_rktOnTake;
 }]];
 
 _newUnit setVariable ["TAC_rkt_actionId", [
