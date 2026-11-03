@@ -15,6 +15,7 @@ Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey
 | 5 | Mermi yakın geçiş (crack) + patlama + ekran efekti + HUD kapatma | ✅ hazır (test bekliyor) |
 | 6 | Silah bakım ve arıza (tüfek + MG): kir, yağ, aşınma, ACE arızası | ✅ hazır (test bekliyor) |
 | 7 | MG: gerçekçi yedek namlu ağırlığı + sıcak namlu değiştirme yanığı (ısı eldiveni) | ✅ hazır (test bekliyor) |
+| 7a | MG: RHS ve CUP Minimi için hafif namlu (opsiyonel compat PBO'lar) | ✅ hazır (test bekliyor) |
 | 7b | MG: besleme kapağı / kayış adımı | ⏳ |
 | 8 | Optik: buğulanma, kirlenme | ⏳ |
 | 9 | Roket atar / RPG: hazırlık, ateşlenmeme, misfire prosedürü | ⏳ |
@@ -109,6 +110,8 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
         fn_mgInitSettings.sqf            CBA ayarları (yanık)
         fn_mgInit.sqf                    ACE namlu değiştirme olayına sunucu dinleyicisi + istemci olayı
         fn_mgBurn.sqf                    sıcak namlu yanığı
+addons/compat_rhs/                       -> tac_compat_rhs.pbo (OPSİYONEL; RHS Minimi ailesine hafif namlu)
+addons/compat_cup/                       -> tac_compat_cup.pbo (OPSİYONEL; CUP Minimi / M249 ailesine hafif namlu)
 ```
 
 ## Mikero ile derleme
@@ -128,7 +131,15 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
    PBO'yu `.biprivatekey` ile imzala (pboProject imzalama seçeneği veya `DSSignFile`) ve `.bikey` dosyasını sunucunun `keys/` klasörüne koy.
    **`.biprivatekey` dosyasını asla depoya koyma** (`.gitignore` zaten engeller).
 
-Sonuç: `@TAC\addons\tac_main.pbo` (+ varsa `.bisign`) ve `@TAC\mod.cpp`.
+### Opsiyonel uyumluluk PBO'ları (RHS, CUP)
+
+`addons/compat_rhs` ve `addons/compat_cup` küçük, **opsiyonel** PBO'lardır; `tac_main` ile aynı yöntemle derlenir
+(kaynak: `P:\z\tac\addons\compat_rhs`, prefix `$PBOPREFIX$` dosyasından okunur: `z\tac\addons\compat_rhs`; aynısı `compat_cup` için).
+Her biri `skipWhenMissingDependencies = 1` taşır: ilgili mod (RHS USAF / CUP Weapons) yüklü değilse config'leri **sessizce atlanır**, hata vermez.
+Bu PBO'ları `@TAC\addons` içine koymazsan o modun MG'leri yalnızca varsayılan orta namluyu kullanır. İçerik: 7. özellik bölümü.
+pboProject `requiredAddons` uyarısı verirse (örn. `rhsusf_main_loadorder`, `CUP_Weapons_LoadOrder`), yukarıdaki 5. adımdaki gibi ilgili modu P: sürücüsüne aç ya da denetimi gevşet.
+
+Sonuç: `@TAC\addons\tac_main.pbo` (+ varsa `tac_compat_rhs.pbo`, `tac_compat_cup.pbo`, `.bisign` dosyaları) ve `@TAC\mod.cpp`.
 
 ## Kurulum / başlatma
 
@@ -656,13 +667,22 @@ ACE'nin yedek namlusu tüm MG'ler için tek tip ve 25 birimdi (~1.1 kg). Arma k�
 | Sınıf | Silahlar | Kütle | Yaklaşık |
 |-------|----------|-------|----------|
 | `TAC_SpareBarrel_Light` | MX SW, Mk200, LIM-85 (5.56 / 6.5 mm SAW tipi) | 42 | ~1.9 kg |
-| `ACE_SpareBarrel` (orta) | Zafir ve **ACE varsayılanını kullanan her MG: RHS, CUP, TMT** | 59 (eskiden 25) | ~2.7 kg |
+| `ACE_SpareBarrel` (orta) | Zafir ve **ACE varsayılanını kullanan her MG**: RHS (PKM/PKP, M240, MG42...), CUP (M240, M60, MG3, Mk48, PKM, UK59), TMT | 59 (eskiden 25) | ~2.7 kg |
 | `TAC_SpareBarrel_Heavy` | Navid (9.3), SPMG (.338) | 84 | ~3.8 kg |
+
+**RHS ve CUP uyumluluk yamaları** (opsiyonel PBO'lar, yukarıdaki derleme bölümü): yalnızca **5.56 mm Minimi ailesine hafif namlu** atar; diğer her şey orta kalır.
+
+| PBO | Gerekli mod | Hafif namlu verilen sınıf | Kapsam |
+|-----|-------------|---------------------------|--------|
+| `tac_compat_rhs` | RHS USAF (`rhsusf_main_loadorder`) | `rhs_weap_saw_base` | tüm RHS Minimi / M249 / Mk46 türevleri |
+| `tac_compat_cup` | CUP Weapons (`CUP_Weapons_LoadOrder`) | `CUP_saw_base` | CUP Minimi / M249 (minimi, para, railed, pip1-4, E2) |
+
+Sınıf ve üst sınıf adlarını ACE'nin kendi `compat_rhs_usf3` ve `compat_cup_weapons` yamalarından birebir aldım (kendi derlemelerinde çalışan ad ve hiyerarşi). RHS/CUP güncellenip adları değişirse yamanın derlemesi yine geçer ama atama sessizce uygulanmaz: o silah orta namluya döner.
 
 - ACE'nin envanter-eşyası sarmalayıcısı `ACE_SpareBarrel_Item` de 59 olur (editör/arsenal tutarlılığı).
 - Atama ACE'nin kendi config özelliğiyle yapılır: `ace_overheating_barrelClassname`. Sınıf ve üst sınıf adları ACE'nin overheating yamasıyla aynıdır (derleme hatası olmaz).
 - **ACE'nin ısınma hesabı değişmez** (namlu ısı kütlesi): yalnızca envanter ağırlığı. İstersek ısı kütlesini de bu değerlere çekeriz; MG'ler daha hızlı ısınır.
-- Değerler yaklaşık: gerçekte silah modeline göre değişir. İstediğin silaha farklı namlu atamak için `mg/CfgWeapons.hpp`'ye `ace_overheating_barrelClassname = "..."` eklemen yeterli (ya da RHS/CUP'a atamayı bana söyle).
+- Değerler yaklaşık: gerçekte silah modeline göre değişir. İstediğin silaha farklı namlu atamak için `mg/CfgWeapons.hpp`'ye `ace_overheating_barrelClassname = "..."` eklemen yeterli.
 - Incele kartı (MG): `Yedek namlu: 2 (her biri ~2.7 kg)`.
 
 ### Sıcak namlu yanığı
@@ -695,10 +715,11 @@ ACE ile namlu değiştirilirken (kendin ya da yardımcı) çıkarılan **namlunu
 3. Namlu değiştir (ACE self-menü > Namlu değiştir, ya da yardımcıyla). Eldivensiz sıcak değiştirince sağ kolda yanık oluşmalı; ekranda `sicaklik / esik / eldiven / hasar` yazmalı.
 4. `player addItem "TAC_HeatGlove"` ile eldiven ekle, tekrar dene: yanık olmamalı.
 5. Soğuk namluyu (eşiğin altında) değiştir: yanık olmamalı.
-6. Zafir/RHS MG'si (atanmamış): orta namlu (`ACE_SpareBarrel`, ~2.7 kg) kullanılmalı.
+6. Zafir / RHS PKM / CUP M240 (atanmamış): orta namlu (`ACE_SpareBarrel`, ~2.7 kg) kullanılmalı.
+6b. **RHS / CUP Minimi** (compat PBO'ları yüklüyse): `weapon player` ile sınıfı doğrula, `player addMagazine "TAC_SpareBarrel_Light"` ekle, ACE ile değiştir: hafif namlu (~1.9 kg) kullanılmalı. `getText (configFile >> "CfgWeapons" >> currentWeapon player >> "ace_overheating_barrelClassname")` değeri `TAC_SpareBarrel_Light` dönmeli. Compat PBO'sunu çıkarıp aynı testi yap: orta namluya dönmeli.
 7. `call TAC_fnc_wpnDebug` ile MG kategorisini, Silahı incele ile yedek namlu satırını doğrula.
 
-> Sonraki adım (7b): besleme kapağı / kayış adımı; RHS/CUP MG'lerine kalibreye uygun namlu ataması için ayrı, bağımlılığı kontrollü bir compat yaması (ACE'nin compat_rhs / compat_cup yapısı gibi) öneriyorum.
+> Sonraki adım (7b): besleme kapağı / kayış adımı.
 
 ## Yeni özellik ekleme
 
