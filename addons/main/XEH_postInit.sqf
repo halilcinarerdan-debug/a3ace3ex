@@ -5,6 +5,9 @@
     hiçbir şey eklemek gerekmez.
 */
 
+// 7. Makineli tüfek: sıcak namlu yanığı olayları (sunucu + istemci bağlantısı; hasInterface kontrolünden önce)
+call TAC_fnc_mgInit;
+
 // Her şey oyuncu arayüzüyle ilgili: sunucuda / headless client'ta yapacak iş yok.
 if (!hasInterface) exitWith {};
 

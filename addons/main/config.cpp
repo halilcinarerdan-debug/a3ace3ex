@@ -15,12 +15,13 @@ class CfgPatches
         author = "TAC";
         url = "";
         units[] = {};
-        weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium", "TAC_NVGBattery_p75", "TAC_NVGBattery_p50", "TAC_NVGBattery_p25", "TAC_NVGBattery_p10", "TAC_NVGBattery_Lithium_p75", "TAC_NVGBattery_Lithium_p50", "TAC_NVGBattery_Lithium_p25", "TAC_NVGBattery_Lithium_p10", "TAC_NVGBattery_Dead", "TAC_WeaponCleaningKit", "TAC_WeaponOil", "TAC_WeaponSpareParts"};
+        weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium", "TAC_NVGBattery_p75", "TAC_NVGBattery_p50", "TAC_NVGBattery_p25", "TAC_NVGBattery_p10", "TAC_NVGBattery_Lithium_p75", "TAC_NVGBattery_Lithium_p50", "TAC_NVGBattery_Lithium_p25", "TAC_NVGBattery_Lithium_p10", "TAC_NVGBattery_Dead", "TAC_WeaponCleaningKit", "TAC_WeaponOil", "TAC_WeaponSpareParts", "TAC_HeatGlove"};
+        magazines[] = {"TAC_SpareBarrel_Light", "TAC_SpareBarrel_Heavy"};
         requiredVersion = 0.1;
-        requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu"};
-        version = 0.9;
-        versionStr = "0.9.1";
-        versionAr[] = {0,9,1};
+        requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu", "ace_overheating"};
+        version = 0.10;
+        versionStr = "0.10.0";
+        versionAr[] = {0,10,0};
     };
 };
 
@@ -84,6 +85,9 @@ class CfgFunctions
 
         // 6. Silah bakim ve ariza
         #include "weapon\CfgFunctions.hpp"
+
+        // 7. Makineli tufek: gercekci yedek namlu + sicak namlu yanigi
+        #include "mg\CfgFunctions.hpp"
     };
 };
 
@@ -98,6 +102,15 @@ class CfgWeapons
 
     // 6. Silah bakim malzemeleri
     #include "weapon\CfgWeapons.hpp"
+
+    // 7. Makineli tufek: yedek namlu atamalari + isi eldiveni
+    #include "mg\CfgWeapons.hpp"
+};
+
+// 7. Makineli tufek: gercekci yedek namlu agirliklari (ACE_SpareBarrel yamasi dahil)
+class CfgMagazines
+{
+    #include "mg\CfgMagazines.hpp"
 };
 
 // CBA XEH: tum makinelerde (sunucu, istemci, HC) mod yuklenince calisir.

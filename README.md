@@ -14,7 +14,8 @@ Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey
 | 4 | Baskı altında artan sway | ✅ hazır (test bekliyor) |
 | 5 | Mermi yakın geçiş (crack) + patlama + ekran efekti + HUD kapatma | ✅ hazır (test bekliyor) |
 | 6 | Silah bakım ve arıza (tüfek + MG): kir, yağ, aşınma, ACE arızası | ✅ hazır (test bekliyor) |
-| 7 | MG: namlu ısısı ve sıcak namlu değiştirme, kayış/kapak | ⏳ |
+| 7 | MG: gerçekçi yedek namlu ağırlığı + sıcak namlu değiştirme yanığı (ısı eldiveni) | ✅ hazır (test bekliyor) |
+| 7b | MG: besleme kapağı / kayış adımı | ⏳ |
 | 8 | Optik: buğulanma, kirlenme | ⏳ |
 | 9 | Roket atar / RPG: hazırlık, ateşlenmeme, misfire prosedürü | ⏳ |
 
@@ -102,6 +103,12 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
         fn_wpnJamChance.sqf              arıza ihtimali formülü
         fn_wpnCategory.sqf / fn_wpnGetState.sqf / fn_wpnEnvFactor.sqf   kategori, durum, ortam
         fn_wpnClean / wpnLube / wpnClearJam / wpnReplaceParts / wpnInspect   bakım eylemleri ve kart
+    mg/                                  7. özellik
+        CfgMagazines.hpp                 gerçekçi yedek namlu ağırlıkları (ACE_SpareBarrel yaması + hafif/ağır sınıf)
+        CfgWeapons.hpp                   vanilla MG'lere namlu ataması, ACE_SpareBarrel_Item ağırlığı, Isı Eldiveni
+        fn_mgInitSettings.sqf            CBA ayarları (yanık)
+        fn_mgInit.sqf                    ACE namlu değiştirme olayına sunucu dinleyicisi + istemci olayı
+        fn_mgBurn.sqf                    sıcak namlu yanığı
 ```
 
 ## Mikero ile derleme
@@ -637,6 +644,61 @@ Durum "birim + silah sınıfı" başınadır (Arma'da silahların ayrı kimliği
 12. Yeni özellik dışında bir RHS/CUP tüfeğiyle de dene: kategori ve eylemler çalışmalı. Yanlış MG/tüfek çıkarsa `MG olarak zorla`'ya ekle.
 
 > Not: `ace_overheating_fnc_jamWeapon` kaynağı `ace_overheating_enabled` ayarını kontrol etmiyor, ama ACE'nin "arıza gider" eyleminin ayar kapalıyken görünüp görünmediği **doğrulanmadı**. Garanti için ACE overheating açık kalsın; kapalıysa "Arızayı gider (ayrıntılı)" eylemi her durumda çalışır.
+
+## Özellik 7 – Makineli tüfek: yedek namlu ağırlığı + sıcak namlu yanığı
+
+ACE overheating zaten ısıyı, yedek namlu değiştirmeyi (yardımcı veya kendin), namlu sıcaklığı takibini ve cook-off'u yapıyor; bu modül onun **üstüne** gerçekçilik ekler, ACE'nin akışını değiştirmez.
+
+### Yedek namlu ağırlığı (envanterde)
+
+ACE'nin yedek namlusu tüm MG'ler için tek tip ve 25 birimdi (~1.1 kg). Arma kütle birimi: **22 birim = 1 kg** (ACE de aynı oranı kullanır). Gerçekçi değerler:
+
+| Sınıf | Silahlar | Kütle | Yaklaşık |
+|-------|----------|-------|----------|
+| `TAC_SpareBarrel_Light` | MX SW, Mk200, LIM-85 (5.56 / 6.5 mm SAW tipi) | 42 | ~1.9 kg |
+| `ACE_SpareBarrel` (orta) | Zafir ve **ACE varsayılanını kullanan her MG: RHS, CUP, TMT** | 59 (eskiden 25) | ~2.7 kg |
+| `TAC_SpareBarrel_Heavy` | Navid (9.3), SPMG (.338) | 84 | ~3.8 kg |
+
+- ACE'nin envanter-eşyası sarmalayıcısı `ACE_SpareBarrel_Item` de 59 olur (editör/arsenal tutarlılığı).
+- Atama ACE'nin kendi config özelliğiyle yapılır: `ace_overheating_barrelClassname`. Sınıf ve üst sınıf adları ACE'nin overheating yamasıyla aynıdır (derleme hatası olmaz).
+- **ACE'nin ısınma hesabı değişmez** (namlu ısı kütlesi): yalnızca envanter ağırlığı. İstersek ısı kütlesini de bu değerlere çekeriz; MG'ler daha hızlı ısınır.
+- Değerler yaklaşık: gerçekte silah modeline göre değişir. İstediğin silaha farklı namlu atamak için `mg/CfgWeapons.hpp`'ye `ace_overheating_barrelClassname = "..."` eklemen yeterli (ya da RHS/CUP'a atamayı bana söyle).
+- Incele kartı (MG): `Yedek namlu: 2 (her biri ~2.7 kg)`.
+
+### Sıcak namlu yanığı
+
+ACE ile namlu değiştirilirken (kendin ya da yardımcı) çıkarılan **namlunun sıcaklığı** eşiğin üstündeyse ve namluyu tutan oyuncuda **Isı Eldiveni** (`TAC_HeatGlove`) envanterde **yoksa** sağ kolda yanık oluşur.
+
+- Hasar: `maksimum x (0.3 + 0.7 x clamp((sıcaklık - eşik) / 350, 0, 1))`. ACE tıbbı varsa `ace_medical_fnc_addDamageToUnit` ("RightArm", "burn"), yoksa vanilla `HitHands`.
+- **Oyuncuya bildirim yok**: acı ve yara ACE tıbbından görünür.
+- Eldiven tükenmez; envanterde bulunması yeterli.
+- MP: ACE'nin sunucu olayına (`ace_overheating_loadCoolestSpareBarrel`) sunucuda dinleyici bağlanır, sıcaklık eşiğin üstündeyse namluyu tutan oyuncuya olay gönderilir; hasar yalnızca onun makinesinde (yerel birim) uygulanır.
+
+### CBA ayarları (`... > TAC - Gerçekçilik Paketi > Makineli tüfek (namlu)`)
+
+| Ayar | Varsayılan |
+|------|-----------|
+| `TAC_mg_burn` | açık |
+| `TAC_mg_burnTemp` (°C eşiği) | 150 |
+| `TAC_mg_burnDamage` (azami hasar) | 0.35 |
+| `TAC_mg_debug` (test göstergesi) | kapalı, kişisel |
+
+### Test adımları
+
+1. Debug konsolunda (yerel çalıştır): MG + yedek namlu:
+   ```sqf
+   player addWeapon "arifle_MX_SW_F"; player addMagazines ["100Rnd_65x39_caseless_mag", 8];
+   player addMagazine "TAC_SpareBarrel_Light"; player addMagazine "TAC_SpareBarrel_Light";
+   ```
+   Envanterde yedek namlunun ağırlığına bak (~1.9 kg). Navid/SPMG ile `TAC_SpareBarrel_Heavy`, Zafir/RHS MG'siyle `ACE_SpareBarrel` dene.
+2. Test göstergesini aç. Sıcak ateşle namluyu ısıt (ACE'nin sıcaklık eylemiyle kontrol edebilirsin: ACE self-menü > Namlu sıcaklığı).
+3. Namlu değiştir (ACE self-menü > Namlu değiştir, ya da yardımcıyla). Eldivensiz sıcak değiştirince sağ kolda yanık oluşmalı; ekranda `sicaklik / esik / eldiven / hasar` yazmalı.
+4. `player addItem "TAC_HeatGlove"` ile eldiven ekle, tekrar dene: yanık olmamalı.
+5. Soğuk namluyu (eşiğin altında) değiştir: yanık olmamalı.
+6. Zafir/RHS MG'si (atanmamış): orta namlu (`ACE_SpareBarrel`, ~2.7 kg) kullanılmalı.
+7. `call TAC_fnc_wpnDebug` ile MG kategorisini, Silahı incele ile yedek namlu satırını doğrula.
+
+> Sonraki adım (7b): besleme kapağı / kayış adımı; RHS/CUP MG'lerine kalibreye uygun namlu ataması için ayrı, bağımlılığı kontrollü bir compat yaması (ACE'nin compat_rhs / compat_cup yapısı gibi) öneriyorum.
 
 ## Yeni özellik ekleme
 

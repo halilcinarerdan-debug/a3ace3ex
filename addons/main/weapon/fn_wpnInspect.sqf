@@ -72,6 +72,18 @@ private _lines = [
     format ["Son arıza: %1", _lastText]
 ];
 
+// Makineli tufek: yedek namlu sayisi ve agirligi
+if (getNumber (configFile >> "CfgWeapons" >> _weapon >> "ace_overheating_allowSwapBarrel") == 1) then {
+    private _barrelClass = getText (configFile >> "CfgWeapons" >> _weapon >> "ace_overheating_barrelClassname");
+
+    if (_barrelClass isEqualTo "") then {_barrelClass = "ACE_SpareBarrel"};
+
+    private _count = {_x isEqualTo _barrelClass} count (magazines _unit);
+    private _kg = (getNumber (configFile >> "CfgMagazines" >> _barrelClass >> "mass")) / 22;
+
+    _lines pushBack format ["Yedek namlu: %1 (her biri ~%2 kg)", _count, (round (_kg * 10)) / 10];
+};
+
 if (_jammedNow) then {
     _lines pushBack "<t color='#ff8844'>Şu an arızalı</t>";
 };
