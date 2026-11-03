@@ -32,4 +32,4 @@ private _time = (_cat select 2) * TAC_wpn_cleanTimeMult;
     _state set [3, 0];
 
     [format ["%1 temizlendi.", getText (configFile >> "CfgWeapons" >> _weapon >> "displayName")]] call ace_common_fnc_displayTextStructured;
-}, [_weapon]] call TAC_fnc_wpnRun;
+}, [_weapon], "clean"] call TAC_fnc_wpnRun;

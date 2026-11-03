@@ -30,4 +30,4 @@ if (_weapon isEqualTo "") exitWith {};
     _state set [1, ((_state select 1) + 65) min 100];
 
     [format ["%1 yağlandı.", getText (configFile >> "CfgWeapons" >> _weapon >> "displayName")]] call ace_common_fnc_displayTextStructured;
-}, [_weapon]] call TAC_fnc_wpnRun;
+}, [_weapon], "lube"] call TAC_fnc_wpnRun;

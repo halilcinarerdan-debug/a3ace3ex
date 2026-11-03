@@ -122,6 +122,15 @@ private _category = ["TAC - Gerçekçilik Paketi", "Silah bakım ve arıza"];
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_wpn_fx",
+    "CHECKBOX",
+    ["Bakım hareketi ve sesi", "Temizlik, yağlama, arıza giderme ve parça değiştirirken silah hareketi oynatılır ve ses çalınır (yakındaki oyuncular da duyar)."],
+    _category,
+    true,
+    true
+] call CBA_settings_fnc_init;
+
+[
     "TAC_wpn_testMode",
     "CHECKBOX",
     ["Test modu", "Kirlenme, yağ kaybı ve aşınma 'Test çarpanı' kadar hızlanır ve herkes silahçı sayılır (sayısal değerleri görür, parça değiştirir). Üretimde kapalı tut."],

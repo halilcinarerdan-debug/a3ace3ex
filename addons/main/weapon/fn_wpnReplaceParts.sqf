@@ -30,4 +30,4 @@ private _cat = [_weapon] call TAC_fnc_wpnCategory;
     _state set [2, 0];
 
     [format ["%1: parçalar değiştirildi.", getText (configFile >> "CfgWeapons" >> _weapon >> "displayName")]] call ace_common_fnc_displayTextStructured;
-}, [_weapon]] call TAC_fnc_wpnRun;
+}, [_weapon], "parts"] call TAC_fnc_wpnRun;

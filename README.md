@@ -580,6 +580,10 @@ Ortam çarpanı (3 sn önbellekli, atış başına hesaplanmaz): yağmur +0.4 x 
 Silahçı: test modu açık, birimde `TAC_isArmorer = true` (Eden: birim init'ine `this setVariable ["TAC_isArmorer", true, true]`) ya da ACE mühendis özelliği.
 Silahçı, incele kartında ayrıca **sayısal değerleri ve tahmini arıza ihtimalini** görür.
 
+**Hareket ve ses:** her bakım eyleminde silahın kendi yükleme hareketi (ACE'nin arıza gidermede kullandığıyla aynı üst gövde jesti, duruş değişmez) süre bitene kadar 2.8 sn'de bir tekrarlanır; çubuk iptal edilirse durur.
+Sesler yalnızca kaynağı doğrulanmış olanlardır: temizlik başlangıcı vanilla `Acts_carFixingWheel`, arıza giderme ACE `ace_overheating_fixing_rifle/pistol`, parça değiştirme ACE `ACE_BarrelSwap`, bitişlerde vanilla sürgü (`reload_Katiba`) ve kuru tık (`dry9`) dosyaları.
+Eksik sınıf sessizce atlanır. `playSound3D` globaldir: yakındaki oyuncular da duyar. Kapatmak: `TAC_wpn_fx`.
+
 Eşyalar: `TAC_WeaponCleaningKit`, `TAC_WeaponOil`, `TAC_WeaponSpareParts`. Hedef silah: elindeki takipli silah, yoksa birincil silah.
 
 ### CBA ayarları (`... > TAC - Gerçekçilik Paketi > Silah bakım ve arıza`)
@@ -596,9 +600,16 @@ Eşyalar: `TAC_WeaponCleaningKit`, `TAC_WeaponOil`, `TAC_WeaponSpareParts`. Hede
 | `TAC_wpn_mgThreshold` (MG eşiği) | 60 |
 | `TAC_wpn_mgTable` (MG olarak zorla, virgülle) | boş |
 | `TAC_wpn_needKit` (bakım malzemesi gerekli) | açık |
+| `TAC_wpn_fx` (bakım hareketi ve sesi) | açık |
 | `TAC_wpn_cleanTimeMult` (bakım süresi çarpanı) | 1 |
 | `TAC_wpn_testMode` / `TAC_wpn_testMult` | kapalı / 20 |
 | `TAC_wpn_debug` (arıza nedeni göstergesi) | kapalı, kişisel |
+
+### Silahı yere atmak / başkasının alması
+
+- **Yere / kutuya / araca / cesede koyunca:** silahın kir/yağ/aşınması kapta saklanır (`TAC_wpn_stash`, herkese yayınlanır). Aynı oyuncu ya da **başkası** silahı alınca durum onunla gelir; kayıt kaptan silinir. Oyuncu o sınıftan başka silah taşımıyorsa kendi durumu da silinir.
+- **"At, yenisini al" hilesi yok:** aynı sınıftan yeni (arsenal, AI cesedi, kayıtsız) silah alınca sıfırdan başlar; eski kirli durum onunla gelmez.
+- **Sınırlar:** kap yok olursa (boşalıp temizlenirse, oyun çöp toplarsa) durum kaybolur. **Ölü oyuncunun** silahı: durum cesette yerel kaldığından silahı alan için sıfırdan başlar. Aynı sınıftan iki silah taşıyorsan ikisi durumu paylaşır.
 
 ### MP mantığı (silah bakım)
 
@@ -621,7 +632,9 @@ Durum "birim + silah sınıfı" başınadır (Arma'da silahların ayrı kimliği
 7. Ortam: yağmuru aç, toz/çamurda yat, sığ suda ateş et: `call TAC_fnc_wpnDebug` ortam çarpanını gösterir.
 8. Susturucu tak, ateş et: kir daha hızlı artmalı. Bakım malzemesini envanterden at: temizle/yağla eylemleri görünmemeli (`Bakım malzemesi gerekli` açıkken).
 9. Test modunu kapat, normal hızı gör.
-10. Yeni özellik dışında bir RHS/CUP tüfeğiyle de dene: kategori ve eylemler çalışmalı. Yanlış MG/tüfek çıkarsa `MG olarak zorla`'ya ekle.
+10. **Hareket ve ses:** temizle / yağla / arıza gider / parça değiştir: silah hareketi tekrar etmeli, başlangıç ve bitiş sesi çalmalı; çubuğu iptal edince hareket durmalı. Yan oyuncu varsa onun da duyduğunu kontrol et.
+11. **Bırakıp alma:** silahı kirletip yere at (envanterden), tekrar al: kir/yağ aynı kalmalı. Başka bir oyuncu (ya da Zeus ile kontrol ettiğin birim) alınca da aynı durumu görmeli. Aynı sınıftan yeni silahı arsenal'den al: sıfırdan başlamalı.
+12. Yeni özellik dışında bir RHS/CUP tüfeğiyle de dene: kategori ve eylemler çalışmalı. Yanlış MG/tüfek çıkarsa `MG olarak zorla`'ya ekle.
 
 > Not: `ace_overheating_fnc_jamWeapon` kaynağı `ace_overheating_enabled` ayarını kontrol etmiyor, ama ACE'nin "arıza gider" eyleminin ayar kapalıyken görünüp görünmediği **doğrulanmadı**. Garanti için ACE overheating açık kalsın; kapalıysa "Arızayı gider (ayrıntılı)" eylemi her durumda çalışır.
 

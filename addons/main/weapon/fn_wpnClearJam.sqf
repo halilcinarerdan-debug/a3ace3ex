@@ -46,4 +46,4 @@ if (_cat isEqualTo [] || {!(_weapon in (_unit getVariable ["ace_overheating_jamm
     _state set [0, ((_state select 0) - 8) max 0];
 
     ["Arıza giderildi."] call ace_common_fnc_displayTextStructured;
-}, [_weapon]] call TAC_fnc_wpnRun;
+}, [_weapon], "clearJam"] call TAC_fnc_wpnRun;
