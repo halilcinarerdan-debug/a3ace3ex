@@ -104,6 +104,30 @@ private _lube = [
 
 ["CAManBase", 1, ["ACE_SelfActions", "TAC_wpn_menu"], _lube, true] call ace_interact_menu_fnc_addActionToClass;
 
+private _feed = [
+    "TAC_wpn_feed",
+    "Kayışı yerleştir, kapağı kapat",
+    "",
+    {
+        params ["_target", "_player"];
+        [_player] call TAC_fnc_wpnFeed;
+    },
+    {
+        params ["_target", "_player"];
+
+        private _weapon = [_player] call TAC_fnc_wpnTargetWeapon;
+        private _cat = [_weapon] call TAC_fnc_wpnCategory;
+
+        TAC_mg_feedStep
+        && {time >= (_player getVariable ["TAC_wpn_busyUntil", 0])}
+        && {!(_cat isEqualTo [])}
+        && {_cat select 3}
+        && {!(([_player, _weapon] call TAC_fnc_wpnGetState) param [7, true])}
+    }
+] call ace_interact_menu_fnc_createAction;
+
+["CAManBase", 1, ["ACE_SelfActions", "TAC_wpn_menu"], _feed, true] call ace_interact_menu_fnc_addActionToClass;
+
 private _clearJam = [
     "TAC_wpn_clearJam",
     "Arızayı gider (ayrıntılı)",

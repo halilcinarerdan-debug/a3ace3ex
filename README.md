@@ -837,6 +837,11 @@ Durum "birim + silah sınıfı" başınadır; silah yere atılınca optik durumu
 6. Ayarlardan `En fazla bulanıklık`'ı 0 yap: bulanıklık kalkar, kontrast hâlâ düşer. `Kontrast kaybı`nı 0 yap: görüntü bozulmaz.
 7. **Dikkat edilecekler (görsel):** `ColorCorrections` optiğin siyah çerçevesini hafif grileştirebilir; rahatsız ederse `Kontrast kaybı`'nı düşür. Bulanıklık tüm ekranı etkiler (reticle dahil).
 
+## Özellik 7b – MG besleme kapağı adımı
+
+MG'ye (kategori **MG**: şarjör / kayış kapasitesi >= eşik) şarjör veya kayış takılınca (`Reloaded`) silah **hazır sayılmaz**. ACE self-menü > Silah Bakımı > **Kayışı yerleştir, kapağı kapat** (4 sn, silah hareketi ve ses) yapılmalı.
+Yapılmadan ilk atışta **besleme arızası** (ACE `feed`, bir kez) çıkar; ACE'nin arıza gider eylemleriyle düzelir. İncele kartında `Besleme: hazır / kayış yerleştirilmedi`. CBA: `TAC_mg_feedStep` (açık). Başlangıçta ve tüfek / tabancada adım yoktur.
+
 ## Özellik 9 – Roketatar / füze: ateşlenmeme ve doktrin
 
 Yalnızca RPG-7 değil, **ikincil silah olan her fırlatıcı** (vanilla, RHS, CUP) kapsanır; tür config'ten / sınıf adından belirlenir:
@@ -856,9 +861,11 @@ Yalnızca RPG-7 değil, **ikincil silah olan her fırlatıcı** (vanilla, RHS, C
 ### Model
 
 ```
-p = taban x ölçek x (1 + 1.5 x soğuk + ıslaklık + aşınma)        üst sınır %50
+p = taban x ölçek x (1 + soğuk + 0.5 x ıslaklık + aşınma + 0.8 x nem/100 + sıcak)        üst sınır %50
 soğuk = clamp((5 - sıcaklık °C) / 30, 0, 1)       ıslaklık = yağmur (0..1), sığ suda 1
 aşınma = clamp(atış / 300, 0, 1)  (yeniden doldurulabilir ve güdümlü; tek kullanımlıkta yok)
+nem = taşınan mühimmatın zamanla biriken nemi 0..100 (aşağıya bak; tek kullanımlıkta sızdırmaz tüp: etkisi yarım)
+sıcak = clamp((sıcaklık - 35) / 15, 0, 1) x 0.3
 ```
 
 - **Zar tetik çekilirken, bir yüklü mühimmat için bir kez atılır** (reload veya başarılı atışta sıfırlanır). Ateşlenmeme çıkarsa ACE'nin arıza sistemindeki mekanizmayla (`DefaultAction` dinleyicisi) **atış tamamen engellenir**: mermi hiç çıkmaz, ACE geri tepme alanı da oluşmaz, kuru tık sesi duyulur.
@@ -866,6 +873,19 @@ aşınma = clamp(atış / 300, 0, 1)  (yeniden doldurulabilir ve güdümlü; tek
 - **Atış öncesi hazırlık** (`TAC_rkt_prepare`, açık): her yüklü mühimmat için ACE self-menü > Roketatar > **Atışa hazırla** yapılmadan fırlatıcı ateşlenmez; tetik yalnızca tık sesi verir (zar atılmaz, bekleme başlamaz). Süre türe göre: tek kullanımlık 3 sn (kapakları aç, tüpü uzat, pimleri çek), omuz atarı 5 sn (emniyet kapağı, itici / başlık kontrolü, horoz), güdümlü 6 sn (güç ver, sensörü başlat); silah bakımındaki süre çarpanıyla çarpılır. Reload, atış veya ateşlenmeyen mühimmatın çıkarılması hazırlığı sıfırlar. Yükleme sırası: yükle -> hazırla -> ateşle.
 - **Hareket ve ses:** hazırlık ve mühimmat çıkarma sırasında fırlatıcının kendi yükleme hareketi tekrarlanır (silah bakımıyla aynı mekanizma), başlangıçta kapak / emniyet tıkı, bitişte sürgü sesi çalar (yakındakiler de duyar; `TAC_wpn_fx` ile kapatılır). Hareket yalnızca fırlatıcı elde seçiliyken oynar.
 - **Oyuncuya bildirim yok:** tık sesi ve menü görünürlüğü dışında bilgi verilmez; durum "Fırlatıcıyı / mühimmatı incele" kartında okunur.
+
+### Hava koşulları ve mühimmat nemi (ılımlı)
+
+Hava yalnızca atış anında değil, **zamanla** da mühimmatı etkiler. Tek bir 10 sn'lik PFH (fırlatıcı yoksa anında çıkar) taşınan roket / füze mühimmatının **nemini** (0-100) günceller:
+
+| Durum | Nem değişimi |
+|-------|--------------|
+| Açıkta yağmur | + 0.2 x yağmur şiddeti / sn (şiddetli yağmurda ~8 dk'da tam nemli) |
+| Sığ suda / yüzerken | + 1 / sn |
+| Kuru hava, bina içi veya araçta | - 0.1 / sn (~17 dk'da tamamen kurur) |
+
+Atış ihtimaline etkisi bilerek **ılımlı**: tam nemli mühimmat ihtimali yaklaşık **1.8 katına** çıkarır (tek kullanımlıkta 1.4); soğuk (< 5 °C) en fazla 2 kat, sıcak (> 35 °C) en fazla 1.3 kat; yağmurda atış anındaki ıslaklık 1.5 kat. Hepsi bir arada en kötü senaryoda ihtimal birkaç katına çıkar ama %2'lik bir RPG-7 %10'a dayanmaz.
+Çare: ACE self-menü > Roketatar > **Mühimmatı kurula** (10 sn, Silah Bakım Kiti; nem %10'a iner). İncele kartında mühimmat "kuru / hafif nemli / nemli / ıslak" olarak okunur. Test modunda nem birikimi hızlanır.
 
 ### İncele kartı (config'ten, RHS / CUP / vanilla)
 

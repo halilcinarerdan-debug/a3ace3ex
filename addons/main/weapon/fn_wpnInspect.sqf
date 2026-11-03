@@ -72,6 +72,11 @@ private _lines = [
     format ["Son arıza: %1", _lastText]
 ];
 
+// MG: besleme kapagi
+if (TAC_mg_feedStep && {_cat select 3}) then {
+    _lines pushBack format ["Besleme: %1", ["kayış yerleştirilmedi / kapak açık", "hazır"] select (_state param [7, true])];
+};
+
 // Makineli tufek: yedek namlu sayisi ve agirligi
 if (getNumber (configFile >> "CfgWeapons" >> _weapon >> "ace_overheating_allowSwapBarrel") == 1) then {
     private _barrelClass = getText (configFile >> "CfgWeapons" >> _weapon >> "ace_overheating_barrelClassname");

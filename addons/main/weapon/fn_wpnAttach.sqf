@@ -20,7 +20,8 @@ params [["_newUnit", objNull, [objNull]], ["_oldUnit", objNull, [objNull]]];
 private _events = [
     ["Fired", "TAC_wpn_ehFired"],
     ["Put", "TAC_wpn_ehPut"],
-    ["Take", "TAC_wpn_ehTake"]
+    ["Take", "TAC_wpn_ehTake"],
+    ["Reloaded", "TAC_wpn_ehReloaded"]
 ];
 
 if (!isNull _oldUnit) then {
@@ -47,4 +48,9 @@ _newUnit setVariable ["TAC_wpn_ehPut", _newUnit addEventHandler ["Put", {
 
 _newUnit setVariable ["TAC_wpn_ehTake", _newUnit addEventHandler ["Take", {
     _this call TAC_fnc_wpnOnTake;
+}]];
+
+// Reloaded: [unit, weapon, muzzle, newMagazine, oldMagazine]  (MG besleme kapagi adimi)
+_newUnit setVariable ["TAC_wpn_ehReloaded", _newUnit addEventHandler ["Reloaded", {
+    _this call TAC_fnc_wpnOnReloaded;
 }]];

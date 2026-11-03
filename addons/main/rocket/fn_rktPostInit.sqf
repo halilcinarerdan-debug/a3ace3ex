@@ -5,8 +5,8 @@
     Roketatar sisteminin istemci kurulumu:
       1. CBA "unit" oyuncu olayı: Fired / Reloaded olayları ve ACE "DefaultAction" ateşlenmeme dinleyicisi
          yeni birime bağlanır (TAC_fnc_rktAttach).
-      2. ACE self-menü "Roketatar": İncele | Atışa hazırla | Ateşlenmeyen mühimmatı çıkar (bekleme bittiyse görünür).
-    Döngü yok.
+      2. ACE self-menü "Roketatar": İncele | Atışa hazırla | Mühimmatı kurula | Ateşlenmeyen mühimmatı çıkar (bekleme bittiyse görünür).
+    10 sn aralıklı tek bir PFH mühimmat nemini günceller (fırlatıcı yoksa anında çıkar).
 
     Parametreler: yok
     Dönüş: yok
@@ -71,6 +71,27 @@ private _prepare = [
 ] call ace_interact_menu_fnc_createAction;
 
 ["CAManBase", 1, ["ACE_SelfActions", "TAC_rkt_menu"], _prepare, true] call ace_interact_menu_fnc_addActionToClass;
+
+private _dry = [
+    "TAC_rkt_dry",
+    "Mühimmatı kurula",
+    "",
+    {
+        params ["_target", "_player"];
+        [_player] call TAC_fnc_rktDry;
+    },
+    {
+        params ["_target", "_player"];
+
+        time >= (_player getVariable ["TAC_wpn_busyUntil", 0])
+        && {(_player getVariable ["TAC_rkt_moist", 0]) > 10}
+        && {[_player, "TAC_WeaponCleaningKit"] call TAC_fnc_wpnHasItem}
+    }
+] call ace_interact_menu_fnc_createAction;
+
+["CAManBase", 1, ["ACE_SelfActions", "TAC_rkt_menu"], _dry, true] call ace_interact_menu_fnc_addActionToClass;
+
+[TAC_fnc_rktTick, 10] call CBA_fnc_addPerFrameHandler;
 
 private _remove = [
     "TAC_rkt_remove",

@@ -39,6 +39,15 @@ private _category = ["TAC - Gerçekçilik Paketi", "Makineli tüfek (namlu)"];
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_mg_feedStep",
+    "CHECKBOX",
+    ["Besleme kapağı adımı", "Açıksa MG'ye şarjör / kayış takıldıktan sonra ACE self-menü > Silah Bakımı > 'Kayışı yerleştir, kapağı kapat' yapılmalı; yapılmazsa ilk atışta besleme arızası çıkar. (Silah bakım sistemi açık olmalı.)"],
+    _category,
+    true,
+    true
+] call CBA_settings_fnc_init;
+
+[
     "TAC_mg_debug",
     "CHECKBOX",
     ["Test göstergesi", "Namlu değiştirilince sıcaklık, eşik ve yanık kararını ekrana yazar. (Kişisel tercih)"],

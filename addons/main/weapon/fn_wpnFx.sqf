@@ -62,6 +62,10 @@ switch (_kind) do {
         };
         if (_phase isEqualTo "end") then {[_bolt, 1, 30] call _file};
     };
+    case "feed": {
+        if (_phase isEqualTo "start") then {[_click, 1, 15] call _file};
+        if (_phase isEqualTo "end") then {[_bolt, 1, 30] call _file};
+    };
     case "rocket": {
         // Roketatar hazirlik / muhimmat cikarma: baslangicta kapak / emniyet tiki, bitiste surgu sesi
         if (_phase isEqualTo "start") then {[_click, 1, 15] call _file};

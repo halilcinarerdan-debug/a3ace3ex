@@ -70,6 +70,17 @@ if (TAC_opt_enabled && {!(_optic isEqualTo "")} && {[_optic] call TAC_fnc_optIsS
 // --- Ariza ------------------------------------------------------------------
 if (isNil "ace_overheating_fnc_jamWeapon") exitWith {};
 
+// MG: besleme kapagi adimi atlandiysa ilk atista besleme arizasi (bir kez).
+if (_isMG && {TAC_mg_feedStep} && {!(_state param [7, true])}) exitWith {
+    _state set [7, true];
+
+    if !(_weapon in (_unit getVariable ["ace_overheating_jammedWeapons", []])) then {
+        [_unit, _weapon, "feed"] call ace_overheating_fnc_jamWeapon;
+
+        if (TAC_wpn_debug) then {systemChat "[TAC silah] ARIZA feed | besleme kapagi adimi atlandi"};
+    };
+};
+
 private _p = [_state, _env, _weapon] call TAC_fnc_wpnJamChance;
 
 if (random 1 >= _p) exitWith {};

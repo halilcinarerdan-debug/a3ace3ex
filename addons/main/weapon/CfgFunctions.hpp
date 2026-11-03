@@ -19,6 +19,8 @@ class weapon
 
     // Atis
     class wpnOnFired {};
+    class wpnOnReloaded {};
+    class wpnFeed {};
     class wpnOnPut {};
     class wpnOnTake {};
 

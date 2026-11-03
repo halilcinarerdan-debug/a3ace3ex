@@ -6,7 +6,9 @@
     TAC_fnc_rktMisfireDo çalışır: mermi HİÇ çıkmaz (geri tepme alanı da oluşmaz).
     Zar, her yüklü mühimmat için BİR kez atılır (durumda saklanır): reload veya başarılı atışta sıfırlanır.
 
-        p = taban x ölçek x (1 + 1.5 x soğuk + ıslaklık + aşınma)
+        p = taban x ölçek x (1 + soğuk + 0.5 x ıslaklık + aşınma + 0.8 x nem/100 + sıcak)
+        nem = zamanla biriken mühimmat nemi (TAC_fnc_rktTick; tek kullanımlıkta etkisi yarım)
+        sıcak = clamp((sıcaklık - 35) / 15, 0, 1) x 0.3  (ılımlı: en kötü hâlde ihtimal yaklaşık 3 katına çıkar)
         soğuk = clamp((5 - sıcaklık °C) / 30, 0, 1)      ıslaklık = yağmur (0..1), sığ suda 1
         aşınma = clamp(atış / 300, 0, 1)  (yalnızca yeniden doldurulabilir ve güdümlü)
         test ayarı varsa p en az o kadar.  Üst sınır 0.5.
@@ -50,7 +52,11 @@ if !(_state select 1) then {
     private _wetF = if (surfaceIsWater _pos && {(_pos select 2) < 0.4}) then {1} else {rain min 1};
     private _wearF = if (_reusable) then {((_state select 0) / 300) min 1} else {0};
 
-    private _p = ((_profile select 1) * TAC_rkt_scale * (1 + (1.5 * _coldF) + _wetF + _wearF)) min 0.5;
+    // Nem (zamanla birikir, TAC_fnc_rktTick): tek kullanimlik tup sizdirmaz, etkisi yarim. Sicak (> 35 C) itici yaslanmasi.
+    private _moistF = ((_unit getVariable ["TAC_rkt_moist", 0]) / 100) * 0.8 * ([1, 0.5] select ((_profile select 0) isEqualTo "disposable"));
+    private _heatF = (((((ambientTemperature select 0) - 35) / 15) max 0) min 1) * 0.3;
+
+    private _p = ((_profile select 1) * TAC_rkt_scale * (1 + (1.0 * _coldF) + (0.5 * _wetF) + _wearF + _moistF + _heatF)) min 0.5;
     if (TAC_rkt_testChance > 0) then {_p = _p max (TAC_rkt_testChance / 100)};
 
     _state set [1, true];
@@ -58,14 +64,15 @@ if !(_state select 1) then {
 
     if (TAC_rkt_debug) then {
         systemChat format [
-            "[TAC roket] %1 (%2) | ihtimal %3%% | soguk %4 | islaklik %5 | asinma %6 | SONUC: %7",
+            "[TAC roket] %1 (%2) | ihtimal %3%% | soguk %4 | islaklik %5 | asinma %6 | nem %8 | SONUC: %7",
             _weapon,
             _profile select 2,
             (round (_p * 1000)) / 10,
             (round (_coldF * 100)) / 100,
             (round (_wetF * 100)) / 100,
             (round (_wearF * 100)) / 100,
-            ["atesleyecek", "ATESLENMEYECEK"] select (_state select 2)
+            ["atesleyecek", "ATESLENMEYECEK"] select (_state select 2),
+            round (_unit getVariable ["TAC_rkt_moist", 0])
         ];
     };
 };

@@ -57,6 +57,9 @@ if !((_profile select 0) isEqualTo "disposable") then {
     _lines pushBack format ["Tüp: %1", if (_wear < 0.25) then {"yeni gibi"} else {if (_wear < 0.7) then {"kullanılmış"} else {"yıpranmış"}}];
 };
 
+private _moist = _unit getVariable ["TAC_rkt_moist", 0];
+_lines pushBack format ["Mühimmat: %1", if (_moist < 15) then {"kuru"} else {if (_moist < 40) then {"hafif nemli"} else {if (_moist < 70) then {"nemli"} else {"ıslak"}}}];
+
 if (TAC_rkt_prepare && {(_unit ammo _weapon) > 0}) then {
     _lines pushBack format ["Atışa hazır: %1", ["hayır (hazırlanmadı)", "evet"] select (_state select 5)];
 };
