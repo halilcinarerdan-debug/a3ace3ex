@@ -4,9 +4,11 @@
 
     Lens durumunu ekrana yansıtır: seviye = min(1, (buğu + 0.6 x kir) / 100).
       - bulanıklık = "En fazla bulanıklık" x seviye^1.3        (DynamicBlur)
-      - kontrast düşüşü = 0.3 x pus ayarı x seviye, hafif aydınlanma (ColorCorrections)
+      - kontrast düşüşü = 0.3 x pus ayarı x seviye, hafif aydınlanma (ColorCorrections).
+        Renk doygunluğu DEĞİŞMEZ: ColorCorrections'ın "nötr" değeri [1,1,0,[0,0,0,0],[1,1,1,1],[0,0,0,0]]
+        (son dizi gri ağırlıkları; [0.299,0.587,0.114,0] verilirse görüntü siyah-beyaz olur).
     PP efektleri ilk kullanımda bir kez yaratılır ve kalıcı tutulur (yaratıp yok etmek takılma yapar);
-    seviye çok düşükse kapatılır. Efekt öncelikleri 480 ve 620'den başlar, doluysa bir sonrakine geçilir.
+    seviye %5'in altındaysa kapatılır. Efekt öncelikleri 480 ve 620'den başlar, doluysa bir sonrakine geçilir.
 
     Parametreler:
         0: NUMBER - buğu 0..100
@@ -38,7 +40,7 @@ if (_color < 0) then {
     missionNamespace setVariable ["TAC_opt_ppColor", _color];
 };
 
-if (_level < 0.02) exitWith {
+if (_level < 0.05) exitWith {
     call TAC_fnc_optClearEffects;
 };
 
@@ -52,6 +54,6 @@ if (_blur >= 0) then {
 
 if (_color >= 0) then {
     _color ppEffectEnable (TAC_opt_haze > 0);
-    _color ppEffectAdjust [1, 1 - (0.3 * TAC_opt_haze * _level), 0.04 * TAC_opt_haze * _level, [0, 0, 0, 0], [1, 1, 1, 0], [0.299, 0.587, 0.114, 0]];
+    _color ppEffectAdjust [1, 1 - (0.3 * TAC_opt_haze * _level), 0.04 * TAC_opt_haze * _level, [0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0]];
     _color ppEffectCommit 0.5;
 };
