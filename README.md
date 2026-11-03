@@ -13,7 +13,6 @@ Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey
 | 3 | Kalibreye göre dinamik recoil | ✅ hazır (test bekliyor) |
 | 4 | Baskı altında artan sway | ✅ hazır (test bekliyor) |
 | 5 | Mermi yakın geçiş (crack) + patlama + ekran efekti + HUD kapatma | ✅ hazır (test bekliyor) |
-| 6 | Aiming deadzone / silah inertiası | ⏳ |
 
 Her özelliğin kendi CBA "aktif" ayarı vardır; parça parça test ederken diğerlerini kapatabilirsin.
 
