@@ -1,7 +1,7 @@
 # TAC – Realism Pack (CBA_A3 + ACE3)
 
-Tek bir mod (`@TAC`), tek bir PBO (`tac_main.pbo`). Yalnızca **CBA_A3** ve **ACE3** gerektirir;
-RHS, Project OPFOR, ACM, LAMBS, ACRE2 ile birlikte kullanılır ama hiçbirine bağımlılık yoktur.
+Tek bir mod (`@TAC`): ana PBO `tac_main.pbo` + iki **opsiyonel** uyumluluk PBO'su (`tac_compat_rhs.pbo`, `tac_compat_cup.pbo`). Yalnızca **CBA_A3** ve **ACE3**
+(ACE overheating dahil, ACE ile gelir) gerektirir; RHS, CUP, Project OPFOR, ACM, LAMBS, ACRE2 ile birlikte kullanılır. Uyumluluk PBO'ları dışında hiçbir mod zorunlu bağımlılık değildir.
 Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey eklemek gerekmez**.
 
 ## Yol haritası
@@ -16,7 +16,7 @@ Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey
 | 6 | Silah bakım ve arıza (tüfek + MG): kir, yağ, aşınma, ACE arızası | ✅ hazır (test bekliyor) |
 | 7 | MG: gerçekçi yedek namlu ağırlığı + sıcak namlu değiştirme yanığı (ısı eldiveni) | ✅ hazır (test bekliyor) |
 | 7a | MG: RHS ve CUP Minimi için hafif namlu (opsiyonel compat PBO'lar) | ✅ hazır (test bekliyor) |
-| 7b | MG: besleme kapağı / kayış adımı | ⏳ |
+| 7b | MG: besleme kapağı / kayış adımı | ✅ hazır (test bekliyor) |
 | 8 | Optik: buğulanma ve kirlenme (kapalı lensli optikler) | ✅ hazır (test bekliyor) |
 | 9 | Roketatar / füze: ateşlenmeme, bekleme, mühimmat çıkarma (tüm türler) | ✅ hazır (test bekliyor) |
 
@@ -141,7 +141,7 @@ addons/compat_cup/                       -> tac_compat_cup.pbo (OPSİYONEL; CUP 
 3. pboProject'te kaynak klasör: `P:\z\tac\addons\main`, çıktı klasörü: `...\@TAC\addons`.
    Prefix, klasördeki `$PBOPREFIX$` dosyasından okunur (`z\tac\addons\main`).
 4. `mod.cpp` dosyasını `...\@TAC\` köküne kopyala.
-5. pboProject `requiredAddons` (cba_main, ace_main, ace_common, ace_interact_menu) bulunamadı diye uyarı verirse,
+5. pboProject `requiredAddons` (cba_main, ace_main, ace_common, ace_interact_menu, ace_overheating) bulunamadı diye uyarı verirse,
    CBA ve ACE PBO'larını DePbo ile P: sürücüsüne açman veya bu denetimi pboProject ayarlarından gevşetmen gerekir.
 6. Dedicated sunucuda imza doğrulaması açıksa: Arma 3 Tools'taki `DSCreateKey` ile anahtar üret,
    PBO'yu `.biprivatekey` ile imzala (pboProject imzalama seçeneği veya `DSSignFile`) ve `.bikey` dosyasını sunucunun `keys/` klasörüne koy.
@@ -326,7 +326,7 @@ Pili almak için: Arsenal/loadout veya `player addItem "TAC_NVGBattery"`. Missio
 | `TAC_nvg_swapTime` | 3 sn (0–15) | global |
 | `TAC_nvg_testMode` | kapalı | global |
 | `TAC_nvg_testSpeed` | ×60 (1–600) | global |
-| `TAC_nvg_notify` | açık | kişisel (istemci) |
+| `TAC_nvg_notify` | kapalı | kişisel (istemci) |
 
 Sunucudan zorlamak için `cba_settings.sqf`:
 
@@ -686,7 +686,7 @@ Eşyalar: `TAC_WeaponCleaningKit`, `TAC_WeaponOil`, `TAC_WeaponSpareParts`. Hede
 | `TAC_wpn_needKit` (bakım malzemesi gerekli) | açık |
 | `TAC_wpn_fx` (bakım hareketi ve sesi) | açık |
 | `TAC_wpn_cleanTimeMult` (bakım süresi çarpanı) | 1 |
-| `TAC_wpn_testMode` / `TAC_wpn_testMult` | kapalı / 20 |
+| `TAC_wpn_testMode` / `TAC_wpn_testMult` (test çarpanı) | kapalı / 20 |
 | `TAC_wpn_debug` (arıza nedeni göstergesi) | kapalı, kişisel |
 
 ### Silahı yere atmak / başkasının alması
@@ -767,6 +767,7 @@ ACE ile namlu değiştirilirken (kendin ya da yardımcı) çıkarılan **namlunu
 | `TAC_mg_burn` | açık |
 | `TAC_mg_burnTemp` (°C eşiği) | 150 |
 | `TAC_mg_burnDamage` (azami hasar) | 0.35 |
+| `TAC_mg_feedStep` (besleme kapağı adımı, 7b) | açık |
 | `TAC_mg_debug` (test göstergesi) | kapalı, kişisel |
 
 ### Test adımları
@@ -907,6 +908,7 @@ Silahçı ayrıca taban ihtimali, atış sayısını ve ateşlenmeme sayısını
 | `TAC_rkt_enabled` | açık |
 | `TAC_rkt_prepare` (atış öncesi hazırlık gerekli) | açık |
 | `TAC_rkt_scale` (ateşlenmeme ölçeği) | 1 |
+| `TAC_rkt_dudChance` (hedefte patlamama, %) | 1.5 |
 | `TAC_rkt_waitTime` (bekleme, sn) | 30 |
 | `TAC_rkt_table` (`classname=yüzde, ...`) | boş |
 | `TAC_rkt_testChance` (test: asgari ihtimal %) | 0 |
