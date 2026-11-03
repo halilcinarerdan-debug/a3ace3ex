@@ -18,7 +18,7 @@ Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey
 | 7a | MG: RHS ve CUP Minimi için hafif namlu (opsiyonel compat PBO'lar) | ✅ hazır (test bekliyor) |
 | 7b | MG: besleme kapağı / kayış adımı | ⏳ |
 | 8 | Optik: buğulanma ve kirlenme (kapalı lensli optikler) | ✅ hazır (test bekliyor) |
-| 9 | Roket atar / RPG: hazırlık, ateşlenmeme, misfire prosedürü | ⏳ |
+| 9 | Roketatar / füze: ateşlenmeme, bekleme, mühimmat çıkarma (tüm türler) | ✅ hazır (test bekliyor) |
 
 Her özelliğin kendi CBA "aktif" ayarı vardır; parça parça test ederken diğerlerini kapatabilirsin.
 
@@ -118,6 +118,14 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
         fn_optRefresh / optStart / optStop / optTick   optikten bakarken çalışan döngü (0.5 sn PFH)
         fn_optApply.sqf / optClearEffects.sqf          DynamicBlur + ColorCorrections (kalıcı PP)
         fn_optIsSealed / optGetState / optActive / optInspectLines / optWipe
+    rocket/                              9. özellik
+        CfgFunctions.hpp
+        fn_rktInitSettings.sqf           CBA ayarları
+        fn_rktPostInit.sqf               "unit" olayı + ACE "Roketatar" menüsü
+        fn_rktAttach.sqf                 Fired / Reloaded + ACE DefaultAction dinleyicisi (tetik anında zar)
+        fn_rktProfile / rktGetState / rktParseTable   tür profili, durum, elle tablo
+        fn_rktMisfireCheck / rktMisfireDo / rktOnFired / rktOnReloaded
+        fn_rktRemoveRound / rktInspect / rktDebug
 addons/compat_rhs/                       -> tac_compat_rhs.pbo (OPSİYONEL; RHS Minimi ailesine hafif namlu)
 addons/compat_cup/                       -> tac_compat_cup.pbo (OPSİYONEL; CUP Minimi / M249 ailesine hafif namlu)
 ```
@@ -828,6 +836,69 @@ Durum "birim + silah sınıfı" başınadır; silah yere atılınca optik durumu
 5. **Kırmızı nokta / demir nişan:** hiçbir bulanıklık olmamalı, incele kartında optik satırı çıkmamalı.
 6. Ayarlardan `En fazla bulanıklık`'ı 0 yap: bulanıklık kalkar, kontrast hâlâ düşer. `Kontrast kaybı`nı 0 yap: görüntü bozulmaz.
 7. **Dikkat edilecekler (görsel):** `ColorCorrections` optiğin siyah çerçevesini hafif grileştirebilir; rahatsız ederse `Kontrast kaybı`'nı düşür. Bulanıklık tüm ekranı etkiler (reticle dahil).
+
+## Özellik 9 – Roketatar / füze: ateşlenmeme ve doktrin
+
+Yalnızca RPG-7 değil, **ikincil silah olan her fırlatıcı** (vanilla, RHS, CUP) kapsanır; tür config'ten / sınıf adından belirlenir:
+
+| Kategori | Örnekler (sınıf alt dizesi) | Taban ateşlenmeme | Ateşlenmezse |
+|----------|------------------------------|------------------:|--------------|
+| Tek kullanımlık, eski / Doğu | M72, RPG-18/22/26/75, RShG | %2 | fırlatıcı güvenle çıkarılıp atılır |
+| Tek kullanımlık, modern | M136/AT4, NLAW, APILAS | %1 | aynı |
+| Panzerfaust (eski) | panzerfaust, pf60 | %5 | aynı |
+| RPG-7 tipi (yeniden doldurulabilir) | RPG-7, RPG-32 | %2 | mühimmat atılır, tüp boşalır |
+| Modern omuz atarı | SMAW, MAAWS/Carl Gustaf, Mk153, MRAWS | %0.8 | aynı |
+| Güdümlü füze | Javelin, Titan, Stinger/FIM-92, Igla, Strela, Metis, TOW | %2.5 | aynı |
+| Tanınmayan | mühimmatın yönlendirme alanlarına (manualControl, lock, maxControlRange) bakılır: güdümlü %2.5, değilse omuz atarı %2 | | |
+
+**Bu taban oranlar tahmindir:** yayımlanmış tek bir sayı bulamadım. Eski / Doğu bloku mühimmatı ve eski silahlarda yüksek, modern sistemlerde düşük aldım. Beğenmediğini CBA `Ateşlenmeme tablosu` ayarıyla ez (`launch_RPG7_F=3, rhs_weap_rpg7=3`).
+
+### Model
+
+```
+p = taban x ölçek x (1 + 1.5 x soğuk + ıslaklık + aşınma)        üst sınır %50
+soğuk = clamp((5 - sıcaklık °C) / 30, 0, 1)       ıslaklık = yağmur (0..1), sığ suda 1
+aşınma = clamp(atış / 300, 0, 1)  (yeniden doldurulabilir ve güdümlü; tek kullanımlıkta yok)
+```
+
+- **Zar tetik çekilirken, bir yüklü mühimmat için bir kez atılır** (reload veya başarılı atışta sıfırlanır). Ateşlenmeme çıkarsa ACE'nin arıza sistemindeki mekanizmayla (`DefaultAction` dinleyicisi) **atış tamamen engellenir**: mermi hiç çıkmaz, ACE geri tepme alanı da oluşmaz, kuru tık sesi duyulur.
+- **Doktrin:** tık sesinden sonra **bekle** (varsayılan 30 sn; gecikmeli ateşleme riski). Bekleme sırasında tetiğe tekrar basılırsa süre yeniden başlar. Süre dolunca ACE self-menü > **Roketatar > Ateşlenmeyen mühimmatı çıkar** görünür (8 sn); tek kullanımlıkta fırlatıcı çıkarılır, diğerlerinde mühimmat atılır.
+- **Oyuncuya bildirim yok:** tık sesi ve menü görünürlüğü dışında bilgi verilmez; durum "Fırlatıcıyı / mühimmatı incele" kartında okunur.
+
+### İncele kartı (config'ten, RHS / CUP / vanilla)
+
+Tür, yüklü mühimmat adı, **başlık türü** (`warheadName`: HEAT, tandem, HE...), **silahlanma mesafesi** (`fuseDistance`), **patlama etki alanı** (`indirectHitRange`), **geri tepme alanı** (ACE `ace_overpressure_range` varsa), güdümlü ise uyarı, tüp durumu (yeni gibi / kullanılmış / yıpranmış) ve ateşlenmeme bekleme durumu.
+Silahçı ayrıca taban ihtimali, atış sayısını ve ateşlenmeme sayısını görür.
+
+### CBA ayarları (`... > TAC - Gerçekçilik Paketi > Roketatar / füze`)
+
+| Ayar | Varsayılan |
+|------|-----------|
+| `TAC_rkt_enabled` | açık |
+| `TAC_rkt_scale` (ateşlenmeme ölçeği) | 1 |
+| `TAC_rkt_waitTime` (bekleme, sn) | 30 |
+| `TAC_rkt_table` (`classname=yüzde, ...`) | boş |
+| `TAC_rkt_testChance` (test: asgari ihtimal %) | 0 |
+| `TAC_rkt_debug` (test göstergesi) | kapalı, kişisel |
+
+### MP mantığı (roketatar)
+
+Tamamen yerel oyuncuda: zar ve durum birimde, ağa bir şey yayınlanmaz, sunucuya yük sıfır, yapay zekâ için kod çalışmaz. Dinleyici yalnızca oyuncu birimine bağlıdır. Durum "birim + fırlatıcı sınıfı" başınadır; respawn'da sıfırlanır.
+
+### Test adımları
+
+1. CBA'da **Test: asgari ateşlenmeme ihtimali**'ni 100 yap, **Test göstergesi**ni aç. Debug konsolunda (yerel çalıştır) bir fırlatıcı ver:
+   ```sqf
+   player addWeapon "launch_RPG7_F"; player addSecondaryWeaponItem "RPG7_F";
+   ```
+   (ya da RHS `rhs_weap_rpg7`, `rhs_weap_m72a7`; CUP `CUP_launch_M72A6_Loaded`, `CUP_launch_Javelin`...).
+2. Fırlatıcıyı elinde seç ve ateş et: kuru tık gelmeli, mermi çıkmamalı, ekranda `ATESLENMEYECEK` yazmalı. Tetiğe tekrar bas: bekleme yeniden başlar.
+3. **Fırlatıcıyı / mühimmatı incele**: mühimmat bilgisi ve "Ateşlenmedi: bekle (~N sn)".
+4. Süre dolunca **Ateşlenmeyen mühimmatı çıkar**: tek kullanımlıkta fırlatıcı gitmeli, RPG-7 tipinde tüp boşalmalı. Yeni mühimmat yükle (`player addMagazine "RPG7_F"`) ve zar yeniden atılmalı.
+5. Test ihtimalini 0 yap: normal oranda (RPG-7 ~%2) ateş et. Soğuk (`setDate` ile kış gecesi) ve yağmurda ihtimal artmalı; `Test göstergesi` soğuk / ıslaklık / aşınma değerlerini yazar.
+6. `call TAC_fnc_rktDebug` profil, durum ve dinleyici kimliğini döker (`TAC_rkt_actionId` -1 ise dinleyici bağlanmamış demektir: bana bildir).
+
+> Kapsam dışı (şimdilik): atış öncesi hazırlama / horoz kurma adımları, gecikmeli ateşleme patlaması, araç / statik silah fırlatıcıları (ayrı silah sınıfları).
 
 ## Yeni özellik ekleme
 

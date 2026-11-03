@@ -28,3 +28,6 @@ call TAC_fnc_mgInitSettings;
 
 // 8. Optik (buğu / kir)
 call TAC_fnc_optInitSettings;
+
+// 9. Roketatar / füze
+call TAC_fnc_rktInitSettings;
