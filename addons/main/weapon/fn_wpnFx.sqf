@@ -11,6 +11,7 @@
         lube       -                                           kuru tık (dry9)
         clearJam   ACE "fixing_rifle" / "fixing_pistol"        sürgü sesi
         parts      ACE "ACE_BarrelSwap" (metal)                kuru tık + sürgü sesi
+        rocket     kuru tık (kapak / emniyet)                  sürgü sesi
 
     Parametreler:
         0: OBJECT - birim
@@ -59,6 +60,11 @@ switch (_kind) do {
 
             [_class, 25] call _config;
         };
+        if (_phase isEqualTo "end") then {[_bolt, 1, 30] call _file};
+    };
+    case "rocket": {
+        // Roketatar hazirlik / muhimmat cikarma: baslangicta kapak / emniyet tiki, bitiste surgu sesi
+        if (_phase isEqualTo "start") then {[_click, 1, 15] call _file};
         if (_phase isEqualTo "end") then {[_bolt, 1, 30] call _file};
     };
     case "parts": {
