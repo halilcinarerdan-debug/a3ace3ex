@@ -623,7 +623,7 @@ Durum "birim + silah sınıfı" başınadır (Arma'da silahların ayrı kimliği
 9. Test modunu kapat, normal hızı gör.
 10. Yeni özellik dışında bir RHS/CUP tüfeğiyle de dene: kategori ve eylemler çalışmalı. Yanlış MG/tüfek çıkarsa `MG olarak zorla`'ya ekle.
 
-> Not: ACE overheating kapalıysa (`ace_overheating_enabled`) bile `jamWeapon` çalışır; ACE'nin ısı arızası ise kapanır. Bizim sistem etkilenmez.
+> Not: `ace_overheating_fnc_jamWeapon` kaynağı `ace_overheating_enabled` ayarını kontrol etmiyor, ama ACE'nin "arıza gider" eyleminin ayar kapalıyken görünüp görünmediği **doğrulanmadı**. Garanti için ACE overheating açık kalsın; kapalıysa "Arızayı gider (ayrıntılı)" eylemi her durumda çalışır.
 
 ## Yeni özellik ekleme
 
