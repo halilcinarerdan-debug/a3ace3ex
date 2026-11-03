@@ -19,3 +19,6 @@ call TAC_fnc_stressInitSettings;
 
 // 5. Mermi yakın geçiş (crack)
 call TAC_fnc_crackInitSettings;
+
+// 6. Silah bakım ve arıza
+call TAC_fnc_wpnInitSettings;

@@ -1,0 +1,65 @@
+/*
+    Fonksiyon: TAC_fnc_wpnCategory
+    Çalışma yeri: İstemci
+
+    Silahın bakım kategorisini verir (sınıf başına bir kez hesaplanır, önbellekli):
+        birincil silah (config type 1) : tüfek, ya da şarjör/kayış kapasitesi >= MG eşiği veya
+                                         "MG olarak zorla" tablosunda ise MG
+        tabanca (type 2)               : tabanca
+        diğerleri (fırlatıcı, dürbün...) : [] (takip edilmez)
+    Şarjör kapasitesi hem config "magazines" alanından hem "magazineWell" (RHS, CUP, yeni vanilla)
+    kümelerinden okunur.
+
+    Parametreler:
+        0: STRING - silah classname
+
+    Dönüş: ARRAY - [kategori, kirlenme çarpanı, temizlik süresi (sn), MG mi], takip edilmiyorsa []
+*/
+
+params [["_weapon", "", [""]]];
+
+if (_weapon isEqualTo "") exitWith {[]};
+
+if (isNil "TAC_wpn_catCache") then {TAC_wpn_catCache = createHashMap};
+if (isNil "TAC_wpn_mgSet") then {[TAC_wpn_mgTable] call TAC_fnc_wpnParseMgTable};
+
+private _key = toLower _weapon;
+private _result = TAC_wpn_catCache get _key;
+
+if (isNil "_result") then {
+    private _cfg = configFile >> "CfgWeapons" >> _weapon;
+    private _type = getNumber (_cfg >> "type");
+
+    _result = [];
+
+    if (_type == 1 || {_type == 2}) then {
+        private _isMG = false;
+
+        if (_type == 1) then {
+            private _mags = getArray (_cfg >> "magazines");
+
+            {
+                {
+                    _mags append (getArray _x);
+                } forEach (configProperties [configFile >> "CfgMagazineWells" >> _x, "isArray _x", true]);
+            } forEach (getArray (_cfg >> "magazineWell"));
+
+            private _maxCount = 0;
+            {
+                _maxCount = _maxCount max (getNumber (configFile >> "CfgMagazines" >> _x >> "count"));
+            } forEach _mags;
+
+            _isMG = _maxCount >= TAC_wpn_mgThreshold || {TAC_wpn_mgSet getOrDefault [_key, false]};
+        };
+
+        _result = if (_type == 2) then {
+            ["pistol", 0.5, 15, false]
+        } else {
+            if (_isMG) then {["mg", 1.3, 45, true]} else {["rifle", 1, 25, false]}
+        };
+    };
+
+    TAC_wpn_catCache set [_key, _result];
+};
+
+_result

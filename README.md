@@ -13,6 +13,10 @@ Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey
 | 3 | Kalibreye göre dinamik recoil | ✅ hazır (test bekliyor) |
 | 4 | Baskı altında artan sway | ✅ hazır (test bekliyor) |
 | 5 | Mermi yakın geçiş (crack) + patlama + ekran efekti + HUD kapatma | ✅ hazır (test bekliyor) |
+| 6 | Silah bakım ve arıza (tüfek + MG): kir, yağ, aşınma, ACE arızası | ✅ hazır (test bekliyor) |
+| 7 | MG: namlu ısısı ve sıcak namlu değiştirme, kayış/kapak | ⏳ |
+| 8 | Optik: buğulanma, kirlenme | ⏳ |
+| 9 | Roket atar / RPG: hazırlık, ateşlenmeme, misfire prosedürü | ⏳ |
 
 Her özelliğin kendi CBA "aktif" ayarı vardır; parça parça test ederken diğerlerini kapatabilirsin.
 
@@ -90,6 +94,14 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
         fn_crackStart.sqf                blur + vignette + HUD gizleme, zamanlayıcılar
         fn_crackEnd.sqf                  temizlik + HUD'u geri yükleme
         fn_crackDebug.sqf                teşhis (call TAC_fnc_crackDebug)
+    weapon/                              6. özellik
+        CfgFunctions.hpp / CfgWeapons.hpp  bakım malzemesi eşyaları (kit, yağ, yedek parça)
+        fn_wpnInitSettings.sqf           CBA ayarları
+        fn_wpnPostInit.sqf               "unit" olayı, ace_weaponJammed dinleyicisi, ACE "Silah Bakımı" menüsü
+        fn_wpnOnFired.sqf                her atışta kir/yağ/aşınma + arıza zarı (oyuncuya bağlı Fired)
+        fn_wpnJamChance.sqf              arıza ihtimali formülü
+        fn_wpnCategory.sqf / fn_wpnGetState.sqf / fn_wpnEnvFactor.sqf   kategori, durum, ortam
+        fn_wpnClean / wpnLube / wpnClearJam / wpnReplaceParts / wpnInspect   bakım eylemleri ve kart
 ```
 
 ## Mikero ile derleme
@@ -533,6 +545,85 @@ Tamamen yerel oyuncuda; ağa hiçbir şey yayınlanmaz, sunucuya yük sıfır. Y
 6. `call TAC_fnc_crackDebug` ile durum raporu al (efekt takılı kalırsa `[-1] call TAC_fnc_crackEnd` ile zorla temizle).
 
 > Not: ACE gibi arayüz modlarının kendi öğeleri `showHUD`'a bağlı değilse ekranda kalabilir. HUD'u geri yükleyen kod `shownHUD` değerini birebir kullanır.
+
+## Özellik 6 – Silah bakım ve arıza (tüfek + MG)
+
+Her silahın **kir**, **yağ** ve **aşınma** durumu vardır. Atış kirletir ve yağı azaltır; ortam (yağmur, sığ su, tozlu zeminde yatma) ve susturucu hızlandırır.
+Arıza ihtimali bunlardan hesaplanır ve **ACE'nin kendi arıza sistemine** verilir (`ace_overheating_fnc_jamWeapon`): arıza türleri Eject / Extract / Feed / Fire / Dud, ACE'nin
+"arıza gider" eylemi aynen çalışır. ACE'nin ısıya bağlı arızası ayrıca devam eder; bizim sistem onu değiştirmez.
+
+**İlke: oyuncuya kendiliğinden bilgi verilmez** (uyarı, ipucu, bildirim yok). Silahın durumu yalnızca ACE menüsünden **"Silahı incele"** ile, gözlem diliyle okunur.
+
+### Model
+
+| Değer | Artış / azalış | Etkisi |
+|-------|----------------|--------|
+| **Kir** 0-100 | atış başına `kirlenme hızı/1000 x kategori x ortam x susturucu`. Tüfek 1, MG x1.3, tabanca x0.5 | arıza ihtimali `Pmax x (kir/100)^2.5`: temizken ihmal edilebilir, kirlendikçe hızla artar |
+| **Yağ** 0-100 | atış başına azalır, yağlayınca +65 | %30 altı sürtünme arızaları; %90 üstü aşırı yağlı: tozda daha çok kirlenir |
+| **Aşınma** (atış) | her atış +1 | `Pmax x 0.5 x (aşınma/ömür)^3` eklenir; yalnızca silahçı parça değiştirerek sıfırlar |
+
+Arıza türü nedene göre ağırlıklanır: kir -> besleme / kovan atma, düşük yağ ve aşınma -> kovan çıkarma, küçük sabit pay -> kusurlu mühimmat.
+Ortam çarpanı (3 sn önbellekli, atış başına hesaplanmaz): yağmur +0.4 x şiddet, sığ suda +0.8, tozlu/çamurlu zeminde yatarken +0.6 (çömelirken +0.2).
+
+**Kategori** config'ten otomatik: birincil silah, şarjör/kayış kapasitesi (`magazines` + `magazineWell`) `MG eşiği`ni (60) aşıyorsa **MG** (daha çok kirlenir, temizlik 45 sn), değilse tüfek (25 sn); tabanca 15 sn. Yanlış sınıflananı `MG olarak zorla` tablosuna yaz. Fırlatıcı ve bomba takip edilmez.
+
+### ACE self-menü > Silah Bakımı
+
+| Eylem | Ne yapar |
+|-------|----------|
+| **Silahı incele** | Kir / yağ / parçalar / namlu ısısı, son temizlikten atış, son arıza, şu an arızalı mı. Sayı yok, sözlü bantlar |
+| **Silahı temizle** | Bakım Kiti ister (tükenmez). Kir %5'e iner, **yağ da gider** (en çok %12 kalır), yani sonra yağlamak gerekir |
+| **Silahı yağla** | Silah Yağı ister (her seferinde 1 tükenir). Yağ +65 |
+| **Arızayı gider (ayrıntılı)** | Silah arızalıyken görünür. ACE'nin hızlı müdahalesi (tap-rack, şansa bağlı) başarısız olursa **ikinci kademe**: başarı garantili, temizlik süresinin %40'ı |
+| **Parça değiştir** | Yalnızca **silahçı**. Yedek Parça Seti ister (tükenir). Aşınma sıfırlanır |
+
+Silahçı: test modu açık, birimde `TAC_isArmorer = true` (Eden: birim init'ine `this setVariable ["TAC_isArmorer", true, true]`) ya da ACE mühendis özelliği.
+Silahçı, incele kartında ayrıca **sayısal değerleri ve tahmini arıza ihtimalini** görür.
+
+Eşyalar: `TAC_WeaponCleaningKit`, `TAC_WeaponOil`, `TAC_WeaponSpareParts`. Hedef silah: elindeki takipli silah, yoksa birincil silah.
+
+### CBA ayarları (`... > TAC - Gerçekçilik Paketi > Silah bakım ve arıza`)
+
+| Ayar | Varsayılan |
+|------|-----------|
+| `TAC_wpn_enabled` | açık |
+| `TAC_wpn_dirtRate` (1000 atışta kir %) | 60 |
+| `TAC_wpn_lubeLoss` (1000 atışta yağ kaybı %) | 50 |
+| `TAC_wpn_jamMax` (tam kirli silahta atış başına arıza %) | 3 |
+| `TAC_wpn_wearLife` (parça ömrü, atış) | 15000 |
+| `TAC_wpn_suppressorMult` | 1.6 |
+| `TAC_wpn_env` (ortam etkisi) | açık |
+| `TAC_wpn_mgThreshold` (MG eşiği) | 60 |
+| `TAC_wpn_mgTable` (MG olarak zorla, virgülle) | boş |
+| `TAC_wpn_needKit` (bakım malzemesi gerekli) | açık |
+| `TAC_wpn_cleanTimeMult` (bakım süresi çarpanı) | 1 |
+| `TAC_wpn_testMode` / `TAC_wpn_testMult` | kapalı / 20 |
+| `TAC_wpn_debug` (arıza nedeni göstergesi) | kapalı, kişisel |
+
+### MP mantığı (silah bakım)
+
+Tamamen yerel oyuncuda: durum birimin üzerinde tutulur, ağa hiçbir şey yayınlanmaz, sunucuya yük sıfır, yapay zekâ için kod çalışmaz. Atış başına maliyet: bir hashmap araması, birkaç toplama, bir `random`. Döngü yok.
+Durum "birim + silah sınıfı" başınadır (Arma'da silahların ayrı kimliği yok): aynı sınıftan iki silah ortak durum paylaşır. Respawn'da yeni beden varsayılanla başlar.
+
+### Test adımları (tek kişi, MG dahil)
+
+1. Eden'de oyna. Ayarlarda **Test modu**nu aç (x20; seni silahçı yapar, sayıları görürsün). Debug konsolunda (yerel çalıştır):
+   ```sqf
+   player addWeapon "arifle_MX_SW_F"; player addMagazines ["100Rnd_65x39_caseless_mag", 6];
+   player addItem "TAC_WeaponCleaningKit"; player addItem "TAC_WeaponOil"; player addItem "TAC_WeaponSpareParts";
+   ```
+   (MG yerine kendi RHS/CUP makineli tüfeğini kullanabilirsin.)
+2. ACE menü > **Silah Bakımı > Silahı incele**: "temiz, yeterli yağ" görmelisin. `call TAC_fnc_wpnDebug` ile kategori **mg** çıkmalı.
+3. Ateş et. Test çarpanıyla ~100 atışta kir yükselir; incele kartı "kirli"ye döner, silahçı satırı kir yüzdesini gösterir. Kir yükseldikçe arızalar çıkmalı. Test göstergesini açıp neden/ihtimalin ekrana yazılmasını izle.
+4. Arıza çıkınca ACE'nin eylemiyle gider; **başarısız olursa** Silah Bakımı > **Arızayı gider (ayrıntılı)** ile kesin gider.
+5. **Silahı temizle**: kir ~%5, yağ düşük. Hemen ateş et: yağ azlığı arızaları çıkabilir. **Silahı yağla**: yağ yükselir. Yağdan malzeme düşmeli.
+6. Hızlı durum ayarı: `([ACE_player, currentWeapon ACE_player] call TAC_fnc_wpnGetState) set [0, 80];` (kir %80).
+7. Ortam: yağmuru aç, toz/çamurda yat, sığ suda ateş et: `call TAC_fnc_wpnDebug` ortam çarpanını gösterir.
+8. Susturucu tak, ateş et: kir daha hızlı artmalı. Bakım malzemesini envanterden at: temizle/yağla eylemleri görünmemeli (`Bakım malzemesi gerekli` açıkken).
+9. Test modunu kapat, normal hızı gör.
+10. Yeni özellik dışında bir RHS/CUP tüfeğiyle de dene: kategori ve eylemler çalışmalı. Yanlış MG/tüfek çıkarsa `MG olarak zorla`'ya ekle.
+
+> Not: ACE overheating kapalıysa (`ace_overheating_enabled`) bile `jamWeapon` çalışır; ACE'nin ısı arızası ise kapanır. Bizim sistem etkilenmez.
 
 ## Yeni özellik ekleme
 

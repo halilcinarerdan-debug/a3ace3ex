@@ -22,3 +22,6 @@ call TAC_fnc_stressPostInit;
 
 // 5. Mermi yakın geçiş (crack)
 call TAC_fnc_crackPostInit;
+
+// 6. Silah bakım ve arıza
+call TAC_fnc_wpnPostInit;

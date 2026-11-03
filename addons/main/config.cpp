@@ -15,12 +15,12 @@ class CfgPatches
         author = "TAC";
         url = "";
         units[] = {};
-        weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium", "TAC_NVGBattery_p75", "TAC_NVGBattery_p50", "TAC_NVGBattery_p25", "TAC_NVGBattery_p10", "TAC_NVGBattery_Lithium_p75", "TAC_NVGBattery_Lithium_p50", "TAC_NVGBattery_Lithium_p25", "TAC_NVGBattery_Lithium_p10", "TAC_NVGBattery_Dead"};
+        weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium", "TAC_NVGBattery_p75", "TAC_NVGBattery_p50", "TAC_NVGBattery_p25", "TAC_NVGBattery_p10", "TAC_NVGBattery_Lithium_p75", "TAC_NVGBattery_Lithium_p50", "TAC_NVGBattery_Lithium_p25", "TAC_NVGBattery_Lithium_p10", "TAC_NVGBattery_Dead", "TAC_WeaponCleaningKit", "TAC_WeaponOil", "TAC_WeaponSpareParts"};
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu"};
-        version = 0.8;
-        versionStr = "0.8.0";
-        versionAr[] = {0,8,0};
+        version = 0.9;
+        versionStr = "0.9.0";
+        versionAr[] = {0,9,0};
     };
 };
 
@@ -81,6 +81,9 @@ class CfgFunctions
 
         // 5. Mermi yakin gecis (crack) + ekran efekti + HUD
         #include "crack\CfgFunctions.hpp"
+
+        // 6. Silah bakim ve ariza
+        #include "weapon\CfgFunctions.hpp"
     };
 };
 
@@ -92,6 +95,9 @@ class CfgWeapons
 
     // 2. Gelismis NVG Pili
     #include "nvg\CfgWeapons.hpp"
+
+    // 6. Silah bakim malzemeleri
+    #include "weapon\CfgWeapons.hpp"
 };
 
 // CBA XEH: tum makinelerde (sunucu, istemci, HC) mod yuklenince calisir.

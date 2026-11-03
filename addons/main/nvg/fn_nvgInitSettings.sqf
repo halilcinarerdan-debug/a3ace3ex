@@ -150,6 +150,6 @@ private _category = ["TAC - Gerçekçilik Paketi", "NVG Pili"];
     "CHECKBOX",
     ["Pil bildirimleri", "NVG açılınca şarj yüzdesini, düşük/biten pil uyarılarını ekranda göster. (Kişisel tercih)"],
     _category,
-    true,
+    false,
     false
 ] call CBA_settings_fnc_init;
