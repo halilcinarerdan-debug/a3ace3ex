@@ -21,7 +21,7 @@ private _weapon = secondaryWeapon _unit;
 if (_weapon isEqualTo "" || {(_unit ammo _weapon) < 1}) exitWith {};
 
 private _category = ([_weapon] call TAC_fnc_rktProfile) select 0;
-private _time = ([3, 5, 6] select (["disposable", "reloadable", "guided"] find _category max 0)) * TAC_wpn_cleanTimeMult;
+private _time = ([3, 5, 6] select ((["disposable", "reloadable", "guided"] find _category) max 0)) * TAC_wpn_cleanTimeMult;
 
 [_unit, "Fırlatıcı atışa hazırlanıyor...", _time, {
     params ["_unit", "_args"];
