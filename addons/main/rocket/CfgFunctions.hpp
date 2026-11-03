@@ -16,6 +16,7 @@ class rocket
     class rktOnFired {};
     class rktOnReloaded {};
     class rktOnTake {};
+    class rktOnPut {};
 
     class rktPrepare {};
     class rktDry {};

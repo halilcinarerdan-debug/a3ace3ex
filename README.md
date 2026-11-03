@@ -914,6 +914,11 @@ Silahçı ayrıca taban ihtimali, atış sayısını ve ateşlenmeme sayısını
 | `TAC_rkt_testChance` (test: asgari ihtimal %) | 0 |
 | `TAC_rkt_debug` (test göstergesi) | kapalı, kişisel |
 
+### Fırlatıcıyı yere atmak / başkasının alması
+
+Fırlatıcı yere / kutuya / araca / cesede konunca durumu (atış sayısı = tüp aşınması, yüklü mühimmatın zarı, ateşlenmeme ve bekleme, hazır işareti) kapta saklanır (`TAC_rkt_stash`, herkese yayınlanır) ve silahı alanla gider: ateşlenmeyen bir fırlatıcı başkasının eline geçince de ateşlenmez, "at, yenisini al" ile bedava yeni zar atılamaz. Aynı sınıftan yeni (arsenal, kayıtsız) fırlatıcı sıfırdan başlar.
+Mühimmat nemi birime bağlıdır, taşınmaz. Sınırlar silah bakımındakiyle aynı: kap yok olursa durum kaybolur, ölü oyuncunun fırlatıcısı alana sıfırdan başlar.
+
 ### MP mantığı (roketatar)
 
 Tamamen yerel oyuncuda: zar ve durum birimde, ağa bir şey yayınlanmaz, sunucuya yük sıfır, yapay zekâ için kod çalışmaz. Dinleyici yalnızca oyuncu birimine bağlıdır. Durum "birim + fırlatıcı sınıfı" başınadır; respawn'da sıfırlanır.
