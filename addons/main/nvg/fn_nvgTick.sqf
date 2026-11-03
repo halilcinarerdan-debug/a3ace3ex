@@ -5,7 +5,8 @@
     1. NVG hâlâ açık mı? Değilse döngüyü durdurur.
     2. Geçen süreye göre şarjı düşürür:
            pil_ömrü_sn = pil_saati * dakika_per_saat * 60 / (test_hızı)
-           oran (%/sn) = 100 / pil_ömrü_sn
+           oran (%/sn) = 100 / pil_ömrü_sn * tüketim_çarpanı   (cihaz x soğuk, TAC_fnc_nvgDrainFactor)
+           şarj < %15 ise oran 1x -> 2x hızlanır (voltaj düşümü, "Voltaj düşümü" ayarı)
        pil_saati, takılı pilin classname'ine göre tablodan gelir (TAC_nvg_installedClass).
     3. Şarj düşük eşiğin altındaysa efekt şiddetini hesaplar:
            şiddet = 1 - şarj / eşik        (eşikte 0, şarj 0'da 1)
@@ -34,9 +35,13 @@ missionNamespace setVariable ["TAC_nvg_lastTick", _now];
 private _installed = _unit getVariable ["TAC_nvg_installedClass", ""];
 private _speed = if (TAC_nvg_testMode) then {TAC_nvg_testSpeed max 1} else {1};
 private _lifeSeconds = (((([_installed] call TAC_fnc_nvgGetHours) * TAC_nvg_minutesPerHour) * 60) max 1) / _speed;
-private _rate = 100 / _lifeSeconds;
+private _rate = (100 / _lifeSeconds) * ([_unit] call TAC_fnc_nvgDrainFactor);
 
-private _charge = ((_unit getVariable ["TAC_nvg_charge", 100]) - (_rate * _dt)) max 0;
+// Voltaj dusumu: sarjin son %15'inde tuketim hizlanir (1x -> 2x). Gostergedeki "kalan" bu hizla hesaplanir.
+private _charge = (_unit getVariable ["TAC_nvg_charge", 100]);
+if (TAC_nvg_sag && {_charge < 15}) then {_rate = _rate * (2 - (_charge / 15))};
+
+_charge = (_charge - (_rate * _dt)) max 0;
 _unit setVariable ["TAC_nvg_charge", _charge];
 
 // Pil bitti

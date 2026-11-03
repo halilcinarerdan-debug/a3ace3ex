@@ -49,6 +49,39 @@ private _category = ["TAC - Gerçekçilik Paketi", "NVG Pili"];
     }
 ] call CBA_settings_fnc_init;
 
+// classname=çarpan çiftleri, ',' ile ayrılır. Takılı NVG (hmd) sınıfının pil tüketimini ölçekler.
+// Tabloda olmayan cihaz 1. Başka modların (RHS, CUP, TMT) gözlükleri de yazılabilir.
+[
+    "TAC_nvg_deviceTable",
+    "EDITBOX",
+    ["Cihaz tüketim çarpanı (classname=çarpan, ...)", "Takılı NVG'nin pil tüketimini ölçekler: 1 = normal, 1.5 = %50 fazla. Termal/füzyon gözlükler gibi daha çok çeken cihazlar için. Tabloda olmayan cihaz 1. Örn: NVGogglesB_blk_F=1.5"],
+    _category,
+    "NVGogglesB_blk_F=1.5, NVGogglesB_grn_F=1.5, NVGogglesB_gry_F=1.5",
+    true,
+    {
+        params ["_value"];
+        [_value] call TAC_fnc_nvgParseDeviceTable;
+    }
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_nvg_cold",
+    "CHECKBOX",
+    ["Soğukta pil kapasitesi düşsün", "ACE hava durumu açıksa 20 °C altında pil daha hızlı boşalır. Alkalin AA soğuktan çok etkilenir, lityum az. (ACE hava durumu yoksa 20 °C sayılır, etki olmaz.)"],
+    _category,
+    true,
+    true
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_nvg_sag",
+    "CHECKBOX",
+    ["Voltaj düşümü (son %15'te hızlı boşalma)", "Şarjın son %15'inde tüketim 1x'ten 2x'e hızlanır; pil bitmeden önce daha gerçekçi sert bir düşüş olur."],
+    _category,
+    true,
+    true
+] call CBA_settings_fnc_init;
+
 [
     "TAC_nvg_minutesPerHour",
     "SLIDER",

@@ -2,10 +2,10 @@
     Fonksiyon: TAC_fnc_nvgSwapBattery
     Çalışma yeri: İstemci
 
-    "NVG Pil Değiştir" eyleminin gövdesi. Envanterde pil yoksa uyarır. Cihaz açıksa önce
-    kapatılır (pil değiştirirken güç kesilir), sonra ayardaki süre kadar ACE ilerleme çubuğu
-    gösterilir. Süre dolunca TAC_fnc_nvgSwapFinish pili düşer ve şarjı %100 yapar.
-    Süre 0 ise anında yapılır.
+    "Pil tak / değiştir" alt menüsündeki bir pile tıklanınca çalışır. Seçilen pil envanterde
+    yoksa uyarır. Cihaz açıksa önce kapatılır (pil değiştirirken güç kesilir), sonra ayardaki süre
+    kadar ACE ilerleme çubuğu gösterilir. Süre dolunca TAC_fnc_nvgSwapFinish eski pili kalan
+    şarjıyla envantere iade eder, seçilen pili takar. Süre 0 ise anında yapılır.
 
     Çift başlatmayı önleyen "meşgul" işareti bir zaman damgasıdır (TAC_nvg_swapUntil): ilerleme
     çubuğu herhangi bir nedenle hiç bitmese bile süre dolunca kendiliğinden temizlenir, eylem
@@ -16,27 +16,28 @@
 
     Parametreler:
         0: OBJECT - oyuncu birimi
+        1: STRING - (isteğe bağlı) takılacak pilin classname'i; verilmezse envanterdeki en iyi pil
 
     Dönüş: yok
 */
 
-params [["_unit", objNull, [objNull]]];
+params [["_unit", objNull, [objNull]], ["_class", "", [""]]];
 
 if (isNull _unit) exitWith {};
 
 if (time < (_unit getVariable ["TAC_nvg_swapUntil", 0])) exitWith {};
 
-private _class = [_unit] call TAC_fnc_nvgFindBattery;
+if (_class isEqualTo "") then {_class = [_unit] call TAC_fnc_nvgFindBattery};
 
 diag_log format [
-    "[TAC][NVG] pil degistirme istendi | bulunan pil: '%1' | hmd: '%2' | sure: %3 sn",
+    "[TAC][NVG] pil degistirme istendi | secilen pil: '%1' | hmd: '%2' | sure: %3 sn",
     _class,
     hmd _unit,
     TAC_nvg_swapTime
 ];
 
-if (_class isEqualTo "") exitWith {
-    missionNamespace setVariable ["TAC_nvg_lastSwap", format ["t=%1 | BASLAMADI: envanterde tablodaki pil yok", round time]];
+if (_class isEqualTo "" || {!((toLower _class) in ((items _unit) apply {toLower _x}))}) exitWith {
+    missionNamespace setVariable ["TAC_nvg_lastSwap", format ["t=%1 | BASLAMADI: '%2' envanterde yok", round time, _class]];
     ["Envanterde NVG bataryası yok.", true] call TAC_fnc_nvgNotify;
 };
 
@@ -46,7 +47,7 @@ if (currentVisionMode _unit == 1) then {
 
 if (TAC_nvg_swapTime <= 0) exitWith {
     missionNamespace setVariable ["TAC_nvg_lastSwap", format ["t=%1 | anlik degistirme basladi (%2)", round time, _class]];
-    [_unit] call TAC_fnc_nvgSwapFinish;
+    [_unit, _class] call TAC_fnc_nvgSwapFinish;
 };
 
 _unit setVariable ["TAC_nvg_swapUntil", time + TAC_nvg_swapTime + 3];
@@ -54,13 +55,13 @@ missionNamespace setVariable ["TAC_nvg_lastSwap", format ["t=%1 | ilerleme cubug
 
 [
     TAC_nvg_swapTime,
-    [_unit],
+    [_unit, _class],
     {
         params ["_args"];
-        _args params ["_unit"];
+        _args params ["_unit", "_class"];
 
         diag_log "[TAC][NVG] ilerleme cubugu bitti, SwapFinish cagriliyor";
-        [_unit] call TAC_fnc_nvgSwapFinish;
+        [_unit, _class] call TAC_fnc_nvgSwapFinish;
     },
     {
         params ["_args"];

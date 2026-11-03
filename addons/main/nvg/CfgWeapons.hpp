@@ -1,11 +1,22 @@
 // Pil omru (saat) bu dosyada degil, CBA ayarindaki "Pil tablosu"nda tutulur.
+// Ozel config alanlari:
+//   TAC_base   : pilin ait oldugu ana sinif (pil tablosundaki ad). Kismen kullanilmis pil de ayni ana siniftandir.
+//   TAC_charge : bu esyanin tasidigi sarj (0..1). Ana siniflar 1 (dolu).
+//   TAC_coldK  : soguk hassasiyeti. Kapasite = 1 - TAC_coldK * (20 - sicaklik C), 0.25 alt sinir.
+// Kismen kullanilmis piller sabit kademelerdir (%75 / %50 / %25 / %10); cikarilan pil sarjina gore
+// asagi yuvarlanan kademeye doner, %7 altindaki pil "bitik" olur. Arsenal'de gorunmezler.
+#define TAC_TIER(CLS,PARENT,BASE,FRAC,NAME) class CLS: PARENT { displayName = NAME; TAC_base = BASE; TAC_charge = FRAC; scopeArsenal = 0; scopeCurator = 0; };
+
 class TAC_NVGBattery: CBA_MiscItem
 {
     author = "TAC";
     scope = 2;
     displayName = "NVG Bataryasi (AA)";
-    descriptionShort = "AN/PVS-14 tipi gece gorusu icin AA pil.<br/>Kullanmak icin: ACE self-menu > NVG Pil Degistir.";
+    descriptionShort = "AN/PVS-14 tipi gece gorusu icin AA pil. Soguga duyarli.<br/>Kullanmak icin: ACE self-menu > NVG Pili.";
     picture = "\a3\ui_f\data\gui\rsc\rscdisplayarsenal\itemacc_ca.paa";
+    TAC_base = "TAC_NVGBattery";
+    TAC_charge = 1;
+    TAC_coldK = 0.012;
 
     class ItemInfo: CBA_MiscItem_ItemInfo
     {
@@ -13,8 +24,30 @@ class TAC_NVGBattery: CBA_MiscItem
     };
 };
 
+TAC_TIER(TAC_NVGBattery_p75,TAC_NVGBattery,"TAC_NVGBattery",0.75,"NVG Bataryasi (AA) ~%75")
+TAC_TIER(TAC_NVGBattery_p50,TAC_NVGBattery,"TAC_NVGBattery",0.5,"NVG Bataryasi (AA) ~%50")
+TAC_TIER(TAC_NVGBattery_p25,TAC_NVGBattery,"TAC_NVGBattery",0.25,"NVG Bataryasi (AA) ~%25")
+TAC_TIER(TAC_NVGBattery_p10,TAC_NVGBattery,"TAC_NVGBattery",0.1,"NVG Bataryasi (AA) ~%10")
+
 class TAC_NVGBattery_Lithium: TAC_NVGBattery
 {
     displayName = "NVG Bataryasi (AA Lityum)";
-    descriptionShort = "Uzun omurlu lityum AA pil. Omru CBA ayarlarindaki Pil tablosundan degistirilir.<br/>Kullanmak icin: ACE self-menu > NVG Pil Degistir.";
+    descriptionShort = "Uzun omurlu lityum AA pil, soguktan az etkilenir. Omru CBA ayarlarindaki Pil tablosundan degistirilir.<br/>Kullanmak icin: ACE self-menu > NVG Pili.";
+    TAC_base = "TAC_NVGBattery_Lithium";
+    TAC_coldK = 0.003;
+};
+
+TAC_TIER(TAC_NVGBattery_Lithium_p75,TAC_NVGBattery_Lithium,"TAC_NVGBattery_Lithium",0.75,"NVG Bataryasi (AA Lityum) ~%75")
+TAC_TIER(TAC_NVGBattery_Lithium_p50,TAC_NVGBattery_Lithium,"TAC_NVGBattery_Lithium",0.5,"NVG Bataryasi (AA Lityum) ~%50")
+TAC_TIER(TAC_NVGBattery_Lithium_p25,TAC_NVGBattery_Lithium,"TAC_NVGBattery_Lithium",0.25,"NVG Bataryasi (AA Lityum) ~%25")
+TAC_TIER(TAC_NVGBattery_Lithium_p10,TAC_NVGBattery_Lithium,"TAC_NVGBattery_Lithium",0.1,"NVG Bataryasi (AA Lityum) ~%10")
+
+class TAC_NVGBattery_Dead: TAC_NVGBattery
+{
+    displayName = "Bitik NVG Bataryasi";
+    descriptionShort = "Bosalmis pil. Artik kullanilamaz.";
+    TAC_base = "TAC_NVGBattery_Dead";
+    TAC_charge = 0;
+    scopeArsenal = 0;
+    scopeCurator = 0;
 };

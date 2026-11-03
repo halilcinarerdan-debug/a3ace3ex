@@ -2,7 +2,7 @@
     Fonksiyon: TAC_fnc_nvgDebug
     Çalışma yeri: İstemci (debug konsolu: "Yerel çalıştır")
 
-    NVG pil sisteminin anlık durumunu ve "NVG Pil Değiştir" eyleminin neden görünüp
+    NVG pil sisteminin anlık durumunu ve NVG pil menüsünün neden görünüp
     görünmediğini döker. Çıktı üç yere gider: ekranda hint, RPT ("[TAC][NVG-DEBUG]") ve
     panoya (Ctrl+V ile yapıştırılabilir).
 
@@ -45,6 +45,8 @@ private _lines = [
     format ["Pil tablosu (cozulen): %1", TAC_nvg_batteryList],
     format ["Sarj: %1 | takili pil: '%2' | dusuk uyari: %3", _unit getVariable ["TAC_nvg_charge", 100], _unit getVariable ["TAC_nvg_installedClass", ""], _unit getVariable ["TAC_nvg_lowWarned", false]],
     format ["Dongu (PFH): %1 | test modu: %2 (x%3) | degistirme suresi: %4 sn | dk/saat: %5 | esik: %6", missionNamespace getVariable ["TAC_nvg_pfh", -1], TAC_nvg_testMode, TAC_nvg_testSpeed, TAC_nvg_swapTime, TAC_nvg_minutesPerHour, TAC_nvg_lowThreshold],
+    format ["Pil var: %1 | envanterdeki piller [sinif, ana, sarj, adet]: %2", _unit getVariable ["TAC_nvg_hasBattery", true], [_unit] call TAC_fnc_nvgListBatteries],
+    format ["Tuketim carpani: %1 (cihaz tablosu: %2 | soguk: %3 | sicaklik: %4 C | voltaj dusumu: %5)", [_unit] call TAC_fnc_nvgDrainFactor, TAC_nvg_deviceTable, TAC_nvg_cold, missionNamespace getVariable ["ace_weather_currentTemperature", "ACE hava durumu yok (20)"], TAC_nvg_sag],
     format ["Config: TAC_NVGBattery %1 (scope %2) | TAC_NVGBattery_Lithium %3", isClass (configFile >> "CfgWeapons" >> "TAC_NVGBattery"), getNumber (configFile >> "CfgWeapons" >> "TAC_NVGBattery" >> "scope"), isClass (configFile >> "CfgWeapons" >> "TAC_NVGBattery_Lithium")]
 ];
 

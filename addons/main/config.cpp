@@ -15,12 +15,12 @@ class CfgPatches
         author = "TAC";
         url = "";
         units[] = {};
-        weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium"};
+        weapons[] = {"TAC_NVGBattery", "TAC_NVGBattery_Lithium", "TAC_NVGBattery_p75", "TAC_NVGBattery_p50", "TAC_NVGBattery_p25", "TAC_NVGBattery_p10", "TAC_NVGBattery_Lithium_p75", "TAC_NVGBattery_Lithium_p50", "TAC_NVGBattery_Lithium_p25", "TAC_NVGBattery_Lithium_p10", "TAC_NVGBattery_Dead"};
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu"};
-        version = 0.7;
-        versionStr = "0.7.4";
-        versionAr[] = {0,7,4};
+        version = 0.8;
+        versionStr = "0.8.0";
+        versionAr[] = {0,8,0};
     };
 };
 

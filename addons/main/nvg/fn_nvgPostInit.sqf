@@ -3,7 +3,8 @@
     Çalışma yeri: İstemci (XEH_postInit.sqf çağırır)
 
     NVG pili modülünün istemci tarafı kurulumu:
-      1. ACE self-action: "NVG Pil Değiştir" (sınıfa bir kez eklenir, respawn'da yeniden gerekmez).
+      1. ACE self-menu "NVG Pili": Pil durumu / Pil tak (dinamik liste) / Pili çıkar (sınıfa bir kez
+         eklenir, respawn'da yeniden gerekmez).
       2. CBA oyuncu olayı "visionMode": NVG açılınca tüketimi başlatır, kapanınca durdurur.
          Sürekli döngü yok; tüketim yalnızca NVG açıkken çalışan bir PFH ile yürür.
       3. CBA oyuncu olayı "unit": birim değişince (respawn) PFH ve efektleri temizler.
@@ -14,31 +15,107 @@
 */
 
 // ----------------------------------------------------------------------------
-// 1. ACE: NVG Pil Değiştir
+// 1. ACE self-menu: NVG Pili (klasor) > Pil durumu | Pil tak / değiştir (dinamik) | Pili çıkar
 // ----------------------------------------------------------------------------
-// Görünme koşulu: sistem açık, oyuncu hayatta/bilinci yerinde, NVG takılı ve envanterde
-// pil tablosundaki pillerden biri var (hangisinin kullanılacağı tablo sırasına göre).
-private _swapAction = [
-    "TAC_nvg_swap",
-    "NVG Pil Değiştir",
-    "\a3\ui_f\data\gui\rsc\rscdisplayarsenal\nvgs_ca.paa",
-    {
-        params ["_target", "_player"];
-        [_player] call TAC_fnc_nvgSwapBattery;
-    },
+// Klasör görünme koşulu: sistem açık, oyuncu hayatta/bilinci yerinde, NVG takılı.
+// "Pil tak" alt menüsü envanterdeki her pil türünü (ve kısmen kullanılmış kademeleri) ayrı satır olarak
+// listeler; seçilen pil takılır, eski pil kalan şarjıyla envantere döner.
+private _icon = "\a3\ui_f\data\gui\rsc\rscdisplayarsenal\nvgs_ca.paa";
+
+private _menu = [
+    "TAC_nvg_menu",
+    "NVG Pili",
+    _icon,
+    {},
     {
         params ["_target", "_player"];
 
         TAC_nvg_enabled
         && {alive _player}
         && {!(_player getVariable ["ACE_isUnconscious", false])}
-        && {time >= (_player getVariable ["TAC_nvg_swapUntil", 0])}
         && {!((hmd _player) isEqualTo "")}
-        && {!(([_player] call TAC_fnc_nvgFindBattery) isEqualTo "")}
     }
 ] call ace_interact_menu_fnc_createAction;
 
-["CAManBase", 1, ["ACE_SelfActions"], _swapAction, true] call ace_interact_menu_fnc_addActionToClass;
+["CAManBase", 1, ["ACE_SelfActions"], _menu, true] call ace_interact_menu_fnc_addActionToClass;
+
+private _status = [
+    "TAC_nvg_status",
+    "Pil durumu",
+    "",
+    {
+        params ["_target", "_player"];
+        [_player] call TAC_fnc_nvgStatus;
+    },
+    {true}
+] call ace_interact_menu_fnc_createAction;
+
+["CAManBase", 1, ["ACE_SelfActions", "TAC_nvg_menu"], _status, true] call ace_interact_menu_fnc_addActionToClass;
+
+private _insert = [
+    "TAC_nvg_insert",
+    "Pil tak / değiştir",
+    "",
+    {},
+    {
+        params ["_target", "_player"];
+
+        time >= (_player getVariable ["TAC_nvg_swapUntil", 0])
+        && {!(([_player] call TAC_fnc_nvgListBatteries) isEqualTo [])}
+    },
+    {
+        params ["_target", "_player"];
+
+        private _actions = [];
+
+        {
+            _x params ["_class", "", "_levelFrac", "_count"];
+
+            private _label = format [
+                "%1 (x%2)",
+                getText (configFile >> "CfgWeapons" >> _class >> "displayName"),
+                _count
+            ];
+
+            private _child = [
+                format ["TAC_nvg_insert_%1", _class],
+                _label,
+                "",
+                {
+                    params ["_target", "_player", "_class"];
+                    [_player, _class] call TAC_fnc_nvgSwapBattery;
+                },
+                {true},
+                {},
+                _class
+            ] call ace_interact_menu_fnc_createAction;
+
+            _actions pushBack [_child, [], _target];
+        } forEach ([_player] call TAC_fnc_nvgListBatteries);
+
+        _actions
+    }
+] call ace_interact_menu_fnc_createAction;
+
+["CAManBase", 1, ["ACE_SelfActions", "TAC_nvg_menu"], _insert, true] call ace_interact_menu_fnc_addActionToClass;
+
+private _remove = [
+    "TAC_nvg_remove",
+    "Pili çıkar",
+    "",
+    {
+        params ["_target", "_player"];
+        [_player] call TAC_fnc_nvgRemoveBattery;
+    },
+    {
+        params ["_target", "_player"];
+
+        time >= (_player getVariable ["TAC_nvg_swapUntil", 0])
+        && {_player getVariable ["TAC_nvg_hasBattery", true]}
+    }
+] call ace_interact_menu_fnc_createAction;
+
+["CAManBase", 1, ["ACE_SelfActions", "TAC_nvg_menu"], _remove, true] call ace_interact_menu_fnc_addActionToClass;
 
 // ----------------------------------------------------------------------------
 // 2. NVG açma / kapama

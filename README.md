@@ -216,7 +216,32 @@ Pil, envanterdeki **NVG Bataryası** eşyasıyla ACE self-menüsünden değişti
 - **Düşük pil:** şarj eşiğin (varsayılan %20) altına inince `şiddet = 1 − şarj/eşik` (eşikte 0, şarj 0'da 1).
   Şiddet arttıkça parazit (FilmGrain) güçlenir, kalıcı kararma artar ve ani sönmeler (flicker) sıklaşıp derinleşir.
 - **Pil bitince** (%0) NVG kapanır ve yeni pil takılana kadar açılmaz.
-- **NVG Pil Değiştir** (ACE self-menü): NVG takılıyken ve envanterde tablodaki bir pil varken görünür. Cihaz kapatılır, ilerleme çubuğu dolar, eski pil atılır, yenisi envanterden düşer, şarj %100 olur.
+- **ACE self-menü > NVG Pili** (NVG takılıyken görünür):
+  - **Pil durumu:** takılı pilin şarjı, tahmini kalan kullanım (pil saati ve oyunda dakika), tüketim çarpanı ve envanterdeki yedek piller. Yazı kartı, ayrı pencere yok.
+  - **Pil tak / değiştir:** envanterdeki her pil türü (ve kısmen kullanılmış kademe) ayrı satır. Seçilen takılır, **eski pil kalan şarjıyla envantere geri döner** (yer yoksa yere düşer).
+  - **Pili çıkar:** pil söküldüğünde NVG pilsiz kalır, yeni pil takılana kadar açılmaz.
+
+### Kısmen kullanılmış piller (v0.8)
+
+Eşyalar şarj tutamadığı için sökülen pil, kalan şarjına göre **kademeli sınıfa** döner. Kademeler her zaman **aşağı** yuvarlanır (pil bedava yenilenemez):
+
+| Kalan şarj | Envantere dönen |
+|-----------|-----------------|
+| %97+ | dolu pil (ana sınıf) |
+| %72-97 | `..._p75` (~%75) |
+| %47-72 | `..._p50` (~%50) |
+| %22-47 | `..._p25` (~%25) |
+| %7-22 | `..._p10` (~%10) |
+| %7 altı | `TAC_NVGBattery_Dead` (bitik pil, kullanılamaz) |
+
+Kademe sınıfları (`TAC_NVGBattery_p50`, `TAC_NVGBattery_Lithium_p25` ...) arsenal'de gizlidir. Başka modların pilleri pil tablosuna yazılabilir ama kademesi yoktur:
+%97 üstü iade edilir, altı tükenmiş sayılıp atılır. Config alanları: `TAC_base` (ana sınıf), `TAC_charge` (taşıdığı şarj), `TAC_coldK` (soğuk hassasiyeti).
+
+### Gerçekçilik ayarları (v0.8)
+
+- **Cihaz tüketim çarpanı** (`TAC_nvg_deviceTable`, `classname=çarpan, ...`): takılı NVG'nin pil tüketimini ölçekler. Varsayılan: ENVG tipi gözlükler (`NVGogglesB_*_F`) 1.5. Tabloda olmayan cihaz 1.
+- **Soğukta kapasite** (`TAC_nvg_cold`): ACE hava durumu açıksa `kapasite = 1 - TAC_coldK x (20 - sıcaklık)` (alt sınır 0.25), tüketim `1/kapasite` katına çıkar. Alkalin 0.012 (0 °C'de ~%76), lityum 0.003. ACE hava durumu yoksa 20 °C sayılır, etkisizdir.
+- **Voltaj düşümü** (`TAC_nvg_sag`): şarjın son %15'inde tüketim 1x'ten 2x'e hızlanır.
 
 ### Pil eşyaları ve sınıf bazlı ömür
 
@@ -245,6 +270,9 @@ Pili almak için: Arsenal/loadout veya `player addItem "TAC_NVGBattery"`. Missio
 | `TAC_nvg_enabled` | açık | global |
 | `TAC_nvg_batteryHours` | 40 sa (1–100): başlangıç/tabloda olmayan pil | global |
 | `TAC_nvg_batteryTable` | `TAC_NVGBattery=40, TAC_NVGBattery_Lithium=60` | global |
+| `TAC_nvg_deviceTable` | `NVGogglesB_blk_F=1.5, NVGogglesB_grn_F=1.5, NVGogglesB_gry_F=1.5` | global |
+| `TAC_nvg_cold` | açık | global |
+| `TAC_nvg_sag` | açık | global |
 | `TAC_nvg_minutesPerHour` | 1 (0.1–60): 1 pil saati = kaç gerçek dk | global |
 | `TAC_nvg_lowThreshold` | %20 | global |
 | `TAC_nvg_noiseMax` | 0.8 (0–2) | global |
@@ -287,7 +315,10 @@ Kalan: 25 sn
    ```
 2. Addon Options'ta **Test modu**nu aç (×60). `N` ile NVG'yi aç: "NVG pili: 100%" bildirimi ve test göstergesi gelmeli, şarj düşmeli.
 3. Şarj %20'nin altına inince "NVG pili zayıf" uyarısı, parazit ve kararma/flicker başlamalı; %0'da NVG kapanmalı. `N` ile tekrar açmayı dene: açılmamalı ("NVG pili bitmiş").
-4. `Ctrl + Sol Windows` → **NVG Pil Değiştir** → ilerleme çubuğu → şarj %100, envanterden bir pil düşmeli, efektler kaybolmalı. Hangi pilin takıldığını test göstergesindeki `Pil:` satırından gör.
+4. `Ctrl + Sol Windows` → **NVG Pili** → **Pil tak / değiştir** → listeden bir pil → ilerleme çubuğu → şarj pilin taşıdığı değere ayarlanmalı, seçilen pil envanterden düşmeli, **eski pil kalan şarjına uygun kademede envantere dönmeli** (ör. %50 kalmışsa "~%50"). Hangi pilin takıldığını test göstergesindeki `Pil:` satırından gör.
+4b. **Pili çıkar:** NVG pilsiz kalır, `N` ile açılmaz; pil envantere kalan şarjıyla döner. **Pil durumu** kartı şarjı ve yedekleri göstermeli.
+4c. **Kısmi pil:** `player addItem "TAC_NVGBattery_p50"` ile ~%50'lik pil ekle, tak: şarj %50 olmalı. Şarjı `ACE_player setVariable ["TAC_nvg_charge", 3]` ile %3 yapıp pili çıkar: "bitik pil" gelmeli.
+4d. **Soğuk:** `ace_weather_currentTemperature = -10` ile (`call TAC_fnc_nvgDebug` çarpanı gösterir) alkalin pilde tüketim ~1.5x, lityumda ~1.04x olmalı.
 5. **Sınıf bazlı ömür:** envanterden `TAC_NVGBattery`'yi at (`player removeItem "TAC_NVGBattery"`), lityumu tak ve ömrün 60 sn göründüğünü doğrula. Tablodaki sayıyı değiştirip (`TAC_NVGBattery=20, ...`) ömrün değiştiğini gör. Tablodaki sıranın önceliği: iki pil varken ilk yazılan takılır.
 6. Hızlı manuel kontrol: `ACE_player setVariable ["TAC_nvg_charge", 22];` ile şarjı doğrudan ayarlayıp eşiği test et. Şarjı okumak için: `ACE_player getVariable ["TAC_nvg_charge", 100]`.
 7. Test modunu kapatıp `TAC_nvg_minutesPerHour`'u küçültmek de (örn. 0.1) gerçek formülü hızlı doğrular.
