@@ -70,7 +70,7 @@ if (TAC_opt_enabled && {!(_optic isEqualTo "")} && {[_optic] call TAC_fnc_optIsS
 // --- Ariza ------------------------------------------------------------------
 if (isNil "ace_overheating_fnc_jamWeapon") exitWith {};
 
-private _p = [_state, _env] call TAC_fnc_wpnJamChance;
+private _p = [_state, _env, _weapon] call TAC_fnc_wpnJamChance;
 
 if (random 1 >= _p) exitWith {};
 if (_weapon in (_unit getVariable ["ace_overheating_jammedWeapons", []])) exitWith {};

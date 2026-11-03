@@ -6,7 +6,8 @@
     sunucudan istemcilere senkronlanır ve sunucu "force" edebilir.
 
     Model: her silahın (birim + silah sınıfı) kir, yağ ve aşınma durumu vardır. Kir ve yağ atışla,
-    ortama göre değişir; arıza ihtimali bunlardan hesaplanır ve ACE'nin kendi arıza sistemine
+    ortama göre değişir; arıza ihtimali silahın gerçek güvenilirlik verisinden (MRBS, TAC_fnc_wpnProfile)
+    ve bu durumdan hesaplanır ve ACE'nin kendi arıza sistemine
     (ace_overheating_fnc_jamWeapon) verilir. ACE'nin ısıya bağlı arızası ayrıca çalışmaya devam eder.
 
     Parametreler: yok
@@ -43,12 +44,25 @@ private _category = ["TAC - Gerçekçilik Paketi", "Silah bakım ve arıza"];
 ] call CBA_settings_fnc_init;
 
 [
-    "TAC_wpn_jamMax",
+    "TAC_wpn_jamScale",
     "SLIDER",
-    ["Maksimum arıza ihtimali (atış başına %)", "Tamamen kirli silahta atış başına arıza ihtimali. Gerçek ihtimal kirle üstel artar: %50 kirde bunun yaklaşık %18'i. Temiz ve yağlı silahta ihtimal ihmal edilebilir."],
+    ["Arıza ihtimali ölçeği", "1 = gerçek güvenilirlik verisi (temiz silahta M4 ~3600, AK ~5000, M240 ~2900, M60 ~850 atışta bir tıkanma). Oyunu zorlaştırmak için artır (5 = 5 kat sık arıza). Kir/yağ/aşınma etkisi de bu ölçekle çarpılır."],
     _category,
-    [0, 20, 3, 1],
+    [0.1, 20, 1, 1],
     true
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_wpn_mrbsTable",
+    "EDITBOX",
+    ["MRBS tablosu (classname=MRBS, ...)", "Bir silahın temiz-yağlı iki tıkanma arası ortalama atışını (MRBS) elle ata; yerleşik tabloyu ezer. Virgülle ayır. Örn: rhs_weap_m4a1=2500, CUP_arifle_AK74=4000"],
+    _category,
+    "",
+    true,
+    {
+        params ["_value"];
+        [_value] call TAC_fnc_wpnParseMrbsTable;
+    }
 ] call CBA_settings_fnc_init;
 
 [

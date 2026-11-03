@@ -101,7 +101,8 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
         fn_wpnInitSettings.sqf           CBA ayarları
         fn_wpnPostInit.sqf               "unit" olayı, ace_weaponJammed dinleyicisi, ACE "Silah Bakımı" menüsü
         fn_wpnOnFired.sqf                her atışta kir/yağ/aşınma + arıza zarı (oyuncuya bağlı Fired)
-        fn_wpnJamChance.sqf              arıza ihtimali formülü
+        fn_wpnJamChance.sqf              arıza ihtimali formülü (1/MRBS x durum x ortam)
+        fn_wpnProfile.sqf                silah başına gerçek güvenilirlik profili (MRBS, kir / yağ duyarlılığı)
         fn_wpnCategory.sqf / fn_wpnGetState.sqf / fn_wpnEnvFactor.sqf   kategori, durum, ortam
         fn_wpnClean / wpnLube / wpnClearJam / wpnReplaceParts / wpnInspect   bakım eylemleri ve kart
     mg/                                  7. özellik
@@ -583,14 +584,63 @@ Arıza ihtimali bunlardan hesaplanır ve **ACE'nin kendi arıza sistemine** veri
 
 | Değer | Artış / azalış | Etkisi |
 |-------|----------------|--------|
-| **Kir** 0-100 | atış başına `kirlenme hızı/1000 x kategori x ortam x susturucu`. Tüfek 1, MG x1.3, tabanca x0.5 | arıza ihtimali `Pmax x (kir/100)^2.5`: temizken ihmal edilebilir, kirlendikçe hızla artar |
+| **Kir** 0-100 | atış başına `kirlenme hızı/1000 x kategori x ortam x susturucu`. Tüfek 1, MG x1.3, tabanca x0.5 | arıza çarpanına `kir duyarlılığı x 40 x (kir/100)^2.5` eklenir: temizken ihmal edilebilir, kirlendikçe hızla artar |
 | **Yağ** 0-100 | atış başına azalır, yağlayınca +65 | %30 altı sürtünme arızaları; %90 üstü aşırı yağlı: tozda daha çok kirlenir |
-| **Aşınma** (atış) | her atış +1 | `Pmax x 0.5 x (aşınma/ömür)^3` eklenir; yalnızca silahçı parça değiştirerek sıfırlar |
+| **Aşınma** (atış) | her atış +1 | çarpana `6 x (aşınma/ömür)^3` eklenir; yalnızca silahçı parça değiştirerek sıfırlar |
 
 Arıza türü nedene göre ağırlıklanır: kir -> besleme / kovan atma, düşük yağ ve aşınma -> kovan çıkarma, küçük sabit pay -> kusurlu mühimmat.
 Ortam çarpanı (3 sn önbellekli, atış başına hesaplanmaz): yağmur +0.4 x şiddet, sığ suda +0.8, tozlu/çamurlu zeminde yatarken +0.6 (çömelirken +0.2).
 
 **Kategori** config'ten otomatik: birincil silah, şarjör/kayış kapasitesi (`magazines` + `magazineWell`) `MG eşiği`ni (60) aşıyorsa **MG** (daha çok kirlenir, temizlik 45 sn), değilse tüfek (25 sn); tabanca 15 sn. Yanlış sınıflananı `MG olarak zorla` tablosuna yaz. Fırlatıcı ve bomba takip edilmez.
+
+### Güvenilirlik verisi: gerçekçi arıza oranları (silah ve kalibre başına)
+
+Arıza ihtimali artık sabit bir sayı değil, **silahın gerçek güvenilirlik verisine (MRBS)** dayanır:
+
+```
+atış başına arıza ihtimali = (1 / MRBS) x durum çarpanı x ortam x genel ölçek
+durum çarpanı = 1 + kir duyarlılığı x 40 x (kir/100)^2.5 + yağ duyarlılığı x 10 x ((30 - yağ)/30)^2 + 6 x (aşınma/ömür)^3
+```
+
+**MRBS** (Mean Rounds Between Stoppages), temiz, yağlı, yeni silahta iki tıkanma arası ortalama atıştır. Temiz silahta ihtimal tam 1/MRBS'tir (M4'te atış başına ~%0.028).
+**Kir duyarlılığı**, tam kirli silahta MRBS'in ne kadar çöktüğünü belirler (çarpan = 1 + duyarlılık x 40); 40 değeri ABD Ordusu 2007 aşırı toz testinden türetildi (aşağıda).
+`Arıza ihtimali ölçeği` 1 = gerçek; oyunu zorlaştırmak için artır (gerçek MRBS binlerce atış olduğu için normal bir görevde pek arıza görmezsin; kirlendikçe/yağsız kalınca belirginleşir).
+Bilinmeyen silahlar için **kalibre** (ilk şarjörün mühimmat adından) ve **kategori** (tüfek / MG / tabanca) genel değerleri kullanılır; yerleşik tablonun gerçek RHS/CUP sınıf adlarına karşı doğruluğu ACE'nin uyumluluk yamalarındaki sınıf listesiyle sınandı.
+
+| Silah ailesi (örnek sınıflar) | Temiz MRBS | Kir duyarlılığı | Veri kalitesi |
+|-------------------------------|-----------:|----------------:|---------------|
+| M16A2/A4 (`rhs_weap_m16a4`, `CUP_arifle_M16*`), M4/M4A1/Mk18 | 3600 | 1.0 | **kaynak**: M4A1 + M855 taban değeri 3.592 MRBS; aşırı tozda M4 ~68-195 |
+| M16A1 / XM16E1 | 1500 | 1.2 | tahmin (erken hizmet sorunları) |
+| HK416 / M27 | 4500 | 0.41 | **kaynak**: aşırı tozda ~257 MRBS |
+| FN SCAR (Mk16/17/H/L) | 4000 | 0.35 | **kaynak**: aşırı tozda ~265 MRBS |
+| XM8 | 5000 | 0.24 | **kaynak**: aşırı tozda ~472 MRBS |
+| G36, L85A2, G3/HK417, FAL, M14, SR-25 | 4000, 2500, 4000, 3500, 3000, 3200 | 0.4-0.9 | tahmin |
+| AK ailesi (AKM, AK-74, AK-12, Vz.58, Galil...) | 5000 | 0.25 | tahmin (resmi sayı yok; itibar + tek tüfek günlükleri) |
+| M240 / Mk48 | 2900 | 0.55 | **kaynak**: 2002 testinde 2.962 MRBS |
+| M60 | 850 | 0.6 | **kaynak**: 2002 testinde 846 MRBS |
+| M249 / Minimi | 1000 | 0.6 | tahmin (kullanıcılar M60'tan az güvenilir buluyor ama sayı yok) |
+| PKM / PKP / Zafir | 3000 | 0.35 | tahmin |
+| MG3 / MG42 | 2500 | 0.5 | tahmin |
+| Beretta M9 | 5000 | 0.5 | tahmin: Beretta 17.500 iddia ediyor, ABD MHS şartı 2.000; ortası alındı |
+| Glock 17/19 | 6000 | 0.4 | tahmin |
+| M1911 / .45 ACP | 2500 | 0.7 | tahmin |
+| Makarov / TT | 4000 | 0.3 | tahmin |
+| Sürgülü tüfekler | 15000 | 0.2 | tahmin |
+| Kalibre genel değerleri (kayıt yoksa) | tüfek 5.56: 3200, 7.62x39: 4500, 7.62/6.5: 3500; MG 5.56: 1000, 7.62: 2500; ağır: 2000; tabanca: 4000 | 0.3-0.6 | tahmin |
+
+**Dürüst not:** gerçekten yayımlanmış sayı bulabildiklerim yalnızca M16/M4 (taban değer ve aşırı toz testi), HK416, SCAR-L, XM8 (aşırı toz testi), M240 ve M60 (2002 testi). Diğerleri yayımlanmış veri bulunamadığı için bilinen itibar ve aile benzerliğine göre
+**tahmin**dir ve tabloda öyle işaretlidir. Aşırı toz testinin kendisi tartışmalıdır: Ordu'nun kendi sunumunda iki koşuda M4 için 296 ve 863 tıkanma çıkmış, yani protokol tekrarlanabilir değil. Rakamlar oyun dengesi için makul bir başlangıçtır, kesin bilgi değildir.
+Beğenmediğin bir değeri CBA'daki `MRBS tablosu` ayarına `classname=MRBS` yazarak (ör. `rhs_weap_m4a1=2500, CUP_arifle_AK74=4000`) ezebilirsin; Silahı incele kartında silahçı, silahın profilini (etiket, MRBS, kalite) görür.
+
+**Kaynaklar:**
+[M4 aşırı toz testi (The Firearm Blog)](https://www.thefirearmblog.com/blog/2007/12/19/m4-beaten-by-piston-carbines/) ·
+[M4 toz testi tartışması (ShadowSpear)](https://shadowspear.com/threads/m4-carbine-fares-poorly-in-dust-test.1667/) ·
+[Ordu: M4A1 3.592 MRBS şartı (Military.com, 2013)](https://365.military.com/daily-news/2013/06/14/army-gun-makers-didnt-meet-reliability-standard.html) ·
+[Improved Carbine yarışması (Breaking Defense, 2013)](https://breakingdefense.com/2013/06/army-killed-new-carbine-because-it-wasnt-twice-as-good-as-current-m4/2/) ·
+[M60 / M240 2002 testi (StrategyPage)](https://www.strategypage.com/htmw/htweap/articles/20021218.aspx) ·
+[M240 / M60 güvenilirlik (SA Defense Journal)](https://sadefensejournal.com/?p=164) ·
+[M17/M9 güvenilirlik şartları (Military.com, 2019)](https://365.military.com/kitup/2019/02/21/pentagon-says-design-fixes-improve-reliability-new-army-service-pistol.html) ·
+[AK işkence testleri (Thin Line wiki)](https://thinlineweapons.com/wiki/index.php/Torture_Testing)
 
 ### ACE self-menü > Silah Bakımı
 
@@ -618,7 +668,8 @@ Eşyalar: `TAC_WeaponCleaningKit`, `TAC_WeaponOil`, `TAC_WeaponSpareParts`. Hede
 | `TAC_wpn_enabled` | açık |
 | `TAC_wpn_dirtRate` (1000 atışta kir %) | 60 |
 | `TAC_wpn_lubeLoss` (1000 atışta yağ kaybı %) | 50 |
-| `TAC_wpn_jamMax` (tam kirli silahta atış başına arıza %) | 3 |
+| `TAC_wpn_jamScale` (arıza ihtimali ölçeği; 1 = gerçek MRBS) | 1 |
+| `TAC_wpn_mrbsTable` (elle MRBS: `classname=MRBS, ...`) | boş |
 | `TAC_wpn_wearLife` (parça ömrü, atış) | 15000 |
 | `TAC_wpn_suppressorMult` | 1.6 |
 | `TAC_wpn_env` (ortam etkisi) | açık |

@@ -92,11 +92,14 @@ if (_jammedNow) then {
 };
 
 if ([_unit] call TAC_fnc_wpnIsArmorer) then {
-    private _p = [_state, 1] call TAC_fnc_wpnJamChance;
+    private _p = [_state, 1, _weapon] call TAC_fnc_wpnJamChance;
 
     _lines pushBack "<t color='#88ccff'>Silahçı değerleri</t>";
     _lines pushBack format ["Kir %1%% | yağ %2%% | aşınma %3%%", round _dirt, round _lube, round (_wearRatio * 100)];
+    private _profile = [_weapon] call TAC_fnc_wpnProfile;
+
     _lines pushBack format ["Arıza ihtimali: 100 atışta ~%1 (ortam hariç)", (round (_p * 10000)) / 100];
+    _lines pushBack format ["Güvenilirlik profili: %1 | temiz MRBS ~%2 (%3)", _profile select 3, _profile select 0, _profile select 4];
 };
 
 [_lines joinString "<br/>"] call ace_common_fnc_displayTextStructured;

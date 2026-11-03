@@ -11,6 +11,8 @@ class weapon
     class wpnGetState {};
     class wpnEnvFactor {};
     class wpnJamChance {};
+    class wpnProfile {};
+    class wpnParseMrbsTable {};
     class wpnParseMgTable {};
     class wpnTargetWeapon {};
     class wpnIsArmorer {};
