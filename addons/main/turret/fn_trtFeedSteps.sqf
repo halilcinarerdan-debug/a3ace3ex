@@ -25,7 +25,7 @@ private _mags = getArray (_cfg >> "magazines");
 if (_mags isEqualTo [] && {!isNull _veh}) then {_mags = _veh magazinesTurret [0]};
 
 private _ammo = toLower (if (_mags isEqualTo []) then {""} else {getText (configFile >> "CfgMagazines" >> (_mags select 0) >> "ammo")});
-private _hit = {params ["_list"]; (_list findIf {(_key find _x) >= 0 || {(_ammo find _x) >= 0}}) >= 0};
+private _hit = {private _list = _this; (_list findIf {(_key find _x) >= 0 || {(_ammo find _x) >= 0}}) >= 0};
 
 if (["m2hb", "m2_", "_m2", "browning", "127x99"] call _hit) exitWith {
     [["Besleme kapağını aç", 2], ["Kayışı yerleştir (açık yan aşağı)", 3], ["Kapağı kapat", 1.5], ["Sürgü kolunu iki kez çek", 3], ["Boşluk (headspace) ve zamanlama kontrolü", 3]]

@@ -117,7 +117,7 @@ if (_profile isEqualTo []) then {
     } forEach (getArray (_cfg >> "magazineWell"));
 
     private _ammo = if (_mags isEqualTo []) then {""} else {toLower (getText (configFile >> "CfgMagazines" >> (_mags select 0) >> "ammo"))};
-    private _has = {params ["_list"]; _list findIf {(_ammo find _x) >= 0} >= 0};
+    private _has = {private _list = _this; _list findIf {(_ammo find _x) >= 0} >= 0};
 
     _profile = switch (true) do {
         case (_catName isEqualTo "pistol"): {[4000, 0.5, 0.5, "Tabanca (kalibreye göre)", "tahmin"]};
