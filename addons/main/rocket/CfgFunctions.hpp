@@ -18,7 +18,8 @@ class rocket
     class rktOnTake {};
     class rktOnPut {};
 
-    class rktPrepare {};
+    class rktStep {};
+    class rktPrepDone {};
     class rktPrepSteps {};
     class rktPowerOff {};
     class rktGuidedCheck {};

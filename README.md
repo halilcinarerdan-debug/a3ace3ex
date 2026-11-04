@@ -845,7 +845,13 @@ Yapılmadan ilk atışta **besleme arızası** (ACE `feed`, bir kez) çıkar; AC
 
 ## Silaha ve başlığa özel hazırlık prosedürleri (MG besleme, roketatar atışa hazırlama)
 
-"Kayışı yerleştir" ve "Atışa hazırla" artık tek çubuk değil, **silaha (ve roket başlığına) özel çok adımlı prosedürlerdir**: her adım kendi ilerleme çubuğu, silah hareketi ve sesiyle sırayla çalışır; bir adım iptal edilirse prosedür baştan başlar. Süreler `Bakım süresi çarpanı` ile çarpılır (saniye, yaklaşık).
+MG besleme ve roketatar atış hazırlığı artık tek bir "hazırla" düğmesi değil, **silaha (ve roket başlığına) özel, oyuncunun kendisinin sırayla uygulaması gereken prosedürlerdir**:
+
+- ACE self-menü > Silah Bakımı > **Besleme prosedürü** (kayışlı MG elde seçiliyken) ve Roketatar > **Atış hazırlığı prosedürü** altında silaha özel **adımlar ayrı ayrı** listelenir (ör. "Emniyet kapağını çıkar", "Başlığı itici barutla birleştir", "Horozu kur").
+- Adımlar menüde **alfabetik** sırayla durur, doğru sırayı **oyuncu bilmelidir** (sıra ipucu verilmez). Yapılan adım kendi ilerleme çubuğu, hareketi ve sesiyle yürür; tamamlanan adımlar menüden kalkar.
+- **Yanlış sırada** bir adım yapılırsa (adım yine de zaman alır) prosedür **sıfırlanır** ("Hatalı sıra: prosedür baştan başlamalı"), baştan başlanır. Tüm adımlar doğru sırayla bitince silah hazır olur.
+- İncele kartında "Prosedür: N adım tamamlandı" yazar; doğru sıra kartta veya menüde gösterilmez.
+- Süreler `Bakım süresi çarpanı` ile çarpılır (saniye, yaklaşık). Aşağıdaki tablolar **doğru sırayı** gösterir (oyuncuya gösterilmez).
 
 **MG besleme (elde seçili kayışlı MG):**
 

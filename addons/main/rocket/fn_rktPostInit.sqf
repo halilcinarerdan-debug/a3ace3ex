@@ -50,14 +50,13 @@ private _inspect = [
 
 ["CAManBase", 1, ["ACE_SelfActions", "TAC_rkt_menu"], _inspect, true] call ace_interact_menu_fnc_addActionToClass;
 
+// Atis hazirligi: silaha ve basliga ozel prosedur. Menude yalnizca KALAN adimlar, ALFABETIK sirayla listelenir
+// (dogru sirayi oyuncu bilmelidir); yanlis sirada yapilan adim prosedürü sifirlar.
 private _prepare = [
     "TAC_rkt_prepare",
-    "Atışa hazırla",
+    "Atış hazırlığı prosedürü",
     "",
-    {
-        params ["_target", "_player"];
-        [_player] call TAC_fnc_rktPrepare;
-    },
+    {},
     {
         params ["_target", "_player"];
 
@@ -67,6 +66,39 @@ private _prepare = [
         && {time >= (_player getVariable ["TAC_wpn_busyUntil", 0])}
         && {(_player ammo _weapon) > 0}
         && {!(([_player, _weapon] call TAC_fnc_rktGetState) select 5)}
+    },
+    {
+        params ["_target", "_player"];
+
+        private _weapon = secondaryWeapon _player;
+        private _mags = secondaryWeaponMagazine _player;
+        private _magazine = if (_mags isEqualTo []) then {currentMagazine _player} else {_mags select 0};
+        private _steps = [_weapon, _magazine] call TAC_fnc_rktPrepSteps;
+        private _progress = ([_player, _weapon] call TAC_fnc_rktGetState) param [10, 0];
+        private _list = [];
+
+        {
+            if (_forEachIndex >= _progress) then {_list pushBack [_x select 0, _forEachIndex]};
+        } forEach _steps;
+
+        _list sort true;
+
+        _list apply {
+            _x params ["_label", "_index"];
+
+            [[
+                format ["TAC_rkt_step_%1", _index],
+                _label,
+                "",
+                {
+                    params ["_target", "_player", "_index"];
+                    [_player, _index] call TAC_fnc_rktStep;
+                },
+                {true},
+                {},
+                _index
+            ] call ace_interact_menu_fnc_createAction, [], _target]
+        }
     }
 ] call ace_interact_menu_fnc_createAction;
 

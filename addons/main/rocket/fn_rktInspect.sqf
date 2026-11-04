@@ -75,6 +75,10 @@ if (TAC_rkt_guided && {(_profile select 0) isEqualTo "guided"}) then {
 
 if (TAC_rkt_prepare && {(_unit ammo _weapon) > 0}) then {
     _lines pushBack format ["Atışa hazır: %1", ["hayır (hazırlanmadı)", "evet"] select (_state select 5)];
+
+    if (!(_state select 5) && {(_state param [10, 0]) > 0}) then {
+        _lines pushBack format ["Prosedür: %1 adım tamamlandı", _state param [10, 0]];
+    };
 };
 
 if (_misfire) then {

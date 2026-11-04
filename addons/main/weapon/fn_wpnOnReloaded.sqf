@@ -17,3 +17,4 @@ if (!TAC_wpn_enabled || {!TAC_mg_feedStep}) exitWith {};
 if !([_weapon] call TAC_fnc_wpnIsBeltFed) exitWith {};
 
 ([_unit, _weapon] call TAC_fnc_wpnGetState) set [7, false];
+([_unit, _weapon] call TAC_fnc_wpnGetState) set [8, 0];

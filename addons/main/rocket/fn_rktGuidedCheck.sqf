@@ -36,6 +36,7 @@ if (time < _readyAt) exitWith {"sogutma"};
 if (time > (_readyAt + TAC_rkt_coolantTime)) exitWith {
     [_state] call TAC_fnc_rktPowerOff;
     _state set [5, false];
+    _state set [10, 0];
     "isindi"
 };
 

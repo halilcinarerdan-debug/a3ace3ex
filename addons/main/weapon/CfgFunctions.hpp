@@ -21,13 +21,12 @@ class weapon
     // Atis
     class wpnOnFired {};
     class wpnOnReloaded {};
-    class wpnFeed {};
+    class wpnFeedStep {};
     class wpnOnPut {};
     class wpnOnTake {};
 
     // Bakim eylemleri (ACE self-menu)
     class wpnRun {};
-    class wpnSteps {};
     class wpnFeedSteps {};
     class wpnFx {};
     class wpnGesture {};

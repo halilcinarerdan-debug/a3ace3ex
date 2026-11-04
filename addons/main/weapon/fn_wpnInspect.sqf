@@ -75,6 +75,10 @@ private _lines = [
 // MG: besleme kapagi
 if (TAC_mg_feedStep && {[_weapon] call TAC_fnc_wpnIsBeltFed}) then {
     _lines pushBack format ["Besleme: %1", ["kayış yerleştirilmedi / kapak açık", "hazır"] select (_state param [7, true])];
+
+    if (!(_state param [7, true]) && {(_state param [8, 0]) > 0}) then {
+        _lines pushBack format ["Prosedür: %1 adım tamamlandı", _state param [8, 0]];
+    };
 };
 
 // Makineli tufek: yedek namlu sayisi ve agirligi

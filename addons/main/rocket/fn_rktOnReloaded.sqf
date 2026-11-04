@@ -19,3 +19,4 @@ _state set [1, false];
 _state set [2, false];
 _state set [3, 0];
 _state set [5, false];
+_state set [10, 0];

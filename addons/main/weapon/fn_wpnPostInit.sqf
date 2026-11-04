@@ -113,24 +113,53 @@ private _lube = [
 
 ["CAManBase", 1, ["ACE_SelfActions", "TAC_wpn_menu"], _lube, true] call ace_interact_menu_fnc_addActionToClass;
 
+// MG besleme prosedürü: silaha özel adımlar, menüde KALAN adımlar alfabetik (doğru sırayı oyuncu bilmeli).
 private _feed = [
     "TAC_wpn_feed",
-    "Kayışı yerleştir, kapağı kapat",
+    "Besleme prosedürü",
     "",
-    {
-        params ["_target", "_player"];
-        [_player] call TAC_fnc_wpnFeed;
-    },
+    {},
     {
         params ["_target", "_player"];
 
-        // Yalnizca ELDE secili kayisli MG varken ve kayis yerlestirilmediyse gorunur.
+        // Yalnizca ELDE secili kayisli MG varken ve besleme hazir degilken gorunur.
         private _weapon = currentWeapon _player;
 
         TAC_mg_feedStep
         && {time >= (_player getVariable ["TAC_wpn_busyUntil", 0])}
         && {[_weapon] call TAC_fnc_wpnIsBeltFed}
         && {!(([_player, _weapon] call TAC_fnc_wpnGetState) param [7, true])}
+    },
+    {
+        params ["_target", "_player"];
+
+        private _weapon = currentWeapon _player;
+        private _steps = [_weapon] call TAC_fnc_wpnFeedSteps;
+        private _progress = ([_player, _weapon] call TAC_fnc_wpnGetState) param [8, 0];
+        private _list = [];
+
+        {
+            if (_forEachIndex >= _progress) then {_list pushBack [_x select 0, _forEachIndex]};
+        } forEach _steps;
+
+        _list sort true;
+
+        _list apply {
+            _x params ["_label", "_index"];
+
+            [[
+                format ["TAC_wpn_feedStep_%1", _index],
+                _label,
+                "",
+                {
+                    params ["_target", "_player", "_index"];
+                    [_player, _index] call TAC_fnc_wpnFeedStep;
+                },
+                {true},
+                {},
+                _index
+            ] call ace_interact_menu_fnc_createAction, [], _target]
+        }
     }
 ] call ace_interact_menu_fnc_createAction;
 

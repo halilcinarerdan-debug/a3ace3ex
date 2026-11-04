@@ -4,8 +4,8 @@
 
     Birimin bir fırlatıcısının durumunu verir (silah sınıfı başına, birimde yerel; referans döner).
     Durum: [atış sayısı, zar atıldı mı, ateşlenmeme var mı, bekleme bitişi (time), ateşlenmeme sayısı, atışa hazır mı]
-    Güdümlü: güç açılış zamanı (-1 = kapalı), seyreltme bitişi / hazır zamanı, pil %0-100.
-    Varsayılan: [0, false, false, 0, 0, false, 1, -1, 0, 100]
+    Güdümlü: güç açılış zamanı (-1 = kapalı), seyreltme bitişi / hazır zamanı, pil %0-100, hazırlık prosedürü ilerlemesi (tamamlanan adım sayısı).
+    Varsayılan: [0, false, false, 0, 0, false, 1, -1, 0, 100, 0]
 
     Parametreler:
         0: OBJECT - birim
@@ -27,7 +27,7 @@ private _key = toLower _weapon;
 private _state = _all get _key;
 
 if (isNil "_state") then {
-    _state = [0, false, false, 0, 0, false, 1, -1, 0, 100];
+    _state = [0, false, false, 0, 0, false, 1, -1, 0, 100, 0];
     _all set [_key, _state];
 };
 
