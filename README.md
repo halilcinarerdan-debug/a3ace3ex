@@ -702,6 +702,8 @@ Yanlış çıkanı elle düzeltmek: CBA `MRBS tablosu` (`classname=MRBS`), `MG o
 
 **TMT (taranıp doğrulandı, 99 silah + 5 statik):** tüm TMT M4 / M16 / HK416 / SVD / AK / PKM / Minimi / M60E4 / M72 / Stinger / TOW eşleşti. GENEL'e düşenler için eşleşmeler eklendi: Tar-21, Sig516, HK G3A4 / HK33, MPT-76, M200 / L115 / JNG90 (sürgülü), M82, M92 (Beretta), düz TMT_M4, MG3, Milkor MGL, ERYX (güdümlü). TMT MG'leri ACE'de namlu değiştirilebilir işaretli olmadığı için kayışlı MG sayılmıyordu; artık güvenilirlik profili kayışlı aileden (M60, M240, M249 / Minimi, PKM, MG3) olan MG'ler ACE işareti olmasa da kayışlı sayılır ve besleme prosedürü çıkar.
 
+**TMT, 2. tarama (146 silah):** eşleşmeler eklendi: MPT-76 / KNT-76 (G3 ailesi profili), MPT55 / KCR556 / SAR-223 / HK33 (5.56 modern), SAR-308 (AR-10 tipi), SAR-56 (AK ailesi), Bora-12 / Accuracy (sürgülü), Canik TP9 / Zigana PX9 (modern 9 mm tabanca). MPT76_AK40 gibi adlardaki "AK40" bir optik adı olduğu için artık AK ailesine karışmaz (MPT / KNT satırları AK satırından önce eşleşir). Kayışlı olmayan tüfeklerin (SAR-308 gibi) magazineWell'lerindeki tambur / kutu şarjörler yüzünden MG sayılması engellendi.
+
 ### Silahı yere atmak / başkasının alması (kalıcılık)
 
 Silah yere / kutuya / araca / cesede konunca **her şey** silahla birlikte saklanır ve alan kişiye (aynı oyuncu ya da başkası) geçer:

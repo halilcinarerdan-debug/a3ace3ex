@@ -50,6 +50,14 @@ if (isNil "_result") then {
             } forEach _mags;
 
             _isMG = _maxCount >= TAC_wpn_mgThreshold || {TAC_wpn_mgSet getOrDefault [_key, false]};
+
+            // Bilinen TUFEK aileleri: magazineWell'lerinde tambur / kutu sarjor olsa da MG sayilmaz
+            // (elle "MG olarak zorla" tablosundakiler hariç).
+            if (_isMG && {!(TAC_wpn_mgSet getOrDefault [_key, false])}) then {
+                private _rifleLike = ["sar308", "sar223", "sar56", "kcr", "mpt5", "mpt7", "knt7", "hk416", "hk417", "g3a", "hk33", "m4a1", "m16", "sr25", "m110", "scar", "tar21", "sig516", "bora"];
+
+                if (_rifleLike findIf {(_key find _x) >= 0} >= 0) then {_isMG = false};
+            };
         };
 
         _result = if (_type == 2) then {
