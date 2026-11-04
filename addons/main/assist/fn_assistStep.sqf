@@ -37,9 +37,9 @@ if (_weapon isEqualTo "" || {_index < 0} || {_index >= count _steps}) exitWith {
 
 [_helper, _label + " (yardım)...", _seconds * TAC_wpn_cleanTimeMult * TAC_assist_speed, {
     params ["_helper", "_args"];
-    _args params ["_target", "_kind", "_index"];
+    _args params ["", "_target", "_kind", "_index"];
 
     if (isNull _target || {!alive _target} || {(_helper distance _target) > 4}) exitWith {};
 
     ["TAC_assistStep", [_target, _kind, _index], _target] call CBA_fnc_targetEvent;
-}, [_kind, _target, _kind, _index], [ "rocket", "feed" ] select (_kind isEqualTo "feed")] call TAC_fnc_wpnRun;
+}, [_weapon, _target, _kind, _index], [ "rocket", "feed" ] select (_kind isEqualTo "feed")] call TAC_fnc_wpnRun;
