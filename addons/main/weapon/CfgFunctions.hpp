@@ -26,6 +26,8 @@ class weapon
     class wpnFeedApply {};
     class wpnPublish {};
     class wpnOnPut {};
+    class stashPush {};
+    class stashPop {};
     class wpnOnTake {};
 
     // Bakim eylemleri (ACE self-menu)

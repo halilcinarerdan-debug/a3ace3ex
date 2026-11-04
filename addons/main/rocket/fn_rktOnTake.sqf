@@ -2,12 +2,11 @@
     Fonksiyon: TAC_fnc_rktOnTake
     Çalışma yeri: İstemci (oyuncunun "Take" olayı)
 
-    1) Durum taşıma: kapta o sınıftan saklı fırlatıcı durumu varsa (TAC_fnc_rktOnPut ile bırakılmış) oyuncuya
-       aktarılır ve kayıt kaptan silinir; yoksa (arsenal, yeni fırlatıcı) kalıntı durum silinir, sıfırdan başlar.
-    2) Hava: hava koşulları yalnızca OYUNCUNUN TAŞIDIĞI fırlatıcı mühimmatını etkiler (nem döngüsü fırlatıcı
-       taşınmıyorsa hiçbir şey yapmaz). Araç, mühimmat sandığı, depo gibi envanterlerdeki eşyalar etkilenmez ve
-       kuru saklanmış sayılır: oradan alınan fırlatıcıda mühimmat nemi en fazla %10 olur. Yerdeki
-       (GroundWeaponHolder / WeaponHolder) eşyalar dışarıda sayılır, nem sıfırlanmaz.
+    1) Durum taşıma: o fırlatıcı için kayıtlı durum varsa (kaptan ya da yedek genel listeden, TAC_fnc_stashPop)
+       oyuncuya aktarılır; yoksa kalıntı durum silinir, sıfırdan başlar.
+    2) Hava: hava koşulları yalnızca OYUNCUNUN TAŞIDIĞI fırlatıcı mühimmatını etkiler. Araç, mühimmat sandığı,
+       depo gibi envanterlerdeki eşyalar etkilenmez ve kuru saklanmış sayılır: oradan alınan fırlatıcıda mühimmat
+       nemi en fazla %10 olur. Yerdeki (WeaponHolder) eşyalar dışarıda sayılır, nem sıfırlanmaz.
 
     Parametreler: Take olayı: [unit, container, item]
     Dönüş: yok
@@ -25,25 +24,22 @@ if (isNil "_all") then {
     _unit setVariable ["TAC_rkt_state", _all];
 };
 
-private _stash = _container getVariable ["TAC_rkt_stash", []];
-private _index = _stash findIf {(_x select 0) isEqualTo _key};
+private _state = [_container, _unit, "r:" + _key] call TAC_fnc_stashPop;
 
 if (TAC_rkt_debug) then {
     systemChat format [
-        "[TAC roket] ALINDI %1 | kap %2 | kapta kayit %3%4",
+        "[TAC roket] ALINDI %1 | kap %2 | kayit %3%4",
         _item,
         typeOf _container,
-        ["YOK -> sifirdan basliyor", "VAR -> devralindi"] select (_index >= 0),
-        if (_index >= 0) then {format [" (ATESLENMEME %1, zar atildi %2)", ((_stash select _index) select 1) select 2, ((_stash select _index) select 1) select 1]} else {""}
+        ["YOK -> sifirdan basliyor", "VAR -> devralindi"] select !(_state isEqualTo []),
+        if (_state isEqualTo []) then {""} else {format [" (ATESLENMEME %1, zar atildi %2)", _state select 2, _state select 1]}
     ];
 };
 
-if (_index < 0) then {
+if (_state isEqualTo []) then {
     _all deleteAt _key;
 } else {
-    _all set [_key, (_stash select _index) select 1];
-    _stash deleteAt _index;
-    _container setVariable ["TAC_rkt_stash", _stash, true];
+    _all set [_key, _state];
 };
 
 if !(_container isKindOf "WeaponHolder") then {

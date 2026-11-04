@@ -689,11 +689,22 @@ Eşyalar: `TAC_WeaponCleaningKit`, `TAC_WeaponOil`, `TAC_WeaponSpareParts`. Hede
 | `TAC_wpn_testMode` / `TAC_wpn_testMult` (test çarpanı) | kapalı / 20 |
 | `TAC_wpn_debug` (arıza nedeni göstergesi) | kapalı, kişisel |
 
-### Silahı yere atmak / başkasının alması
+### Silahı yere atmak / başkasının alması (kalıcılık)
 
-- **Yere / kutuya / araca / cesede koyunca:** silahın kir/yağ/aşınması kapta saklanır (`TAC_wpn_stash`, herkese yayınlanır). Aynı oyuncu ya da **başkası** silahı alınca durum onunla gelir; kayıt kaptan silinir. Oyuncu o sınıftan başka silah taşımıyorsa kendi durumu da silinir.
-- **"At, yenisini al" hilesi yok:** aynı sınıftan yeni (arsenal, AI cesedi, kayıtsız) silah alınca sıfırdan başlar; eski kirli durum onunla gelmez.
-- **Sınırlar:** kap yok olursa (boşalıp temizlenirse, oyun çöp toplarsa) durum kaybolur. **Ölü oyuncunun** silahı: durum cesette yerel kaldığından silahı alan için sıfırdan başlar. Aynı sınıftan iki silah taşıyorsan ikisi durumu paylaşır.
+Silah yere / kutuya / araca / cesede konunca **her şey** silahla birlikte saklanır ve alan kişiye (aynı oyuncu ya da başkası) geçer:
+
+| Ne | Saklanan / devralınan |
+|----|----------------------|
+| Bakım durumu | kir, yağ, aşınma, son arıza, arıza sayısı |
+| MG besleme | hazır mı, prosedür ilerlemesi |
+| Optik | lens buğusu ve kiri |
+| ACE namlu sıcaklığı | bırakıldığı andaki sıcaklık; geçen süre için ACE'nin soğuma hesabıyla (ortam sıcaklığına kadar) soğutulup yeni sahibine yazılır |
+| Roketatar | tüp aşınması, zar / ateşlenmeme / bekleme, hazırlık ve prosedür ilerlemesi, güdümlüde güç / soğuma / pil (açık kalma süresi önce pilden düşülür) |
+
+**İki katmanlı kayıt:** durum hem bırakılan **kapta** (`TAC_stash`, herkese yayınlanır) hem **yedek genel listede** (`TAC_stashGlobal`, en çok 60 kayıt: sınıf, konum, zaman) tutulur. Motor envanterden atılan eşya için bazen farklı / yeni bir yer-kabı yarattığından kap değişkeni kaybolabilir; o zaman aynı sınıftan **8 m içindeki en yeni** kayıt devralınır. Bulunan kayıt iki yerden de silinir.
+Sabit silahlarda (taret) durum zaten araçta, herkese yayınlanan değişkende tutulur (taşınmaz, silah araçla kalır).
+"At, yenisini al" hilesi yok: aynı sınıftan yeni (arsenal) silah sıfırdan başlar. Mühimmat nemi (roket) birime bağlıdır, taşınmaz. Test göstergesi (`TAC_wpn_debug`, `TAC_rkt_debug`) bırakma ve alma satırlarını yazar (hangi kayıtlar saklandı / devralındı, sıcaklık değişimi).
+**Sınırlar:** kap yok olursa ve 8 m yedeği de tutmazsa (uzağa atılmış / başka biri aldıysa) durum kaybolur; ölü oyuncunun silahı alana sıfırdan başlar; aynı sınıftan iki silah taşıyorsan durumu paylaşırlar. ACE yedek namlu sıcaklıkları (ayrı magazine'ler) buradan bağımsızdır.
 
 ### MP mantığı (silah bakım)
 
