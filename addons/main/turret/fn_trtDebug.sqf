@@ -15,7 +15,7 @@
 
 private _veh = if (!isNull cursorObject && {cursorObject isKindOf "StaticWeapon"}) then {cursorObject} else {vehicle ACE_player};
 
-private _lines = ["== TAC TARET DEBUG =="];
+private _lines = ["== TAC TARET DEBUG ==", format ["Surum (yuklu PBO): %1", getText (configFile >> "CfgPatches" >> "tac_main" >> "versionStr")]];
 
 if (isNull _veh || {!(_veh isKindOf "StaticWeapon")}) then {
     _lines pushBack "Sabit silah yok: bir statik silaha bakarak ya da icine binerek calistir.";
