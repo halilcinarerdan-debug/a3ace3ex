@@ -13,8 +13,8 @@
 
 params [["_unit", objNull, [objNull]]];
 
-private _weapon = [_unit] call TAC_fnc_wpnTargetWeapon;
-if (_weapon isEqualTo "") exitWith {};
+private _weapon = currentWeapon _unit;
+if !([_weapon] call TAC_fnc_wpnIsBeltFed) exitWith {};
 
 [_unit, "Kayış yerleştiriliyor, kapak kapatılıyor...", 4 * TAC_wpn_cleanTimeMult, {
     params ["_unit", "_args"];

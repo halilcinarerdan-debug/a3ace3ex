@@ -73,7 +73,7 @@ private _lines = [
 ];
 
 // MG: besleme kapagi
-if (TAC_mg_feedStep && {_cat select 3}) then {
+if (TAC_mg_feedStep && {[_weapon] call TAC_fnc_wpnIsBeltFed}) then {
     _lines pushBack format ["Besleme: %1", ["kayış yerleştirilmedi / kapak açık", "hazır"] select (_state param [7, true])];
 };
 

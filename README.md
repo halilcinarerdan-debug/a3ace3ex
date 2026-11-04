@@ -840,7 +840,7 @@ Durum "birim + silah sınıfı" başınadır; silah yere atılınca optik durumu
 
 ## Özellik 7b – MG besleme kapağı adımı
 
-MG'ye (kategori **MG**: şarjör / kayış kapasitesi >= eşik) şarjör veya kayış takılınca (`Reloaded`) silah **hazır sayılmaz**. ACE self-menü > Silah Bakımı > **Kayışı yerleştir, kapağı kapat** (4 sn, silah hareketi ve ses) yapılmalı.
+**Yalnızca kayışlı MG'ler** (MG kategorisi + ACE'nin namlu değiştirilebilir MG işareti: M249, M240, PKM, MG3, Mk200, MMG...; tamburlu MX SW tipi hariç) ve eylem yalnızca bu silah **elde seçiliyken** görünür. MG'ye şarjör veya kayış takılınca (`Reloaded`) silah **hazır sayılmaz**. ACE self-menü > Silah Bakımı > **Kayışı yerleştir, kapağı kapat** (4 sn, silah hareketi ve ses) yapılmalı.
 Yapılmadan ilk atışta **besleme arızası** (ACE `feed`, bir kez) çıkar; ACE'nin arıza gider eylemleriyle düzelir. İncele kartında `Besleme: hazır / kayış yerleştirilmedi`. CBA: `TAC_mg_feedStep` (açık). Başlangıçta ve tüfek / tabancada adım yoktur.
 
 ## Özellik 9 – Roketatar / füze: ateşlenmeme ve doktrin

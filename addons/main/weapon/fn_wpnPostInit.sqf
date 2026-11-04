@@ -124,13 +124,12 @@ private _feed = [
     {
         params ["_target", "_player"];
 
-        private _weapon = [_player] call TAC_fnc_wpnTargetWeapon;
-        private _cat = [_weapon] call TAC_fnc_wpnCategory;
+        // Yalnizca ELDE secili kayisli MG varken ve kayis yerlestirilmediyse gorunur.
+        private _weapon = currentWeapon _player;
 
         TAC_mg_feedStep
         && {time >= (_player getVariable ["TAC_wpn_busyUntil", 0])}
-        && {!(_cat isEqualTo [])}
-        && {_cat select 3}
+        && {[_weapon] call TAC_fnc_wpnIsBeltFed}
         && {!(([_player, _weapon] call TAC_fnc_wpnGetState) param [7, true])}
     }
 ] call ace_interact_menu_fnc_createAction;

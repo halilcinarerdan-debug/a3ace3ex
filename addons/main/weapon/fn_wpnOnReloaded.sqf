@@ -4,7 +4,7 @@
 
     Makineli tüfeğe yeni şarjör / kayış takıldığında besleme kapağı adımı açılır: kayış yerleştirilip
     kapak kapatılana kadar ("Kayışı yerleştir ve kapağı kapat" eylemi) silah hazır sayılmaz; hazırlanmadan
-    ilk atışta besleme arızası çıkar. Yalnızca MG kategorisi ve "Besleme kapağı adımı" ayarı açıkken.
+    ilk atışta besleme arızası çıkar. Yalnızca kayışlı MG (TAC_fnc_wpnIsBeltFed) ve "Besleme kapağı adımı" ayarı açıkken.
 
     Parametreler: Reloaded olayı: [unit, weapon, ...]
     Dönüş: yok
@@ -14,8 +14,6 @@ params ["_unit", "_weapon"];
 
 if (!TAC_wpn_enabled || {!TAC_mg_feedStep}) exitWith {};
 
-private _cat = [_weapon] call TAC_fnc_wpnCategory;
-
-if (_cat isEqualTo [] || {!(_cat select 3)}) exitWith {};
+if !([_weapon] call TAC_fnc_wpnIsBeltFed) exitWith {};
 
 ([_unit, _weapon] call TAC_fnc_wpnGetState) set [7, false];

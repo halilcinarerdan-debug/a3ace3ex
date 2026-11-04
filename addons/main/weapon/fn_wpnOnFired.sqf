@@ -71,7 +71,7 @@ if (TAC_opt_enabled && {!(_optic isEqualTo "")} && {[_optic] call TAC_fnc_optIsS
 if (isNil "ace_overheating_fnc_jamWeapon") exitWith {};
 
 // MG: besleme kapagi adimi atlandiysa ilk atista besleme arizasi (bir kez).
-if (_isMG && {TAC_mg_feedStep} && {!(_state param [7, true])}) exitWith {
+if (TAC_mg_feedStep && {[_weapon] call TAC_fnc_wpnIsBeltFed} && {!(_state param [7, true])}) exitWith {
     _state set [7, true];
 
     if !(_weapon in (_unit getVariable ["ace_overheating_jammedWeapons", []])) then {

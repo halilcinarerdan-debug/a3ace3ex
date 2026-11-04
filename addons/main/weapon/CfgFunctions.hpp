@@ -8,6 +8,7 @@ class weapon
 
     // Durum ve hesap
     class wpnCategory {};
+    class wpnIsBeltFed {};
     class wpnGetState {};
     class wpnEnvFactor {};
     class wpnJamChance {};
