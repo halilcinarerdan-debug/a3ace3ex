@@ -14,6 +14,9 @@ call TAC_fnc_rktInit;
 // 10. Koop yardımı: yardım olayı (sahibin makinesinde uygulanır)
 call TAC_fnc_assistInit;
 
+// 11. Sabit silah / taret: mühimmat boşaltma olayı (araç sahibinde)
+call TAC_fnc_trtInit;
+
 // Her şey oyuncu arayüzüyle ilgili: sunucuda / headless client'ta yapacak iş yok.
 if (!hasInterface) exitWith {};
 
@@ -43,3 +46,6 @@ call TAC_fnc_rktPostInit;
 
 // 10. Koop yardımı: arkadaşın silah menüsü
 call TAC_fnc_assistPostInit;
+
+// 11. Sabit silah / taret
+call TAC_fnc_trtPostInit;

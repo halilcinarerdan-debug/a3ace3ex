@@ -34,3 +34,6 @@ call TAC_fnc_rktInitSettings;
 
 // 10. Koop yardımı
 call TAC_fnc_assistInitSettings;
+
+// 11. Sabit silah / taret
+call TAC_fnc_trtInitSettings;

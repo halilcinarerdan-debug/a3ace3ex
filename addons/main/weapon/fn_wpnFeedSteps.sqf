@@ -26,6 +26,7 @@ private _table = [
     [["m240", "mk48", "m60"], [["Besleme kapağını aç", 1.5], ["Kayışı yerleştir (açık yan aşağı)", 2.5], ["Kapağı kapat", 1], ["Sürgüyü çek", 1.5]]],
     [["pkm", "pkp", "pecheneg", "zafir"], [["Besleme kapağını aç", 1.5], ["Kayışı tepsiye yerleştir", 2.5], ["Kapağı kapat", 1], ["Sürgüyü çek", 1.5]]],
     [["lmg_mg3", "mg42", "uk59"], [["Besleme kapağını kaldır", 1.5], ["Kayışı yerleştir", 2.5], ["Kapağı indir", 1], ["Kolu çek", 2]]],
+    [["dshk", "kord", "nsv", "m2hb", "m2_", "browning", "hmg", "gmg", "mk19"], [["Besleme kapağını aç", 2], ["Kayışı yerleştir", 3], ["Kapağı kapat", 1.5], ["Sürgüyü çek", 2.5]]],
     [["mmg_01", "mmg_02"], [["Besleme kapağını aç", 2], ["Kayışı yerleştir", 3], ["Kapağı kapat", 1.5], ["Sürgüyü çek", 2]]]
 ];
 

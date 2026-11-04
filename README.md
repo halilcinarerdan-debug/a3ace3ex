@@ -1019,6 +1019,22 @@ Tamamen yerel oyuncuda: zar ve durum birimde, ağa bir şey yayınlanmaz, sunucu
 
 > Kapsam dışı (şimdilik): gecikmeli ateşleme patlaması, araç / statik silah fırlatıcıları (ayrı silah sınıfları).
 
+## Özellik 11 – Sabit silah / taret (DShK, M2, KORD, TOW, Metis...)
+
+Aynı sistemler **sabit silahlara** (`StaticWeapon`) uygulanır; gunner ya da yanından geçen herkes **sabit silaha bakıp ACE etkileşim tuşuna** basarak kullanır (ACE etkileşim menüsü > **Sabit silah bakımı / hazırlığı**). Durum **araçta, herkese yayınlanan** bir değişkende tutulur (gunner ve yardımcı aynı durumu görür).
+
+| Tür (otomatik) | Ölçüt | Neler uygulanır |
+|----------------|-------|------------------|
+| **Kayışlı MG** (DShK, M2, KORD, NSV, statik M240...) | ilk şarjör >= 50 mermi ve mühimmat simülasyonu kurşun | silaha özel **besleme prosedürü** (ağır statik MG'ler için daha uzun adımlar), kir / yağ / aşınma ve **arıza** (kişisel silahlarla aynı oranlar, MG x1.3, gerçek MRBS profili), **Silahı temizle / yağla**, **Arızayı gider (ayrıntılı)**; tutukluk varken tetik yalnızca tık verir |
+| **Güdümlü** (TOW, Metis, Titan, Igla statik...) | roketatar profili "güdümlü" | silaha ve başlığa özel **atış hazırlığı prosedürü**, **pil ve soğutma** (arayıcı soğuma, soğutucu süresi, açık kaldıkça pil), **ateşlenmeme** zarı + bekleme, **Pili değiştir**, **Ateşlenmeyen mühimmatı çıkar** |
+
+- Tetik, gunner'da ACE `DefaultAction` dinleyicisiyle kontrol edilir (kişisel silah sistemiyle aynı mekanizma); atış `FiredMan` olayıyla işlenir.
+- Adımlar alfabetik listelenir, doğru sırayı oyuncu bilmelidir; yanlış sıra prosedürü sıfırlar. Adımı yapan kişi gunner de olabilir, yanındaki arkadaş da (durum araçta olduğu için ayrı bir yardım olayı gerekmez).
+- Ayarlar: `TAC_trt_enabled`; diğerleri (`TAC_wpn_*`, `TAC_rkt_*`, `TAC_mg_feedStep`) ilgili modüllerle ortaktır.
+- **Kapsam dışı (şimdilik):** araç taretleri (zırhlı araç, helikopter), sabit silahta optik buğusu, sabit silah namlu değiştirme / yanık (ACE sabit silahta namlu değiştirmeyi kendi destekliyorsa o çalışır), UXO (patlamamış mühimmat), mühimmat nemi.
+- **Test:** `_s = createVehicle ["O_HMG_01_F", player modelToWorld [0,3,0], [], 0, "CAN_COLLIDE"]; player moveInGunner _s;` (DShK benzeri vanilla statik) ya da TOW için `"B_static_AT_F"` / RHS / CUP statik TOW. Önce ateş etmeyi dene (tık, hazırlık yok), ACE menüsünden (araçtan inmeden değil, aracın başında) prosedürü uygula, ateşle.
+- **Bilinmeyenler:** ACE menüsünde `StaticWeapon` sınıfı, `FiredMan` olayının sabit silah gunner'ı için çalışması ve `DefaultAction` dinleyicisinin silah gunner koltuğunda tetiği yakalaması **oyunda doğrulanmadı**; çalışmazsa bana RPT'deki hatayı gönder.
+
 ## Yeni özellik ekleme
 
 1. `addons/main/<özellik>/` klasörü aç; `fn_*.sqf` dosyalarını ve bir `CfgFunctions.hpp` ekle (`notebook/`, `nvg/` örnek). Envanter eşyası gerekiyorsa `CfgWeapons.hpp` de ekle.

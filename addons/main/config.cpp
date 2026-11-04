@@ -19,9 +19,9 @@ class CfgPatches
         magazines[] = {"TAC_SpareBarrel_Light", "TAC_SpareBarrel_Heavy"};
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu", "ace_overheating"};
-        version = 0.20;
-        versionStr = "0.20.2";
-        versionAr[] = {0,20,2};
+        version = 0.21;
+        versionStr = "0.21.0";
+        versionAr[] = {0,21,0};
     };
 };
 
@@ -97,6 +97,9 @@ class CfgFunctions
 
         // 10. Koop yardimi (arkadasin silah hazirligina yardim)
         #include "assist\CfgFunctions.hpp"
+
+        // 11. Sabit silah / taret (DShK, M2, KORD, TOW...)
+        #include "turret\CfgFunctions.hpp"
     };
 };
 
