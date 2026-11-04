@@ -843,6 +843,41 @@ Durum "birim + silah sınıfı" başınadır; silah yere atılınca optik durumu
 **Yalnızca kayışlı MG'ler** (MG kategorisi + ACE'nin namlu değiştirilebilir MG işareti: M249, M240, PKM, MG3, Mk200, MMG...; tamburlu MX SW tipi hariç) ve eylem yalnızca bu silah **elde seçiliyken** görünür. MG'ye şarjör veya kayış takılınca (`Reloaded`) silah **hazır sayılmaz**. ACE self-menü > Silah Bakımı > **Kayışı yerleştir, kapağı kapat** (4 sn, silah hareketi ve ses) yapılmalı.
 Yapılmadan ilk atışta **besleme arızası** (ACE `feed`, bir kez) çıkar; ACE'nin arıza gider eylemleriyle düzelir. İncele kartında `Besleme: hazır / kayış yerleştirilmedi`. CBA: `TAC_mg_feedStep` (açık). Başlangıçta ve tüfek / tabancada adım yoktur.
 
+## Silaha ve başlığa özel hazırlık prosedürleri (MG besleme, roketatar atışa hazırlama)
+
+"Kayışı yerleştir" ve "Atışa hazırla" artık tek çubuk değil, **silaha (ve roket başlığına) özel çok adımlı prosedürlerdir**: her adım kendi ilerleme çubuğu, silah hareketi ve sesiyle sırayla çalışır; bir adım iptal edilirse prosedür baştan başlar. Süreler `Bakım süresi çarpanı` ile çarpılır (saniye, yaklaşık).
+
+**MG besleme (elde seçili kayışlı MG):**
+
+| Silah | Adımlar |
+|-------|---------|
+| M249 / Minimi / Mk46 | kutuyu tak (2) > kapağı aç (1.5) > kayışı besleme tepsisine yerleştir (2) > kapat (1) > sürgüyü çek (1.5) |
+| M240 / Mk48 / M60 | kapağı aç (1.5) > kayışı yerleştir, açık yan aşağı (2.5) > kapat (1) > sürgüyü çek (1.5) |
+| PKM / PKP / Zafir | kapağı aç (1.5) > kayışı tepsiye yerleştir (2.5) > kapat (1) > sürgüyü çek (1.5) |
+| MG3 / MG42 / UK59 | kapağı kaldır (1.5) > kayışı yerleştir (2.5) > indir (1) > kolu çek (2) |
+| Navid / SPMG (ağır MMG) | aynı adımlar, daha uzun (2 / 3 / 1.5 / 2) |
+| diğer kayışlı MG | kapağı aç (1.5) > kayışı yerleştir (2) > kapat (1) |
+
+**Roketatar atışa hazırlama (fırlatıcıya göre):**
+
+| Fırlatıcı | Adımlar |
+|-----------|---------|
+| RPG-7 / RPG-32 | emniyet kapağını çıkar (2) > başlığı itici barutla birleştir (3) > horozu kur (2) |
+| M72, RPG-18/22/26/75 | emniyet pimini çek (1.5) > tüpü uzat (2-2.5) |
+| M136 / AT4 | kapakları çıkar (2) > emniyeti aç, nişangahı kaldır (2) |
+| NLAW / APILAS | emniyet kapaklarını aç (2) > nişangahı kaldır, sistemi çalıştır (2.5) |
+| SMAW / Mk153 | tüp kilidini kontrol et (2) > fünye ayarı ve emniyeti aç (2) > horoz (1.5) |
+| MAAWS / Carl Gustaf / MRAWS | kama kilidini kontrol et (2) > emniyeti ve ateşleme modunu ayarla (2.5) > horoz (1) |
+| Panzerfaust | emniyet çevirmesini aç (2) > tüpü ve nişangahı kaldır (2) |
+| Javelin | BCU'yu bağla (2) > CLU'ya güç ver (2) > arayıcı soğutmasını başlat (2) |
+| Stinger / FIM-92 | BCU / soğutucu kartuşunu tak (2.5) > güç ver (1.5) > IFF ve arayıcıyı başlat (2) |
+| Igla / Strela | pil-soğutma ünitesini tak (2.5) > güç ver (1.5) > arayıcıyı başlat (2) |
+| Titan / Vorona / Metis / TOW | güç ve sistem kontrolü (2.5) > arayıcıyı başlat (2) |
+| tanınmayan | türe göre tek adım (tek kullanımlık 3, omuz atarı 5, güdümlü 6 sn) |
+
+**Başlığa özel ek adım (güdümsüz roketlerde, son adımdan önce):** mühimmatın `warheadName` / sınıf adına göre: **tandem** -> çift fünye kontrolü (2.5), **termobarik** -> emniyet halkası kontrolü (2), **HE / parçalı** (OG-7 vb.) -> fünye ayarı ani / gecikmeli (2). HEAT'te ek adım yok.
+Sıralar ve süreler gerçek prosedürlere yaklaşık, oyun temposuna göre ayarlandı (tahmin). Değiştirmek için `weapon/fn_wpnFeedSteps.sqf` ve `rocket/fn_rktPrepSteps.sqf` içindeki tablolar.
+
 ## Özellik 9 – Roketatar / füze: ateşlenmeme ve doktrin
 
 Yalnızca RPG-7 değil, **ikincil silah olan her fırlatıcı** (vanilla, RHS, CUP) kapsanır; tür config'ten / sınıf adından belirlenir:

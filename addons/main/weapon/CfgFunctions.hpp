@@ -27,6 +27,8 @@ class weapon
 
     // Bakim eylemleri (ACE self-menu)
     class wpnRun {};
+    class wpnSteps {};
+    class wpnFeedSteps {};
     class wpnFx {};
     class wpnGesture {};
     class wpnConsume {};

@@ -2,13 +2,12 @@
     Fonksiyon: TAC_fnc_rktPrepare
     Çalışma yeri: İstemci
 
-    "Atışa hazırla": ilerleme çubuğu + silah hareketi. Türe göre süre (x bakım süresi çarpanı):
-      tek kullanımlık 3 sn (kapakları aç, tüpü uzat, emniyet pimlerini çek)
-      yeniden doldurulabilir omuz atarı 5 sn (emniyet kapağı, itici / başlık kontrolü, horoz kur)
-      güdümlü 6 sn (güç ver, sensör / arayıcıyı başlat)
+    "Atışa hazırla": fırlatıcıya ve yüklü başlığa özel çok adımlı prosedür (TAC_fnc_rktPrepSteps): ör. RPG-7'de
+    emniyet kapağı, başlık-itici birleştirme, horoz; Javelin'de BCU, CLU gücü, soğutma; tandem / termobarik / HE
+    başlıkta ek bir kontrol adımı. Her adım kendi çubuğu, hareketi ve sesiyle çalışır (TAC_fnc_wpnSteps); bir
+    adım iptal edilirse prosedür baştan başlar. Son adım bitince hazır işareti açılır.
     Güdümlü fırlatıcıda (pil ve soğutma açıksa) ayrıca sistem açılır: pil sayılmaya başlar, arayıcı soğumaya girer.
-    Bitince hazır işareti açılır; reload, atış veya ateşlenmeyen mühimmatın çıkarılması bunu sıfırlar.
-    Mühimmat yoksa yapılmaz.
+    Reload, atış veya ateşlenmeyen mühimmatın çıkarılması hazırlığı sıfırlar. Mühimmat yoksa yapılmaz.
 
     Parametreler:
         0: OBJECT - oyuncu birimi
@@ -21,10 +20,10 @@ params [["_unit", objNull, [objNull]]];
 private _weapon = secondaryWeapon _unit;
 if (_weapon isEqualTo "" || {(_unit ammo _weapon) < 1}) exitWith {};
 
-private _category = ([_weapon] call TAC_fnc_rktProfile) select 0;
-private _time = ([3, 5, 6] select ((["disposable", "reloadable", "guided"] find _category) max 0)) * TAC_wpn_cleanTimeMult;
+private _mags = secondaryWeaponMagazine _unit;
+private _magazine = if (_mags isEqualTo []) then {currentMagazine _unit} else {_mags select 0};
 
-[_unit, "Fırlatıcı atışa hazırlanıyor...", _time, {
+[_unit, [_weapon, _magazine] call TAC_fnc_rktPrepSteps, "rocket", _weapon, {
     params ["_unit", "_args"];
     _args params ["_weapon"];
 
@@ -46,4 +45,4 @@ private _time = ([3, 5, 6] select ((["disposable", "reloadable", "guided"] find 
     };
 
     _state set [5, true];
-}, [_weapon], "rocket"] call TAC_fnc_wpnRun;
+}, [_weapon]] call TAC_fnc_wpnSteps;

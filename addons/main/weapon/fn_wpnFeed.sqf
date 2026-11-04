@@ -2,8 +2,9 @@
     Fonksiyon: TAC_fnc_wpnFeed
     Çalışma yeri: İstemci
 
-    "Kayışı yerleştir ve kapağı kapat": MG'nin besleme kapağı adımı. 4 sn x bakım süresi çarpanı,
-    silah hareketi ve ses (TAC_fnc_wpnRun). Bitince silah beslemeye hazırdır.
+    "Besleme kapağı prosedürü": elde seçili kayışlı MG'ye özel çok adımlı prosedür (TAC_fnc_wpnFeedSteps:
+    M249 / M240 / M60 / PKM / MG3 / MMG... her biri kendi sırası ve süresiyle). Her adım kendi ilerleme çubuğu,
+    silah hareketi ve sesiyle çalışır (TAC_fnc_wpnSteps). Son adım bitince silah beslemeye hazırdır.
 
     Parametreler:
         0: OBJECT - oyuncu birimi
@@ -16,9 +17,9 @@ params [["_unit", objNull, [objNull]]];
 private _weapon = currentWeapon _unit;
 if !([_weapon] call TAC_fnc_wpnIsBeltFed) exitWith {};
 
-[_unit, "Kayış yerleştiriliyor, kapak kapatılıyor...", 4 * TAC_wpn_cleanTimeMult, {
+[_unit, [_weapon] call TAC_fnc_wpnFeedSteps, "feed", _weapon, {
     params ["_unit", "_args"];
     _args params ["_weapon"];
 
     ([_unit, _weapon] call TAC_fnc_wpnGetState) set [7, true];
-}, [_weapon], "feed"] call TAC_fnc_wpnRun;
+}, [_weapon]] call TAC_fnc_wpnSteps;
