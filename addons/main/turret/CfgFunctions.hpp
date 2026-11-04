@@ -10,6 +10,7 @@ class turret
     class trtState {};
     class trtKind {};
     class trtFeedSteps {};
+    class trtFeedStepsRaw {};
     class trtDebug {};
     class trtFireCheck {};
     class trtFireDo {};

@@ -22,13 +22,17 @@ if (_kind isEqualTo "other") exitWith {};
 private _state = [_veh, _weapon] call TAC_fnc_trtState;
 
 if (_kind in ["guided", "launcher"]) exitWith {
-    [_state] call TAC_fnc_rktPowerOff;
+    // Guduml: sistem acik kalir (yeniden guc / hazirlik istenmez); statik firlaticida her atis hazirligi sifirlar.
+    if !(_kind isEqualTo "guided" && {TAC_rkt_guided}) then {
+        [_state] call TAC_fnc_rktPowerOff;
+        _state set [5, false];
+        _state set [10, 0];
+    };
+
     _state set [0, (_state select 0) + 1];
     _state set [1, false];
     _state set [2, false];
     _state set [3, 0];
-    _state set [5, false];
-    _state set [10, 0];
     [_veh, _weapon, _state] call TAC_fnc_trtState;
 };
 

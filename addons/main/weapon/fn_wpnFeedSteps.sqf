@@ -33,8 +33,11 @@ private _table = [
 
 private _index = _table findIf {(_x select 0) findIf {(_key find _x) >= 0} >= 0};
 
-if (_index >= 0) then {
+private _result = if (_index >= 0) then {
     (_table select _index) select 1
 } else {
     [["Besleme kapağını aç", 1.5], ["Kayışı yerleştir", 2], ["Kapağı kapat", 1]]
-}
+};
+
+// Sürgü / şarj kolu adımları reload animasyonunda var: varsayılan olarak ayıklanır (ayar açıksa kalır).
+_result call TAC_fnc_wpnFilterSteps

@@ -28,12 +28,17 @@ if (_weapon isEqualTo "") exitWith {};
     private _state = [_unit, _weapon] call TAC_fnc_rktGetState;
     private _profile = [_weapon] call TAC_fnc_rktProfile;
 
-    [_state] call TAC_fnc_rktPowerOff;
+    private _keep = TAC_rkt_guided && {(_profile select 0) isEqualTo "guided"};
+
+    if (!_keep) then {
+        [_state] call TAC_fnc_rktPowerOff;
+        _state set [5, false];
+        _state set [10, 0];
+    };
+
     _state set [1, false];
     _state set [2, false];
     _state set [3, 0];
-    _state set [5, false];
-    _state set [10, 0];
     [_unit, _weapon] call TAC_fnc_rktPublish;
 
     if ((_profile select 0) isEqualTo "disposable") then {

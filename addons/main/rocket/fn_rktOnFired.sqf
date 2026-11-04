@@ -15,13 +15,20 @@ if (!TAC_rkt_enabled || {!(_weapon isEqualTo (secondaryWeapon _unit))}) exitWith
 
 private _state = [_unit, _weapon] call TAC_fnc_rktGetState;
 
-[_state] call TAC_fnc_rktPowerOff;
+private _keep = TAC_rkt_guided && {(([_weapon] call TAC_fnc_rktProfile) select 0) isEqualTo "guided"};
+
+// Guduml: sistem acik kalir (guc / sogutma / hazirlik atistan sonra yeniden istenmez; yalnizca soguma suresi
+// bitince ya da pil bosalinca kapanir). Digerlerinde her atis hazirligi sifirlar.
+if (!_keep) then {
+    [_state] call TAC_fnc_rktPowerOff;
+    _state set [5, false];
+    _state set [10, 0];
+};
+
 _state set [0, (_state select 0) + 1];
 _state set [1, false];
 _state set [2, false];
 _state set [3, 0];
-_state set [5, false];
-_state set [10, 0];
 [_unit, _weapon] call TAC_fnc_rktPublish;
 
 // Hedefte patlamama (dud): guduml olmayan roketlerde, ayni kosul carpaniyla (nem, soguk, sicak...).

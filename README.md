@@ -854,6 +854,8 @@ MG besleme ve roketatar atış hazırlığı artık tek bir "hazırla" düğmesi
 - İncele kartında "Prosedür: N adım tamamlandı" yazar; doğru sıra kartta veya menüde gösterilmez.
 - Süreler `Bakım süresi çarpanı` ile çarpılır (saniye, yaklaşık). Aşağıdaki tablolar **doğru sırayı** gösterir (oyuncuya gösterilmez).
 
+**Sürgü / şarj kolu adımları varsayılan olarak yoktur** (reload animasyonu sürgüyü zaten çeker): aşağıdaki tablolardaki "sürgüyü çek", "kolu çek", "sürgü kolunu çek" adımları CBA `Sürgü / şarj kolu adımı` (`TAC_mg_chargingStep`, varsayılan kapalı) açılırsa devreye girer. Bu, sabit silahlar için de geçerli. Roketatarın "horozu kur" gibi elle yapılan adımları korunur.
+
 **MG besleme (elde seçili kayışlı MG):**
 
 | Silah | Adımlar |
@@ -957,7 +959,7 @@ Yalnızca **güdümlü** kategori (tek kullanımlık NLAW hariç). Gerçek siste
 
 1. **Atışa hazırla** (6 sn) sistemi açar: pil sayılmaya başlar, arayıcı **soğumaya** girer (`TAC_rkt_cooldown`, varsayılan 12 sn; > 25 °C sıcakta en fazla %50 uzar).
 2. Soğuyana kadar tetik yalnızca tık sesi verir. Soğuduktan sonra **soğutucu** `TAC_rkt_coolantTime` (180 sn) dayanır; ateşlenmezse arayıcı **ısınır**: sistem kapanır, hazırlık sıfırlanır, yeniden "Atışa hazırla" (yeni soğuma) gerekir.
-3. **Pil:** sistem açık kaldıkça boşalır (`TAC_rkt_batteryMinutes`, varsayılan 30 dk açık kalma = %100). Pil boşsa füze ateşlenmez; sistem de açılmaz. Atış, reload, mühimmat çıkarma veya fırlatıcıyı bırakma sistemi kapatır ve geçen süre kadar pil düşülür.
+3. **Pil:** sistem açık kaldıkça boşalır (`TAC_rkt_batteryMinutes`, varsayılan 30 dk açık kalma = %100). Pil boşsa füze ateşlenmez; sistem de açılmaz. Sistem **açık kalır**: atış, reload ve mühimmat çıkarma güç / hazırlığı sıfırlamaz (yeni füze için yeniden güç ve hazırlık istenmez). Yalnızca soğutucu süresi bitince (arayıcı ısınır), pil boşalınca ya da fırlatıcı bırakılınca kapanır; geçen süre kadar pil düşülür.
 4. **Pili değiştir:** ACE self-menü > Roketatar, yedek `TAC_MissileBattery` (Güdümlü Füze Pili) ister (5 sn). Pil %100 olur.
 5. Oyuncuya bildirim yok: İncele kartında "Sistem: kapalı / açık, arayıcı soğuyor (~N sn) / hazır (soğutucu ~N sn) / arayıcı ısındı" ve pil "dolu / yarı / zayıf / boş" yazar; silahçı yüzdeyi görür.
 CBA: `TAC_rkt_guided`, `TAC_rkt_cooldown`, `TAC_rkt_coolantTime`, `TAC_rkt_batteryMinutes`. Süreler gerçekten daha uzun / kısa olabilir; oyun temposuna göre ayarlandı (tahmin).

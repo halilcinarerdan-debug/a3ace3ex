@@ -48,6 +48,15 @@ private _category = ["TAC - Gerçekçilik Paketi", "Makineli tüfek (namlu)"];
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_mg_chargingStep",
+    "CHECKBOX",
+    ["Sürgü / şarj kolu adımı", "Açıksa MG besleme prosedürüne 'sürgüyü / kolu çek' adımları da girer. Varsayılan kapalı: reload animasyonu sürgüyü zaten çeker."],
+    _category,
+    false,
+    true
+] call CBA_settings_fnc_init;
+
+[
     "TAC_mg_debug",
     "CHECKBOX",
     ["Test göstergesi", "Namlu değiştirilince sıcaklık, eşik ve yanık kararını ekrana yazar. (Kişisel tercih)"],

@@ -31,6 +31,7 @@ class weapon
     // Bakim eylemleri (ACE self-menu)
     class wpnRun {};
     class wpnFeedSteps {};
+    class wpnFilterSteps {};
     class wpnFx {};
     class wpnGesture {};
     class wpnConsume {};
