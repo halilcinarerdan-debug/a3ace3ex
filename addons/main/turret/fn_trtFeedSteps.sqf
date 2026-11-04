@@ -5,6 +5,7 @@
     Sabit silahın besleme prosedürü (silaha ve kalibreye özel). Önce silah adına, sonra mühimmat kalibresine bakılır:
       M2 / .50 BMG (12.7x99)        : kapak, kayış (açık yan aşağı), kapat, sürgü kolunu 2 kez çek, BOŞLUK (headspace) ve zamanlama kontrolü
       DShK / NSV / Kord / KPV (12.7x108, 14.5x114) : kapak, kayışı tırnağa oturt, kapat, sürgü kolu, gaz ayarı kontrolü
+      23 mm AA topu (ZU-23 / 2A14, AZP-23): kapak, kayış, kapat, sürgü kolu 2 kez, gaz ve soğutma ayarı
       Bombaatar (Mk19, GMG 40 mm; AGS-30 / AGS-17 30 mm) : kapak, kayış (kutu), kapat, kolu 2 kez çek, emniyeti aç
       diğer kayışlı (7.62 statik vb.) : kişisel MG tablosu (TAC_fnc_wpnFeedSteps: PKM, M240, MG3...)
 
@@ -32,6 +33,10 @@ if (["m2hb", "m2_", "_m2", "browning", "127x99"] call _hit) exitWith {
 
 if (["dshk", "nsv", "kord", "kpv", "zpu", "127x108", "145x114"] call _hit) exitWith {
     [["Besleme kapağını aç", 2], ["Kayışı tırnağa oturt", 3], ["Kapağı kapat", 1.5], ["Sürgü kolunu çek", 2.5], ["Gaz ayarını kontrol et", 2]]
+};
+
+if (["2a14", "zu23", "zu-23", "azp", "23mm", "2a7", "2a38", "30x165"] call _hit) exitWith {
+    [["Besleme kapağını aç", 2], ["Kayış / kutuyu yerleştir", 3], ["Kapağı kapat", 1.5], ["Sürgü kolunu iki kez çek", 3], ["Gaz ve soğutma ayarını kontrol et", 2.5]]
 };
 
 if (["mk19", "gmg", "ags", "40x53", "30x29", "30mm"] call _hit) exitWith {

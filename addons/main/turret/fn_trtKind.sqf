@@ -3,7 +3,8 @@
     Çalışma yeri: İstemci
 
     Sabit silahın bu sistemdeki türü (silah sınıfı başına bir kez, önbellekli):
-      "guided"   : roketatar profili güdümlü (TOW, Metis, Kornet, Konkurs, Fagot, Spike, Igla, Stinger, Titan...)
+      (tür mühimmat SİMÜLASYONUNDAN belirlenir; kurşun atan silah asla "guided" olmaz)
+      "guided"   : mühimmat roket / füze ve roketatar profili güdümlü (TOW, Metis, Kornet, Konkurs, Fagot, Spike, Igla, Stinger, Titan...)
       "launcher" : güdümsüz statik fırlatıcı (SPG-9, recoilless...): mühimmat simülasyonu roket / füze
       "mg"       : kayışlı: ilk şarjör >= 50 mermi (bombaatar kayışları >= 20: Mk19, GMG, AGS-30) ve mühimmat
                    simülasyonu kurşun / bomba / topçu mermisi (shotBullet, shotGrenade, shotShell)
@@ -45,15 +46,14 @@ if (isNil "_kind") then {
 
     _kind = "other";
 
-    if (_category isEqualTo "guided") then {
-        _kind = "guided";
+    // Tur MUHIMMAT SIMULASYONUNDAN: kursun / bomba kayislari "mg", roket / fuze "launcher" ya da "guided"
+    // (guduml mu: roketatar profili). Kursun atan silah hicbir zaman guduml sayilmaz (bazi kursunlarda
+    // airLock / irLock alanlari vardir; profil yedegi onlari guduml sanmasin).
+    if (_sim in ["shotrocket", "shotmissile"]) then {
+        _kind = ["launcher", "guided"] select (_category isEqualTo "guided");
     } else {
-        if (_sim in ["shotrocket", "shotmissile"]) then {
-            _kind = "launcher";
-        } else {
-            if (_sim isEqualTo "shotbullet" && {_count >= 50}) then {_kind = "mg"};
-            if (_sim in ["shotgrenade", "shotshell"] && {_count >= 20}) then {_kind = "mg"};
-        };
+        if (_sim isEqualTo "shotbullet" && {_count >= 50}) then {_kind = "mg"};
+        if (_sim in ["shotgrenade", "shotshell"] && {_count >= 20}) then {_kind = "mg"};
     };
 
     TAC_trt_kindCache set [_key, _kind];
