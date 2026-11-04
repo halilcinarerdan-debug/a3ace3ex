@@ -21,7 +21,7 @@ private _veh = vehicle _unit;
 if (_veh isEqualTo _unit || {!(_veh isKindOf "StaticWeapon")} || {!(_unit isEqualTo (gunner _veh))}) exitWith {false};
 
 private _weapon = _veh currentWeaponTurret [0];
-private _kind = [_weapon] call TAC_fnc_trtKind;
+private _kind = [_weapon, _veh] call TAC_fnc_trtKind;
 
 if (_kind isEqualTo "other" || {(_veh ammo _weapon) < 1}) exitWith {false};
 
@@ -38,13 +38,13 @@ if (_kind isEqualTo "mg") exitWith {
     _block
 };
 
-// --- Guduml ------------------------------------------------------------------
+// --- Guduml / statik firlatici (hazirlik + ateslenmeme; pil-sogutma yalniz gudumluyde) ----------
 if (TAC_rkt_prepare && {!(_state select 5)}) exitWith {
     missionNamespace setVariable ["TAC_trt_blockPrep", true];
     true
 };
 
-if (TAC_rkt_guided) then {
+if (TAC_rkt_guided && {_kind isEqualTo "guided"}) then {
     private _reason = [_state] call TAC_fnc_rktGuidedCheck;
 
     [_veh, _weapon, _state] call TAC_fnc_trtState;

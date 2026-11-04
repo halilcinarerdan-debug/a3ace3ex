@@ -29,7 +29,7 @@ private _root = [
         && {alive _target}
         && {!(_player getVariable ["ACE_isUnconscious", false])}
         && {time >= (_player getVariable ["TAC_wpn_busyUntil", 0])}
-        && {!(([((_target weaponsTurret [0])) param [0, ""]] call TAC_fnc_trtKind) isEqualTo "other")}
+        && {!(([((_target weaponsTurret [0])) param [0, ""], _target] call TAC_fnc_trtKind) isEqualTo "other")}
     },
     {
         _this call TAC_fnc_trtChildren

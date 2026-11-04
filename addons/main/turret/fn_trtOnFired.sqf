@@ -15,13 +15,13 @@ params ["_unit", "_weapon", "", "", "_ammo", "", "", "_veh"];
 
 if (!TAC_trt_enabled || {isNull _veh} || {!(_veh isKindOf "StaticWeapon")}) exitWith {};
 
-private _kind = [_weapon] call TAC_fnc_trtKind;
+private _kind = [_weapon, _veh] call TAC_fnc_trtKind;
 
 if (_kind isEqualTo "other") exitWith {};
 
 private _state = [_veh, _weapon] call TAC_fnc_trtState;
 
-if (_kind isEqualTo "guided") exitWith {
+if (_kind in ["guided", "launcher"]) exitWith {
     [_state] call TAC_fnc_rktPowerOff;
     _state set [0, (_state select 0) + 1];
     _state set [1, false];
@@ -32,7 +32,7 @@ if (_kind isEqualTo "guided") exitWith {
     [_veh, _weapon, _state] call TAC_fnc_trtState;
 };
 
-if (!TAC_wpn_enabled || {!(_ammo isKindOf "BulletBase")}) exitWith {};
+if (!TAC_wpn_enabled || {!(_ammo isKindOf "BulletBase" || {_ammo isKindOf "GrenadeBase"} || {_ammo isKindOf "ShellBase"})}) exitWith {};
 
 private _env = [_unit] call TAC_fnc_wpnEnvFactor;
 private _accel = if (TAC_wpn_testMode) then {TAC_wpn_testMult} else {1};

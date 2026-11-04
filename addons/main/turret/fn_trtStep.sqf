@@ -20,7 +20,7 @@ params [["_player", objNull, [objNull]], ["_veh", objNull, [objNull]], ["_kind",
 
 private _weapon = ((_veh weaponsTurret [0])) param [0, ""];
 private _mag = (((_veh magazinesTurret [0])) param [0, ""]);
-private _steps = if (_kind isEqualTo "feed") then {[_weapon] call TAC_fnc_wpnFeedSteps} else {[_weapon, _mag] call TAC_fnc_rktPrepSteps};
+private _steps = if (_kind isEqualTo "feed") then {[_weapon, _veh] call TAC_fnc_trtFeedSteps} else {[_weapon, _mag] call TAC_fnc_rktPrepSteps};
 
 if (_weapon isEqualTo "" || {_index < 0} || {_index >= count _steps}) exitWith {};
 
@@ -44,7 +44,7 @@ if (_weapon isEqualTo "" || {_index < 0} || {_index >= count _steps}) exitWith {
     };
 
     if ((_progress + 1) >= _count) then {
-        if (_kind isEqualTo "rocket" && {TAC_rkt_guided} && {(([_weapon] call TAC_fnc_rktProfile) select 0) isEqualTo "guided"}) then {
+        if (_kind isEqualTo "rocket" && {TAC_rkt_guided} && {([_weapon, _veh] call TAC_fnc_trtKind) isEqualTo "guided"}) then {
             if ((_state select 9) > 0) then {
                 private _hot = ((((ambientTemperature select 0) - 25) / 20) max 0) min 1;
 

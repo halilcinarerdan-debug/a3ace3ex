@@ -9,6 +9,7 @@
       MG3 / MG42 / UK59 : kapağı kaldır, kayışı yerleştir, indir, kolu çek (kol çekme daha uzun)
       Ağır MMG (Navid, SPMG) : aynı adımlar, daha uzun
       diğer kayışlı MG : kapağı aç, kayışı yerleştir, kapat
+    Eşleşme classname + görünen ad üzerinde alt dize aramasıyla yapılır (TAC_fnc_wpnSearchKey).
     Süreler saniye (bakım süresi çarpanından önce); gerçek prosedürlerin sırası ve süresine yaklaşık.
 
     Parametreler:
@@ -19,7 +20,7 @@
 
 params [["_weapon", "", [""]]];
 
-private _key = toLower _weapon;
+private _key = [_weapon] call TAC_fnc_wpnSearchKey;
 
 private _table = [
     [["m249", "minimi", "saw_base", "mk46"], [["Kutuyu tak", 2], ["Besleme kapağını aç", 1.5], ["Kayışı besleme tepsisine yerleştir", 2], ["Kapağı kapat", 1], ["Sürgüyü çek", 1.5]]],

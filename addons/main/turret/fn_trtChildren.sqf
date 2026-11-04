@@ -16,7 +16,7 @@
 params ["_veh", "_player"];
 
 private _weapon = ((_veh weaponsTurret [0])) param [0, ""];
-private _kind = [_weapon] call TAC_fnc_trtKind;
+private _kind = [_weapon, _veh] call TAC_fnc_trtKind;
 
 if (_kind isEqualTo "other") exitWith {[]};
 
@@ -71,7 +71,7 @@ private _group = {
 
 if (_kind isEqualTo "mg") then {
     if (TAC_mg_feedStep && {!(_state select 5)}) then {
-        _actions pushBack (["TAC_trt_feed", "Besleme prosedürü", [_weapon] call TAC_fnc_wpnFeedSteps, _state select 10, "feed"] call _group);
+        _actions pushBack (["TAC_trt_feed", "Besleme prosedürü", [_weapon, _veh] call TAC_fnc_trtFeedSteps, _state select 10, "feed"] call _group);
     };
 
     if (_state select 14) then {
@@ -87,7 +87,7 @@ if (_kind isEqualTo "mg") then {
         _actions pushBack (["TAC_trt_prep", "Atış hazırlığı prosedürü", [_weapon, _mag] call TAC_fnc_rktPrepSteps, _state select 10, "rocket"] call _group);
     };
 
-    if (TAC_rkt_guided) then {
+    if (TAC_rkt_guided && {_kind isEqualTo "guided"}) then {
         _actions pushBack (["TAC_trt_battery", "Pili değiştir", "battery", {[_this select 1, "TAC_MissileBattery"] call TAC_fnc_wpnHasItem}] call _plain);
     };
 

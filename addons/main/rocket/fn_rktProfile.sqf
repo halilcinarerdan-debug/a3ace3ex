@@ -23,6 +23,7 @@ if (isNil "TAC_rkt_profileCache") then {TAC_rkt_profileCache = createHashMap};
 if (isNil "TAC_rkt_map") then {[TAC_rkt_table] call TAC_fnc_rktParseTable};
 
 private _key = toLower _weapon;
+private _search = [_weapon] call TAC_fnc_wpnSearchKey;
 private _result = TAC_rkt_profileCache get _key;
 
 if (!isNil "_result") exitWith {_result};
@@ -32,9 +33,9 @@ private _table = [
     [["m72", "rpg18", "rpg22", "rpg26", "rpg75", "rshg"], "disposable", 0.02, "Tek kullanımlık (eski / Doğu)"],
     [["m136", "at4", "nlaw", "apilas"], "disposable", 0.01, "Tek kullanımlık (modern)"],
     [["panzerfaust", "pf60"], "disposable", 0.05, "Panzerfaust (eski)"],
-    [["rpg7", "rpg32"], "reloadable", 0.02, "RPG-7 tipi"],
+    [["rpg7", "rpg32", "spg9"], "reloadable", 0.02, "RPG-7 tipi"],
     [["smaw", "maaws", "mk153", "mraws", "carl"], "reloadable", 0.008, "Modern omuz atarı"],
-    [["javelin", "titan", "stinger", "fim92", "igla", "strela", "metis", "vorona", "tow", "9k"], "guided", 0.025, "Güdümlü füze"]
+    [["javelin", "titan", "stinger", "fim92", "igla", "strela", "metis", "vorona", "tow", "9k", "kornet", "konkurs", "fagot", "spike", "stugna", "mapats"], "guided", 0.025, "Güdümlü füze"]
 ];
 
 private _profile = [];
@@ -42,7 +43,7 @@ private _profile = [];
 {
     _x params ["_patterns", "_category", "_chance", "_label"];
 
-    if (_patterns findIf {(_key find _x) >= 0} >= 0) exitWith {
+    if (_patterns findIf {(_search find _x) >= 0} >= 0) exitWith {
         _profile = [_category, _chance, _label, "tahmin"];
     };
 } forEach _table;

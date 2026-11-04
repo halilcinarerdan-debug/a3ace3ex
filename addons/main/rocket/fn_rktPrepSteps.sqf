@@ -20,7 +20,7 @@
 
 params [["_weapon", "", [""]], ["_magazine", "", [""]]];
 
-private _key = toLower _weapon;
+private _key = [_weapon] call TAC_fnc_wpnSearchKey;
 private _category = ([_weapon] call TAC_fnc_rktProfile) select 0;
 
 private _table = [
@@ -35,7 +35,10 @@ private _table = [
     [["javelin"], [["BCU'yu bağla", 2], ["CLU'ya güç ver", 2], ["Arayıcı soğutmasını başlat", 2]]],
     [["stinger", "fim92"], [["BCU / soğutucu kartuşunu tak", 2.5], ["Güç ver", 1.5], ["IFF ve arayıcıyı başlat", 2]]],
     [["igla", "strela", "9k"], [["Pil-soğutma ünitesini tak", 2.5], ["Güç ver", 1.5], ["Arayıcıyı başlat", 2]]],
-    [["titan", "vorona", "metis", "tow"], [["Güç ve sistem kontrolü", 2.5], ["Arayıcıyı başlat", 2]]]
+    [["tow"], [["Fırlatma tüpünü yerleştir ve kilitle", 3], ["Kablo ve optik bağlantıyı yap", 2.5], ["Gece nişangahı soğutmasını başlat", 2.5], ["Güç ver", 1.5]]],
+    [["metis", "kornet", "konkurs", "fagot", "spike", "stugna", "mapats", "9k"], [["Füze tüpünü raya yerleştir ve kilitle", 3], ["Yönlendirme birimini bağla", 2.5], ["Güç ver, termal soğutmayı başlat", 2.5]]],
+    [["spg9", "spg-9", "recoilless"], [["Namlu kilidini kontrol et", 2], ["Mermiyi yerleştir, kamayı kilitle", 3], ["Emniyeti aç, tetik halatını kur", 2]]],
+    [["titan", "vorona"], [["Güç ve sistem kontrolü", 2.5], ["Arayıcıyı başlat", 2]]]
 ];
 
 private _index = _table findIf {(_x select 0) findIf {(_key find _x) >= 0} >= 0};
