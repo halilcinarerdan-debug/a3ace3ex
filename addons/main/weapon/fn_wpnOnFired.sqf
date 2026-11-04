@@ -73,6 +73,7 @@ if (isNil "ace_overheating_fnc_jamWeapon") exitWith {};
 // MG: besleme kapagi adimi atlandiysa ilk atista besleme arizasi (bir kez).
 if (TAC_mg_feedStep && {[_weapon] call TAC_fnc_wpnIsBeltFed} && {!(_state param [7, true])}) exitWith {
     _state set [7, true];
+    [_unit, _weapon] call TAC_fnc_wpnPublish;
 
     if !(_weapon in (_unit getVariable ["ace_overheating_jammedWeapons", []])) then {
         missionNamespace setVariable ["TAC_wpn_ownJam", time];

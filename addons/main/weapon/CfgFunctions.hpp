@@ -22,6 +22,8 @@ class weapon
     class wpnOnFired {};
     class wpnOnReloaded {};
     class wpnFeedStep {};
+    class wpnFeedApply {};
+    class wpnPublish {};
     class wpnOnPut {};
     class wpnOnTake {};
 

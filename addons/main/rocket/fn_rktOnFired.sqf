@@ -22,6 +22,7 @@ _state set [2, false];
 _state set [3, 0];
 _state set [5, false];
 _state set [10, 0];
+[_unit, _weapon] call TAC_fnc_rktPublish;
 
 // Hedefte patlamama (dud): guduml olmayan roketlerde, ayni kosul carpaniyla (nem, soguk, sicak...).
 if (TAC_rkt_dudChance > 0 && {!isNull _projectile} && {!((([_weapon] call TAC_fnc_rktProfile) select 0) isEqualTo "guided")}) then {

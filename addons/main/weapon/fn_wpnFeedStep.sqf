@@ -26,20 +26,7 @@ if (_index < 0 || {_index >= count _steps}) exitWith {};
 
 [_unit, _label + "...", _seconds * TAC_wpn_cleanTimeMult, {
     params ["_unit", "_args"];
-    _args params ["_weapon", "_index", "_count"];
+    _args params ["_weapon", "_index"];
 
-    private _state = [_unit, _weapon] call TAC_fnc_wpnGetState;
-    private _progress = _state param [8, 0];
-
-    if (_index != _progress) exitWith {
-        _state set [8, 0];
-        ["Hatalı sıra: prosedür baştan başlamalı."] call ace_common_fnc_displayTextStructured;
-    };
-
-    if ((_progress + 1) >= _count) then {
-        _state set [7, true];
-        _state set [8, 0];
-    } else {
-        _state set [8, _progress + 1];
-    };
-}, [_weapon, _index, count _steps], "feed"] call TAC_fnc_wpnRun;
+    [_unit, _index] call TAC_fnc_wpnFeedApply;
+}, [_weapon, _index], "feed"] call TAC_fnc_wpnRun;

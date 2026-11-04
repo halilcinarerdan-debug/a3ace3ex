@@ -884,6 +884,33 @@ MG besleme ve roketatar atış hazırlığı artık tek bir "hazırla" düğmesi
 **Başlığa özel ek adım (güdümsüz roketlerde, son adımdan önce):** mühimmatın `warheadName` / sınıf adına göre: **tandem** -> çift fünye kontrolü (2.5), **termobarik** -> emniyet halkası kontrolü (2), **HE / parçalı** (OG-7 vb.) -> fünye ayarı ani / gecikmeli (2). HEAT'te ek adım yok.
 Sıralar ve süreler gerçek prosedürlere yaklaşık, oyun temposuna göre ayarlandı (tahmin). Değiştirmek için `weapon/fn_wpnFeedSteps.sqf` ve `rocket/fn_rktPrepSteps.sqf` içindeki tablolar.
 
+## Özellik 10 – Koop yardımı (arkadaş silah hazırlığına yardım eder) ve MP uyumluluğu
+
+**Kullanım:** yardım edeceğin arkadaşa bak, **ACE etkileşim tuşuna** (varsayılan sol Windows) bas > **Silah yardımı**. Arkadaşın durumuna göre altta:
+
+- **MG besleme prosedürü:** arkadaşın elinde seçili kayışlı MG var ve besleme hazır değil.
+- **Atış hazırlığı prosedürü:** arkadaşın fırlatıcısı yüklü ve hazır değil (güdümlü füzede pil / soğutma açılışı dahil).
+
+Adımlar silaha ve başlığa özeldir, alfabetik listelenir (doğru sırayı **yardımcı** bilmelidir). Yardımcının çubuğu yürür; her adım `Yardımlı adım süre çarpanı` (0.7, ikili çalışma daha hızlı) ile kısalır. Adım arkadaşın makinesine gider ve **orada** sıra doğrulanır: yanlış sıra prosedürü sıfırlar, doğru adımlar birikir, son adımda silah hazır olur. Arkadaş kendi adımlarıyla da yardımcıyla da ilerleyebilir (aynı ilerleme).
+Koşullar: aynı taraf, oyuncu, 4 m içinde, ikisi de yaşıyor ve bilinci açık. CBA: `TAC_assist_enabled`, `TAC_assist_speed`.
+
+### MP / coop denetimi
+
+| Konu | Durum |
+|------|-------|
+| Silah / optik / roket durumu, nem, zarlar | birimde **yerel**, ağa yayılmaz; ayarlar sunucudan senkron / `force` edilebilir |
+| Hazırlık ilerlemesi (yardım için) | yalnızca küçük, değişince yayınlanan `TAC_pub_feed` / `TAC_pub_rkt` |
+| Yardım adımı | yardımcıdan, durumun sahibinin makinesine **CBA hedefli olayı** (`TAC_assistStep`); doğrulama ve sonuç sahipte |
+| Hasar (namlu yanığı, roket erken müdahale yok) | yalnızca yerel birime, sahibin makinesinde |
+| UXO (patlamamış mühimmat) | sunucuda yaratılır (`enableSimulationGlobal` yalnızca sunucuda çalışır), herkese görünür |
+| Fırlatıcı / silah bırakma-alma durumu | kapta herkese yayınlanan `TAC_rkt_stash` / `TAC_wpn_stash` |
+| Dedicated sunucu / HC | sunucuda yalnızca olay dinleyicileri (UXO, namlu yanığı yönlendirmesi, yardım olayı); arayüz kodu `hasInterface` ile atlanır |
+| Ses | `playSound3D` global: yakındaki herkes bakım seslerini duyar |
+
+### Tek başına test
+
+CBA'da silah bakımı **Test modu**nu aç: ACE self-menüsünde **Silah yardımı (test: kendi silahım)** çıkar. Yardımcı da hedef de sen olursun, adım yine olay yoluyla (gerçek koop yolu) uygulanır. Adımları yardımlı yoldan (kısaltılmış süreyle) uygula; kendi prosedür menünle karşılaştır. Gerçek iki kişilik testte (arkadaşın makinesi) aynı akış çalışır; tek kişilikte ağ gecikmesi / yerellik farkları test edilemez.
+
 ## Özellik 9 – Roketatar / füze: ateşlenmeme ve doktrin
 
 Yalnızca RPG-7 değil, **ikincil silah olan her fırlatıcı** (vanilla, RHS, CUP) kapsanır; tür config'ten / sınıf adından belirlenir:

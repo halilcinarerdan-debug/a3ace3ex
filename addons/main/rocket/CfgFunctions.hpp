@@ -19,6 +19,8 @@ class rocket
     class rktOnPut {};
 
     class rktStep {};
+    class rktStepApply {};
+    class rktPublish {};
     class rktPrepDone {};
     class rktPrepSteps {};
     class rktPowerOff {};

@@ -34,6 +34,7 @@ if (_weapon isEqualTo "") exitWith {};
     _state set [3, 0];
     _state set [5, false];
     _state set [10, 0];
+    [_unit, _weapon] call TAC_fnc_rktPublish;
 
     if ((_profile select 0) isEqualTo "disposable") then {
         _unit removeWeapon _weapon;

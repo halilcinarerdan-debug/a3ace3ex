@@ -31,3 +31,6 @@ call TAC_fnc_optInitSettings;
 
 // 9. Roketatar / füze
 call TAC_fnc_rktInitSettings;
+
+// 10. Koop yardımı
+call TAC_fnc_assistInitSettings;

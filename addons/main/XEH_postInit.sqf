@@ -11,6 +11,9 @@ call TAC_fnc_mgInit;
 // 9. Roketatar: kalıcı patlamamış mühimmat (sunucu)
 call TAC_fnc_rktInit;
 
+// 10. Koop yardımı: yardım olayı (sahibin makinesinde uygulanır)
+call TAC_fnc_assistInit;
+
 // Her şey oyuncu arayüzüyle ilgili: sunucuda / headless client'ta yapacak iş yok.
 if (!hasInterface) exitWith {};
 
@@ -37,3 +40,6 @@ call TAC_fnc_optPostInit;
 
 // 9. Roketatar / füze
 call TAC_fnc_rktPostInit;
+
+// 10. Koop yardımı: arkadaşın silah menüsü
+call TAC_fnc_assistPostInit;

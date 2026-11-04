@@ -19,9 +19,9 @@ class CfgPatches
         magazines[] = {"TAC_SpareBarrel_Light", "TAC_SpareBarrel_Heavy"};
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu", "ace_overheating"};
-        version = 0.19;
-        versionStr = "0.19.0";
-        versionAr[] = {0,19,0};
+        version = 0.20;
+        versionStr = "0.20.0";
+        versionAr[] = {0,20,0};
     };
 };
 
@@ -94,6 +94,9 @@ class CfgFunctions
 
         // 9. Roketatar / fuze: ateslenmeme, bekleme, muhimmat cikarma
         #include "rocket\CfgFunctions.hpp"
+
+        // 10. Koop yardimi (arkadasin silah hazirligina yardim)
+        #include "assist\CfgFunctions.hpp"
     };
 };
 

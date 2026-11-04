@@ -33,3 +33,4 @@ if (TAC_rkt_guided && {_category isEqualTo "guided"}) then {
 
 _state set [5, true];
 _state set [10, 0];
+[_unit, _weapon] call TAC_fnc_rktPublish;
