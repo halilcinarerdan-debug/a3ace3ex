@@ -689,6 +689,17 @@ Eşyalar: `TAC_WeaponCleaningKit`, `TAC_WeaponOil`, `TAC_WeaponSpareParts`. Hede
 | `TAC_wpn_testMode` / `TAC_wpn_testMult` (test çarpanı) | kapalı / 20 |
 | `TAC_wpn_debug` (arıza nedeni göstergesi) | kapalı, kişisel |
 
+### Başka modların silahlarıyla uyum (TMT, RHS, CUP...)
+
+Sistem classname'e **ve görünen ada**, bilinmeyen silahta mühimmat **kalibresine** ve **kategoriye** (tüfek / MG / tabanca / fırlatıcı / güdümlü) bakar; yani TMT gibi tabloda adı olmayan modların silahları da bir profil alır (kalibre yedeği, "tahmin"). Doğrulamak ve yanlış sınıflananı bulmak için tarama aracı:
+
+```sqf
+["tmt"] call TAC_fnc_wpnScan     // classname'inde "tmt" geçen tüm silahlar ve statikler (mod yüklüyken, yerel çalıştır)
+```
+
+Çıktı (ekrana özet, RPT'ye `[TAC][SCAN]` satırları, panoya tam liste) her silah için kategori, güvenilirlik profili (etiket, MRBS, kalite), kayışlı MG mi, fırlatıcıysa tür ve taban ateşlenmeme; tabloda adı bulunamayıp **GENEL** profile düşenleri işaretler; statik silahlar için atanan türü yazar.
+Yanlış çıkanı elle düzeltmek: CBA `MRBS tablosu` (`classname=MRBS`), `MG olarak zorla`, `Ateşlenmeme tablosu`. Kalıcı düzeltme için çıktıyı bana gönder, tablolara alt dize eklenir. ACE yedek namlu / namlu değiştirme için MG'nin ACE'de işaretli (`ace_overheating_allowSwapBarrel`) olması gerekir; TMT MG'leri işaretli değilse besleme prosedürü ve namlu değiştirme onlarda çıkmaz (gerekirse ayrı bir TMT uyumluluk PBO'su yazılır: sınıf adları gerekir).
+
 ### Silahı yere atmak / başkasının alması (kalıcılık)
 
 Silah yere / kutuya / araca / cesede konunca **her şey** silahla birlikte saklanır ve alan kişiye (aynı oyuncu ya da başkası) geçer:

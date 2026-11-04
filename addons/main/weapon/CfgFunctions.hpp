@@ -46,4 +46,5 @@ class weapon
 
     // Teshis (debug konsolu: call TAC_fnc_wpnDebug)
     class wpnDebug {};
+    class wpnScan {};
 };
