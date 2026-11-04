@@ -42,19 +42,19 @@ if (!isNil "_result") exitWith {_result};
 // [alt dizeler, MRBS, kir duyarliligi, yag duyarliligi, etiket, kalite]
 private _table = [
     // --- Surgulu tufekler (ilk: "mosin_sbr", "cz750" gibi adlar baska satirlara carpmasin) ---
-    [["remington700", "awm", "cz550", "cz750", "leeenfield", "mosin", "kar98", "m38", "t5000", "orsis", "m2010", "xm2010", "lrr", "m24sws", "cup_srifle_m24", "m40a"], 15000, 0.2, 0.3, "Sürgülü tüfek", "tahmin"],
+    [["remington700", "awm", "cz550", "cz750", "l115", "jng90", "m200", "leeenfield", "mosin", "kar98", "m38", "t5000", "orsis", "m2010", "xm2010", "lrr", "m24sws", "cup_srifle_m24", "m40a"], 15000, 0.2, 0.3, "Sürgülü tüfek", "tahmin"],
     // --- Makineli tufekler ---
     [["m60"], 850, 0.6, 0.6, "M60", "kaynak"],
     [["m240", "mk48"], 2900, 0.55, 0.5, "M240 / Mk48", "kaynak"],
     [["m249", "minimi", "mk46", "saw_base", "lmg_03"], 1000, 0.6, 0.6, "M249 / Minimi", "tahmin"],
     [["pkm", "pkp", "pecheneg", "zafir"], 3000, 0.35, 0.4, "PKM / PKP", "tahmin"],
-    [["lmg_mg3", "mg42", "uk59"], 2500, 0.5, 0.5, "MG3 / MG42", "tahmin"],
+    [["lmg_mg3", "tmt_mg3", "mg42", "uk59"], 2500, 0.5, 0.5, "MG3 / MG42", "tahmin"],
     [["rpk"], 4500, 0.3, 0.3, "RPK", "tahmin"],
     [["arifle_mx_sw"], 1800, 0.6, 0.6, "MX SW", "tahmin"],
     // --- Dogrudan gazli AR (M16 / M4 / AR-15 ailesi) ---
     [["m16a1", "xm16e1"], 1500, 1.2, 1.0, "M16A1", "tahmin"],
     [["m16"], 3600, 1.0, 1.0, "M16A2 / A4", "kaynak"],
-    [["m4a1", "m4a3", "m4_", "mk18", "mk12", "colt727", "_sbr"], 3600, 1.0, 1.0, "M4 / M4A1", "kaynak"],
+    [["m4a1", "m4a3", "m4_", "mk18", "mk12", "colt727", "_sbr", "=tmt_m4"], 3600, 1.0, 1.0, "M4 / M4A1", "kaynak"],
     [["sr25", "m110", "mk11", "l129a1", "rsass", "dmr_02", "dmr_03"], 3200, 0.9, 0.9, "SR-25 / AR-10 tipi", "tahmin"],
     // --- Piston / modern ---
     [["hk416", "m27", "hk_m27"], 4500, 0.41, 0.5, "HK416 / M27", "kaynak"],
@@ -62,10 +62,10 @@ private _table = [
     [["xm8"], 5000, 0.24, 0.4, "XM8", "kaynak"],
     [["g36", "mg36"], 4000, 0.45, 0.5, "G36", "tahmin"],
     [["l85", "l86"], 2500, 0.6, 0.6, "L85A2", "tahmin"],
-    [["hk417", "g3_", "_g3", "rhs_weap_g3"], 4000, 0.4, 0.5, "G3 / HK417", "tahmin"],
+    [["hk417", "g3_", "_g3", "rhs_weap_g3", "g3a4", "hkg3", "hk33", "mpt_76", "mpt76"], 4000, 0.4, 0.5, "G3 / HK33 / MPT-76", "tahmin"],
     [["fal", "l1a1", "fnfal", "gewehr1", "stg58", "stgw57", "dsa_sa58"], 3500, 0.6, 0.6, "FAL", "tahmin"],
     [["m14", "cup_srifle_m21", "ebr", "dmr_06"], 3000, 0.6, 0.6, "M14", "tahmin"],
-    [["famas", "aug", "acr", "tavor", "x95", "cz805", "bren2", "vhs2", "vhsd2", "vhsk2", "xm29", "m29_ke", "arifle_spar", "arifle_ctar", "arifle_arx", "arifle_trg", "arifle_mk20"], 4000, 0.45, 0.5, "Modern 5.56 (piston/bullpup)", "tahmin"],
+    [["famas", "aug", "acr", "tavor", "x95", "cz805", "bren2", "tar21", "tar_21", "sig516", "vhs2", "vhsd2", "vhsk2", "xm29", "m29_ke", "arifle_spar", "arifle_ctar", "arifle_arx", "arifle_trg", "arifle_mk20"], 4000, 0.45, 0.5, "Modern 5.56 (piston/bullpup)", "tahmin"],
     // --- AK ve turevleri ---
     [["_ak", "ak74", "akm", "ak47", "groza", "romat", "type_56", "type56", "sa58", "sa56", "vz58", "saiga", "siage", "galil", "arifle_katiba", "rhs_weap_m21", "rhs_weap_m70", "rhs_weap_m92"], 5000, 0.25, 0.3, "AK ailesi", "tahmin"],
     [["mp44"], 3500, 0.5, 0.5, "StG 44", "tahmin"],
@@ -73,7 +73,8 @@ private _table = [
     [["arifle_mx"], 3600, 0.6, 0.6, "MX", "tahmin"],
     // --- Keskin nisanci ---
     [["svd", "vss", "vikhr", "asval", "as_val", "ksvk", "rhs_weap_m76"], 4000, 0.4, 0.4, "SVD / VSS / AS Val", "tahmin"],
-    [["m107", "gm6", "as50"], 2000, 0.5, 0.5, "Ağır keskin nişancı", "tahmin"],
+    [["m107", "gm6", "as50", "m82"], 2000, 0.5, 0.5, "Ağır keskin nişancı", "tahmin"],
+    [["mke_mgl", "milkor"], 3000, 0.5, 0.5, "Milkor MGL (40 mm)", "tahmin"],
     [["m1garand", "sks"], 3000, 0.5, 0.5, "Eski yarı otomatik", "tahmin"],
     // --- Pompali / SMG ---
     [["m590", "izh18", "hunter"], 8000, 0.3, 0.3, "Pompalı", "tahmin"],
@@ -81,7 +82,7 @@ private _table = [
     [["mp5", "mp7", "p90", "ps90", "smg_0"], 4000, 0.5, 0.5, "MP5 / MP7 / P90 / modern SMG", "tahmin"],
     [["uzi", "mac10", "tec9", "m3a1", "bizon", "vityaz", "sa61", "smg_evo"], 3000, 0.7, 0.6, "Eski / ucuz SMG", "tahmin"],
     // --- Tabancalar ---
-    [["=rhsusf_weap_m9", "=cup_hgun_m9", "92fs", "beretta"], 5000, 0.5, 0.5, "Beretta M9", "tahmin"],
+    [["=rhsusf_weap_m9", "=cup_hgun_m9", "92fs", "beretta", "tmt_m92"], 5000, 0.5, 0.5, "Beretta M9", "tahmin"],
     [["glock"], 6000, 0.4, 0.4, "Glock", "tahmin"],
     [["p07", "p30", "p99", "rook40", "cz75", "browning_hp", "hgun_compact", "duty", "m17"], 5000, 0.45, 0.45, "Modern 9 mm tabanca", "tahmin"],
     [["1911", "acpc2", "mk23", "heavy_01"], 2500, 0.7, 0.7, "M1911 / .45 ACP", "tahmin"],

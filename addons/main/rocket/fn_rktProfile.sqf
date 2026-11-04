@@ -35,7 +35,7 @@ private _table = [
     [["panzerfaust", "pf60"], "disposable", 0.05, "Panzerfaust (eski)"],
     [["rpg7", "rpg32", "spg9"], "reloadable", 0.02, "RPG-7 tipi"],
     [["smaw", "maaws", "mk153", "mraws", "carl"], "reloadable", 0.008, "Modern omuz atarı"],
-    [["javelin", "titan", "stinger", "fim92", "igla", "strela", "metis", "vorona", "tow", "9k", "kornet", "konkurs", "fagot", "spike", "stugna", "mapats"], "guided", 0.025, "Güdümlü füze"]
+    [["javelin", "titan", "stinger", "fim92", "igla", "strela", "metis", "vorona", "tow", "9k", "eryx", "kornet", "konkurs", "fagot", "spike", "stugna", "mapats"], "guided", 0.025, "Güdümlü füze"]
 ];
 
 private _profile = [];

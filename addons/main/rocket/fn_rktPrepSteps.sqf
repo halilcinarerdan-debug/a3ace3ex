@@ -36,7 +36,7 @@ private _table = [
     [["stinger", "fim92"], [["BCU / soğutucu kartuşunu tak", 2.5], ["Güç ver", 1.5], ["IFF ve arayıcıyı başlat", 2]]],
     [["igla", "strela", "9k38", "9k32", "9k34"], [["Pil-soğutma ünitesini tak", 2.5], ["Güç ver", 1.5], ["Arayıcıyı başlat", 2]]],
     [["tow"], [["Fırlatma tüpünü yerleştir ve kilitle", 3], ["Kablo ve optik bağlantıyı yap", 2.5], ["Gece nişangahı soğutmasını başlat", 2.5], ["Güç ver", 1.5]]],
-    [["metis", "kornet", "konkurs", "fagot", "spike", "stugna", "mapats", "9k133", "9k113", "9k115", "9k111", "9m133", "9m113"], [["Füze tüpünü raya yerleştir ve kilitle", 3], ["Yönlendirme birimini bağla", 2.5], ["Güç ver, termal soğutmayı başlat", 2.5]]],
+    [["metis", "eryx", "kornet", "konkurs", "fagot", "spike", "stugna", "mapats", "9k133", "9k113", "9k115", "9k111", "9m133", "9m113"], [["Füze tüpünü raya yerleştir ve kilitle", 3], ["Yönlendirme birimini bağla", 2.5], ["Güç ver, termal soğutmayı başlat", 2.5]]],
     [["spg9", "spg-9", "recoilless"], [["Namlu kilidini kontrol et", 2], ["Mermiyi yerleştir, kamayı kilitle", 3], ["Emniyeti aç, tetik halatını kur", 2]]],
     [["titan", "vorona"], [["Güç ve sistem kontrolü", 2.5], ["Arayıcıyı başlat", 2]]]
 ];

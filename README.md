@@ -700,6 +700,8 @@ Sistem classname'e **ve görünen ada**, bilinmeyen silahta mühimmat **kalibres
 Çıktı (ekrana özet, RPT'ye `[TAC][SCAN]` satırları, panoya tam liste) her silah için kategori, güvenilirlik profili (etiket, MRBS, kalite), kayışlı MG mi, fırlatıcıysa tür ve taban ateşlenmeme; tabloda adı bulunamayıp **GENEL** profile düşenleri işaretler; statik silahlar için atanan türü yazar.
 Yanlış çıkanı elle düzeltmek: CBA `MRBS tablosu` (`classname=MRBS`), `MG olarak zorla`, `Ateşlenmeme tablosu`. Kalıcı düzeltme için çıktıyı bana gönder, tablolara alt dize eklenir. ACE yedek namlu / namlu değiştirme için MG'nin ACE'de işaretli (`ace_overheating_allowSwapBarrel`) olması gerekir; TMT MG'leri işaretli değilse besleme prosedürü ve namlu değiştirme onlarda çıkmaz (gerekirse ayrı bir TMT uyumluluk PBO'su yazılır: sınıf adları gerekir).
 
+**TMT (taranıp doğrulandı, 99 silah + 5 statik):** tüm TMT M4 / M16 / HK416 / SVD / AK / PKM / Minimi / M60E4 / M72 / Stinger / TOW eşleşti. GENEL'e düşenler için eşleşmeler eklendi: Tar-21, Sig516, HK G3A4 / HK33, MPT-76, M200 / L115 / JNG90 (sürgülü), M82, M92 (Beretta), düz TMT_M4, MG3, Milkor MGL, ERYX (güdümlü). TMT MG'leri ACE'de namlu değiştirilebilir işaretli olmadığı için kayışlı MG sayılmıyordu; artık güvenilirlik profili kayışlı aileden (M60, M240, M249 / Minimi, PKM, MG3) olan MG'ler ACE işareti olmasa da kayışlı sayılır ve besleme prosedürü çıkar.
+
 ### Silahı yere atmak / başkasının alması (kalıcılık)
 
 Silah yere / kutuya / araca / cesede konunca **her şey** silahla birlikte saklanır ve alan kişiye (aynı oyuncu ya da başkası) geçer:
