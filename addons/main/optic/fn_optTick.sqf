@@ -2,7 +2,8 @@
     Fonksiyon: TAC_fnc_optTick
     Çalışma yeri: İstemci (CBA PFH, 0.5 sn'de bir, yalnızca optikten bakarken)
 
-    1. Hâlâ optikten bakılıyor mu? Değilse döngüyü durdurur.
+    1. Hâlâ optikten bakılıyor mu? Değilse döngüyü durdurur. Optik modu büyütmeli değilse (Ctrl + sağ tık ile
+       kırmızı nokta / demir nişan moduna geçilmişse) etkiyi kapatır, durumu değiştirmez (döngü sürer).
     2. Buğu:  fogF = min(1, 0.7 x soğuk + 0.6 x ıslaklık)
          soğuk = clamp((10 - sıcaklık) / 15, 0, 1)   (10 °C ve üstü 0, -5 °C ve altı 1)
          ıslaklık = yağmur (0..1), sığ suda 1
@@ -25,6 +26,13 @@ if !([_unit] call TAC_fnc_optActive) exitWith {
 };
 
 private _state = [_unit, currentWeapon _unit] call TAC_fnc_optGetState;
+
+// Ctrl + sag tikla kirmizi nokta / demir nisan moduna gecildiyse: etki yok, durum da degismez.
+if !([_unit] call TAC_fnc_optModeMagnified) exitWith {
+    _state set [2, time];
+    call TAC_fnc_optClearEffects;
+};
+
 private _now = time;
 private _dt = ((_now - (_state select 2)) max 0) min 2;
 private _accel = if (TAC_wpn_testMode) then {TAC_wpn_testMult} else {1};

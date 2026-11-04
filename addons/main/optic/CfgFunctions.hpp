@@ -9,6 +9,7 @@ class optic
     class optIsSealed {};
     class optGetState {};
     class optActive {};
+    class optModeMagnified {};
     class optInspectLines {};
 
     // Etki (yalnizca optikten bakilirken)
