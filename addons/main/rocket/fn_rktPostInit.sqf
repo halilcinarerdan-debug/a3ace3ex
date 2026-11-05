@@ -32,6 +32,9 @@ private _menu = [
         && {alive _player}
         && {!(_player getVariable ["ACE_isUnconscious", false])}
         && {!((secondaryWeapon _player) isEqualTo "")}
+        // Yalnizca fırlatici ELDE secili ve yuklu muhimmat (roket basligi) varken
+        && {(currentWeapon _player) isEqualTo (secondaryWeapon _player)}
+        && {(_player ammo (secondaryWeapon _player)) > 0}
     }
 ] call ace_interact_menu_fnc_createAction;
 

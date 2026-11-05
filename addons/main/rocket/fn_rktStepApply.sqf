@@ -18,7 +18,8 @@ params [["_unit", objNull, [objNull]], ["_index", 0, [0]]];
 if (!local _unit) exitWith {};
 
 private _weapon = secondaryWeapon _unit;
-if (_weapon isEqualTo "" || {(_unit ammo _weapon) < 1}) exitWith {};
+// Fırlatıcı sahibinin ELİNDE seçili ve yüklü olmalı (yardım olayı geldiğinde de)
+if (_weapon isEqualTo "" || {(_unit ammo _weapon) < 1} || {!((currentWeapon _unit) isEqualTo _weapon)}) exitWith {};
 
 private _mags = secondaryWeaponMagazine _unit;
 private _magazine = if (_mags isEqualTo []) then {currentMagazine _unit} else {_mags select 0};

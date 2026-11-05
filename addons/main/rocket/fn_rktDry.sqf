@@ -14,6 +14,7 @@
 params [["_unit", objNull, [objNull]]];
 
 private _weapon = secondaryWeapon _unit;
+if (!((currentWeapon _unit) isEqualTo _weapon) || {_weapon isEqualTo ""}) exitWith {};
 if (_weapon isEqualTo "") exitWith {};
 
 [_unit, "Mühimmat kurulanıyor...", 10 * TAC_wpn_cleanTimeMult, {

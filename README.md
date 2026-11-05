@@ -940,6 +940,20 @@ Koşullar: aynı taraf, oyuncu, 4 m içinde, ikisi de yaşıyor ve bilinci açı
 
 CBA'da silah bakımı **Test modu**nu aç: ACE self-menüsünde **Silah yardımı (test: kendi silahım)** çıkar. Yardımcı da hedef de sen olursun, adım yine olay yoluyla (gerçek koop yolu) uygulanır. Adımları yardımlı yoldan (kısaltılmış süreyle) uygula; kendi prosedür menünle karşılaştır. Gerçek iki kişilik testte (arkadaşın makinesi) aynı akış çalışır; tek kişilikte ağ gecikmesi / yerellik farkları test edilemez.
 
+## Etkileşim kuralı: silah ELDE olmalı
+
+Silah bakımı, MG besleme, roketatar ve optik menüleri **yalnızca ilgili silah elde seçiliyken** açılır; hem kendin için hem arkadaşına yardım ederken:
+
+| Menü | Koşul |
+|------|-------|
+| Silah Bakımı (incele, temizle, yağla, arıza gider, parça değiştir) | elde seçili, takip edilen silah (tüfek / MG / tabanca); sırtta ya da seçili değilse menü yok |
+| MG besleme prosedürü | elde seçili **kayışlı MG** |
+| Optiği sil | elde seçili birincil silahta büyütmeli optik |
+| Roketatar (incele, hazırlık, kurula, pil, mühimmat çıkar) | fırlatıcı elde seçili **ve** yüklü mühimmat (roket başlığı / füze) var |
+| Arkadaşa yardım (Silah yardımı) | **arkadaşın** MG'si / fırlatıcısı elinde seçili (MG: yüklü kayışlı; fırlatıcı: yüklü mühimmat) |
+
+Hazırlık adımları da (kendi ya da yardımlı) adım bitiminde silahın hâlâ elde olduğunu doğrular: silah değiştirilirse adım uygulanmaz. Sabit silahlarda kural zaten gunner koltuğu / silahın yanı.
+
 ## Özellik 9 – Roketatar / füze: ateşlenmeme ve doktrin
 
 Yalnızca RPG-7 değil, **ikincil silah olan her fırlatıcı** (vanilla, RHS, CUP) kapsanır; tür config'ten / sınıf adından belirlenir:

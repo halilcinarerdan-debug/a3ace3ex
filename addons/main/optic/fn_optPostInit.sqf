@@ -36,6 +36,7 @@ private _wipe = [
 
         TAC_opt_enabled
         && {time >= (_player getVariable ["TAC_wpn_busyUntil", 0])}
+        && {(currentWeapon _player) isEqualTo (primaryWeapon _player)}
         && {[((primaryWeaponItems _player) select 2)] call TAC_fnc_optIsSealed}
         && {[_player, "TAC_LensCloth"] call TAC_fnc_wpnHasItem}
     }

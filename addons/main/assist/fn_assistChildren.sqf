@@ -61,7 +61,7 @@ if (TAC_mg_feedStep && {[_mg] call TAC_fnc_wpnIsBeltFed} && {!(_feed isEqualTo [
 private _launcher = secondaryWeapon _target;
 private _prep = _target getVariable ["TAC_pub_rkt", []];
 
-if (TAC_rkt_prepare && {!(_launcher isEqualTo "")} && {(_target ammo _launcher) > 0} && {!(_prep isEqualTo [])} && {(_prep select 0) isEqualTo _launcher} && {!(_prep select 1)}) then {
+if (TAC_rkt_prepare && {!(_launcher isEqualTo "")} && {(currentWeapon _target) isEqualTo _launcher} && {(_target ammo _launcher) > 0} && {!(_prep isEqualTo [])} && {(_prep select 0) isEqualTo _launcher} && {!(_prep select 1)}) then {
     private _mags = secondaryWeaponMagazine _target;
     private _steps = [_launcher, if (_mags isEqualTo []) then {""} else {_mags select 0}] call TAC_fnc_rktPrepSteps;
     private _list = [];

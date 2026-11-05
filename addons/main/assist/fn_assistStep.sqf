@@ -31,6 +31,9 @@ if (_kind isEqualTo "feed") then {
     _steps = [_weapon, if (_mags isEqualTo []) then {""} else {_mags select 0}] call TAC_fnc_rktPrepSteps;
 };
 
+// Arkadaşın silahı ELİNDE seçili olmalı (MG: currentWeapon zaten; fırlatıcı: burada doğrulanır)
+if (_kind isEqualTo "rocket" && {!((currentWeapon _target) isEqualTo _weapon)}) exitWith {};
+
 if (_weapon isEqualTo "" || {_index < 0} || {_index >= count _steps}) exitWith {};
 
 (_steps select _index) params ["_label", "_seconds"];

@@ -16,7 +16,7 @@ params [["_unit", objNull, [objNull]]];
 
 private _weapon = primaryWeapon _unit;
 
-if (_weapon isEqualTo "" || {!([((primaryWeaponItems _unit) select 2)] call TAC_fnc_optIsSealed)}) exitWith {};
+if (_weapon isEqualTo "" || {!((currentWeapon _unit) isEqualTo _weapon)} || {!([((primaryWeaponItems _unit) select 2)] call TAC_fnc_optIsSealed)}) exitWith {};
 
 [_unit, "Optik siliniyor...", 4 * TAC_wpn_cleanTimeMult, {
     params ["_unit", "_args"];

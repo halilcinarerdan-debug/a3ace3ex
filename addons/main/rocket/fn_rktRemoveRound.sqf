@@ -17,6 +17,7 @@
 params [["_unit", objNull, [objNull]]];
 
 private _weapon = secondaryWeapon _unit;
+if (!((currentWeapon _unit) isEqualTo _weapon) || {_weapon isEqualTo ""}) exitWith {};
 if (_weapon isEqualTo "") exitWith {};
 
 [_unit, "Ateşlenmeyen mühimmat çıkarılıyor...", 8 * TAC_wpn_cleanTimeMult, {
