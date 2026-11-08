@@ -1,437 +1,282 @@
 #!/usr/bin/env python3
-"""TAC envanter ikonlari v2 (256x256 PNG, seffaf zemin): gercekci / mat / soluk renkli, ince doku ve isik hesabi.
-Kullanim: python3 tools/gen_icons.py   (Pillow + numpy gerekir)
-Cikti: addons/main/data/icons/*_ca.png  (Arma icin .paa'ya cevrilmeli; bkz. README)
-Silindirler Lambert + speküler ile, kutular uc yuzlu (on / ust / yan) isiklandirilir; naylon / metal gren dokusu eklenir."""
-import math, os
+"""TAC envanter ikonlari v3: gercek 3 boyutlu cizim (SDF ray-marching, tools/sdf3d.py): bevel, yumusak golge, AO, dokulu malzeme.
+Kullanim: python3 tools/gen_icons.py   (Pillow + numpy gerekir; ~1 dk)
+Cikti: addons/main/data/icons/*_ca.png (256x256, seffaf zemin) -> Arma icin .paa'ya cevrilmeli (bkz. README)."""
+import os, sys, math
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
-K = 3
-N = 256 * K
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from sdf3d import *
+
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'addons', 'main', 'data', 'icons')
 os.makedirs(OUT, exist_ok=True)
-RNG = np.random.default_rng(11)
-LIGHT = np.array([-0.55, -0.45, 0.70]); LIGHT = LIGHT / np.linalg.norm(LIGHT)
-
 FONTS = ['/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf', '/usr/share/fonts/truetype/liberation/LiberationMono-Bold.ttf']
+SIZE = 256
 
 
 def font(px):
     for f in FONTS:
         if os.path.exists(f):
-            return ImageFont.truetype(f, int(px * K))
+            return ImageFont.truetype(f, px)
     return ImageFont.load_default()
 
 
-def s(v):
-    return int(round(v * K))
+def decal(w, h, items, bg=(0, 0, 0, 0)):
+    """items: [(kind, ...)] 'text',(x,y),txt,px,color  /  'rect',(x0,y0,x1,y1),color"""
+    im = Image.new('RGBA', (w, h), bg)
+    d = ImageDraw.Draw(im)
+    for it in items:
+        if it[0] == 'text':
+            d.text(it[1], it[2], font=font(it[3]), fill=it[4], anchor='mm')
+        elif it[0] == 'rect':
+            d.rectangle(it[1], fill=it[2])
+        elif it[0] == 'poly':
+            d.polygon(it[1], fill=it[2])
+    return im
 
 
-def canvas():
-    return Image.new('RGBA', (N, N), (0, 0, 0, 0))
+def planar(img, cx, cy, w, h, normal_min=0.55, face_z=True):
+    """Duz yuzey uzerine decal: Pr yerel koordinat, on yuz (+z)."""
+    def fn(P, a, N):
+        u = (P[:, 0] - cx) / w + 0.5
+        v = (P[:, 1] - cy) / h + 0.5
+        m = (u >= 0) & (u <= 1) & (v >= 0) & (v <= 1) & (N[:, 2] > normal_min)
+        t = tex_from_image(img, np.clip(u, 0, 1), np.clip(v, 0, 1))
+        al = (t[:, 3] * m)[:, None]
+        return a * (1 - al) + t[:, :3] * al
+    return fn
 
 
-def shadow(img, box, blur=9, alpha=85):
-    sh = Image.new('RGBA', img.size, (0, 0, 0, 0))
-    ImageDraw.Draw(sh).ellipse([s(box[0]), s(box[1]), s(box[2]), s(box[3])], fill=(0, 0, 0, alpha))
-    img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(s(blur))))
+def wrap(img, cx, cz, y0, hgt, span=0.95):
+    """Dikey silindire sarilmis decal (on yuz). u: aci, v: yukseklik."""
+    def fn(P, a, N):
+        th = np.arctan2(P[:, 0] - cx, P[:, 2] - cz)
+        u = (th + span) / (2 * span)
+        v = (P[:, 1] - y0) / hgt
+        m = (np.abs(th) < span) & (v >= 0) & (v <= 1)
+        t = tex_from_image(img, np.clip(u, 0, 1), np.clip(v, 0, 1))
+        al = (t[:, 3] * m)[:, None]
+        return a * (1 - al) + t[:, :3] * al
+    return fn
 
 
-def grain(w, h, amp=14, scale=1.0):
-    n = RNG.normal(0, 1, (h, w))
-    im = Image.fromarray(np.clip(n * 40 + 128, 0, 255).astype('uint8')).filter(ImageFilter.GaussianBlur(scale * K * 0.5))
-    a = np.asarray(im).astype('float32') - 128
-    return a / max(1e-6, a.std()) * amp
+def chain(*fns):
+    def fn(P, a, N):
+        for f in fns:
+            a = f(P, a, N)
+        return a
+    return fn
 
 
-def weave(w, h, amp=10, pitch=3):
-    y, x = np.mgrid[0:h, 0:w]
-    v = (np.sin(x / (pitch * K) * math.pi) * np.sin(y / (pitch * K) * math.pi))
-    return v * amp
+def view(ax=0.42, ay=-0.5, az=0.0):
+    return lambda p: rot(p, ax, ay, az)
 
 
-def shade_cyl(w, h, color, axis_vertical=True, spec=0.45, tex=10, rough=0.0):
-    """Silindir yuzeyi: kenarlara dogru kararir, soldan ust isik, hafif speküler. Dondurur RGBA (h,w)."""
-    if axis_vertical:
-        u = (np.linspace(-1, 1, w))[None, :].repeat(h, 0)
-    else:
-        u = (np.linspace(-1, 1, h))[:, None].repeat(w, 1)
-    nz = np.sqrt(np.clip(1 - u ** 2, 0, 1))
-    if axis_vertical:
-        nx, ny = u, np.zeros_like(u)
-    else:
-        nx, ny = np.zeros_like(u), u
-    diff = np.clip(nx * LIGHT[0] + ny * LIGHT[1] + nz * LIGHT[2], 0, 1)
-    h_vec = LIGHT + np.array([0, 0, 1]); h_vec = h_vec / np.linalg.norm(h_vec)
-    sp = np.clip(nx * h_vec[0] + ny * h_vec[1] + nz * h_vec[2], 0, 1) ** (40 if rough == 0 else 14) * spec
-    base = np.array(color[:3], dtype='float32')[None, None, :]
-    rgb = base * (0.28 + 0.85 * diff[..., None]) + 255 * sp[..., None]
-    rgb = rgb + grain(w, h, tex)[..., None]
-    a = np.full((h, w, 1), 255, dtype='float32')
-    return np.clip(np.concatenate([rgb, a], axis=2), 0, 255).astype('uint8')
+def save(img, name):
+    img.save(os.path.join(OUT, name + '_ca.png'))
 
 
-def paste_arr(img, arr, x, y, mask=None):
-    im = Image.fromarray(arr, 'RGBA')
-    if mask is not None:
-        im.putalpha(mask)
-    img.alpha_composite(im, (x, y))
-
-
-def rr_mask(w, h, r):
-    m = Image.new('L', (w, h), 0)
-    ImageDraw.Draw(m).rounded_rectangle([0, 0, w - 1, h - 1], radius=r, fill=255)
-    return m
-
-
-def cylinder(img, x0, y0, x1, y1, color, vertical=True, r=0, **kw):
-    w, h = s(x1 - x0), s(y1 - y0)
-    arr = shade_cyl(w, h, color, vertical, **kw)
-    paste_arr(img, arr, s(x0), s(y0), rr_mask(w, h, s(r)))
-
-
-def band(img, x0, y0, x1, y1, color, vertical=True, **kw):
-    cylinder(img, x0, y0, x1, y1, color, vertical, **kw)
-
-
-def print_text(img, xy, txt, px, color=(225, 225, 215, 255), anchor='mm', alpha=215):
-    d = ImageDraw.Draw(img)
-    c = color[:3] + (alpha,)
-    d.text((s(xy[0]), s(xy[1])), txt, font=font(px), fill=c, anchor=anchor)
-
-
-def scuffs(img, box, count=30, light=True):
-    d = ImageDraw.Draw(img, 'RGBA')
-    for _ in range(count):
-        x = RNG.uniform(box[0], box[2]); y = RNG.uniform(box[1], box[3])
-        l = RNG.uniform(2, 7); a = RNG.uniform(0, math.pi)
-        c = (225, 225, 220, 55) if light else (10, 10, 10, 70)
-        d.line([s(x), s(y), s(x + l * math.cos(a)), s(y + l * math.sin(a))], fill=c, width=s(0.6))
-
-
-def finish(img, name):
-    out = img.resize((256, 256), Image.LANCZOS)
-    out.save(os.path.join(OUT, name + '_ca.png'))
-
-
-# --- yardimci: kutu (pouch / BCU) ------------------------------------------------
-def box3(img, x0, y0, w, h, depth, front, top, side, r=8, tex=8, nylon=False):
-    """On yuz + ust yuz (paralelogram) + sag yan yuz (paralelogram); on yuz isiklandirmali gradyan."""
-    fw, fh = s(w), s(h)
-    yy = np.linspace(0, 1, fh)[:, None, None]
-    xx = np.linspace(0, 1, fw)[None, :, None]
-    base = np.array(front[:3], dtype='float32')[None, None, :]
-    rgb = base * (1.08 - 0.28 * yy - 0.10 * xx) + grain(fw, fh, tex)[..., None]
-    if nylon:
-        rgb = rgb + weave(fw, fh, 7)[..., None]
-    arr = np.clip(np.concatenate([rgb, np.full((fh, fw, 1), 255, dtype='float32')], axis=2), 0, 255).astype('uint8')
-    dx, dy = depth * 0.8, -depth * 0.55
-    # ust yuz
-    d = ImageDraw.Draw(img)
-    d.polygon([(s(x0 + 6), s(y0)), (s(x0 + w), s(y0)), (s(x0 + w + dx), s(y0 + dy)), (s(x0 + 6 + dx), s(y0 + dy))], fill=top[:3] + (255,))
-    # sag yan yuz
-    d.polygon([(s(x0 + w), s(y0)), (s(x0 + w + dx), s(y0 + dy)), (s(x0 + w + dx), s(y0 + dy + h - 8)), (s(x0 + w), s(y0 + h))], fill=side[:3] + (255,))
-    paste_arr(img, arr, s(x0), s(y0), rr_mask(fw, fh, s(r)))
-    # kenar vurgusu
-    d.line([s(x0 + 6), s(y0 + 1), s(x0 + w - 4), s(y0 + 1)], fill=(255, 255, 255, 60), width=s(1))
-    d.rounded_rectangle([s(x0), s(y0), s(x0 + w) - 1, s(y0 + h) - 1], radius=s(r), outline=(0, 0, 0, 120), width=s(1.2))
-
-
-def stitches(img, pts, color=(215, 205, 170, 170), step=5.0, dash=2.6):
-    d = ImageDraw.Draw(img, 'RGBA')
-    for (xa, ya), (xb, yb) in zip(pts[:-1], pts[1:]):
-        L = math.hypot(xb - xa, yb - ya)
-        n = int(L / step)
-        for i in range(n):
-            t0 = i / max(1, n); t1 = min(1, t0 + dash / max(1, L))
-            d.line([s(xa + (xb - xa) * t0), s(ya + (yb - ya) * t0), s(xa + (xb - xa) * t1), s(ya + (yb - ya) * t1)], fill=color, width=s(0.9))
-
-
-def patch(img, box, label, px=9, bg=(205, 200, 180, 255), fg=(40, 42, 36, 255)):
-    x0, y0, x1, y1 = box
-    d = ImageDraw.Draw(img)
-    d.rounded_rectangle([s(x0), s(y0), s(x1), s(y1)], radius=s(2.5), fill=bg, outline=(30, 30, 25, 200), width=s(1))
-    arr = np.zeros((s(y1 - y0), s(x1 - x0)), dtype='float32')
-    g = grain(s(x1 - x0), s(y1 - y0), 6)
-    ov = Image.fromarray(np.clip(128 + g * 3, 0, 255).astype('uint8')).convert('RGBA')
-    ov.putalpha(35)
-    img.alpha_composite(ov, (s(x0), s(y0)))
-    print_text(img, ((x0 + x1) / 2, (y0 + y1) / 2), label, px, fg, alpha=235)
-
-
-# --- esyalar -----------------------------------------------------------------------
-def cell(img, cx, top, w, h, body, bandc, label, dead=False):
-    x0, x1 = cx - w / 2, cx + w / 2
-    cylinder(img, cx - w * 0.2, top - 6, cx + w * 0.2, top + 8, (200, 200, 195), True, r=3, spec=0.8, tex=4)
-    cylinder(img, x0, top, x1, top + h, body, True, r=7, spec=0.55 if not dead else 0.1, tex=3.5 if not dead else 9)
-    # ust ve alt metal halka
-    cylinder(img, x0, top + 6, x1, top + 18, (170, 172, 172), True, r=2, spec=0.7, tex=5)
-    cylinder(img, x0, top + h - 14, x1, top + h - 4, (160, 160, 158), True, r=2, spec=0.7, tex=5)
-    # bant
-    band(img, x0, top + h * 0.40, x1, top + h * 0.40 + 22, bandc, True, spec=0.3, tex=6)
-    print_text(img, (cx, top + h * 0.40 + 11), label, 7.5, (240, 240, 232, 255), alpha=235)
-    print_text(img, (cx, top + h * 0.78), '1.5V', 7, (225, 225, 215, 255), alpha=170)
-    # soldan parlama
-    ov = Image.new('RGBA', img.size, (0, 0, 0, 0))
-    ImageDraw.Draw(ov).rounded_rectangle([s(x0 + 5), s(top + 20), s(x0 + 9), s(top + h - 18)], radius=s(2), fill=(255, 255, 255, 60 if not dead else 22))
-    img.alpha_composite(ov.filter(ImageFilter.GaussianBlur(s(1.2))))
-
-
-def gauge(img, frac, y=214):
-    """Sade, tek renkli sarj gostergesi (trafik isigi yok): 5 ince cizgi."""
-    d = ImageDraw.Draw(img)
-    d.rounded_rectangle([s(70), s(y), s(186), s(y + 11)], radius=s(3), fill=(18, 20, 18, 235), outline=(0, 0, 0, 200), width=s(1))
-    n = 5
-    lit = int(round(frac * n))
-    for i in range(n):
-        x = 75 + i * 22
-        c = (190, 196, 180, 255) if i < lit else (60, 64, 58, 255)
-        d.rectangle([s(x), s(y + 3), s(x + 18), s(y + 8)], fill=c)
-
-
-def battery(name, lithium, frac, dead=False):
-    img = canvas()
-    shadow(img, (40, 196, 220, 222), 7)
+# ---------------------------------------------------------------- piller
+def cell_parts(cx, base_y, body, bandc, label, dead, lithium):
+    rad, hh = 0.22, 0.62
+    cy = base_y
+    img = decal(256, 512, [
+        ('rect', (0, 190, 256, 300), bandc + (255,)),
+        ('text', (128, 245), label, 56, (240, 238, 228, 255)),
+        ('text', (128, 360), '1.5V', 40, (215, 215, 205, 200)),
+        ('text', (128, 120), 'AA' if not lithium else 'Li-FeS2', 34, (215, 215, 205, 190)),
+    ])
+    body_tint = wrap(img, cx, 0.0, cy - hh, 2 * hh, 0.95)
     if dead:
-        body, bnd, lab = (88, 90, 86), (74, 74, 70), 'AA'
+        def corr(P, a, N):
+            n = noise3(P, 22.0)
+            m = (n > 0.80) | ((P[:, 1] > cy + hh - 0.10) & (n > 0.55))
+            a = a.copy()
+            a[m] = a[m] * 0.55 + np.array([0.60, 0.66, 0.52]) * 0.45
+            return a
+        body_tint = chain(body_tint, corr)
+    parts = [
+        Part(lambda p: cyl(p, (cx, cy, 0), rad, hh, 1, 0.045), body, rough=0.35 if not dead else 0.8, spec=0.6 if not dead else 0.1,
+             bump=0.01 if not dead else 0.05, bump_f=60, tint_fn=body_tint, metal=0.3),
+        Part(lambda p: cyl(p, (cx, cy + hh + 0.035, 0), 0.075, 0.04, 1, 0.02), (205, 205, 200), rough=0.2, spec=0.9, metal=0.9),
+        Part(lambda p: cyl(p, (cx, cy + hh - 0.1, 0), rad + 0.004, 0.035, 1, 0.01), (175, 176, 175), rough=0.25, spec=0.8, metal=0.8),
+        Part(lambda p: cyl(p, (cx, cy - hh + 0.06, 0), rad + 0.004, 0.035, 1, 0.01), (165, 165, 163), rough=0.25, spec=0.8, metal=0.8),
+    ]
+    return parts
+
+
+def battery(name, lithium, pct, dead=False):
+    if dead:
+        body, bnd, lab = (78, 80, 76), (70, 70, 66), 'AA'
     elif lithium:
-        body, bnd, lab = (190, 196, 202), (38, 62, 112), 'Li'
+        body, bnd, lab = (185, 190, 196), (36, 60, 112), '%d%%' % pct
     else:
-        body, bnd, lab = (44, 46, 48), (142, 94, 38), 'AA'
-    cell(img, 98, 46, 56, 148, body, bnd, lab, dead)
-    cell(img, 160, 58, 56, 148, body, bnd, lab, dead)
-    if dead:
-        d = ImageDraw.Draw(img, 'RGBA')
-        for (px, py, r) in ((160, 56, 9), (166, 60, 6), (154, 58, 5), (98, 44, 7)):
-            d.ellipse([s(px - r), s(py - r * 0.5), s(px + r), s(py + r * 0.5)], fill=(168, 178, 150, 190))
-        d.ellipse([s(150), s(66), s(172), s(82)], fill=(150, 160, 128, 120))
-        scuffs(img, (72, 50, 190, 200), 55, True)
-    else:
-        scuffs(img, (72, 50, 190, 200), 8, True)
-    gauge(img, 0 if dead else frac)
-    finish(img, name)
+        body, bnd, lab = (34, 36, 38), (150, 98, 40), '%d%%' % pct
+    parts = cell_parts(-0.27, -0.12, body, bnd, lab, dead, lithium) + cell_parts(0.27, -0.28, body, bnd, lab, dead, lithium)
+    img = render(parts, size=SIZE, ss=2, rot_fn=view(0.30, -0.45), extent=1.15)
+    save(img, name)
+
+
+# ---------------------------------------------------------------- sise / torba
+def oil():
+    lab = decal(256, 256, [('rect', (0, 0, 256, 256), (226, 222, 204, 255)), ('text', (128, 70), 'GUN OIL', 42, (34, 34, 30, 255)),
+                           ('text', (128, 125), 'CLP', 40, (34, 34, 30, 255)), ('rect', (30, 160, 226, 168), (34, 34, 30, 255)),
+                           ('text', (128, 200), '118 ml', 30, (34, 34, 30, 255))])
+    parts = [
+        Part(lambda p: cyl(p, (0, -0.42, 0), 0.5, 0.52, 1, 0.14), (96, 54, 18), rough=0.12, spec=1.0,
+             tint_fn=wrap(lab, 0, 0, -0.78, 0.78, 0.9)),
+        Part(lambda p: cyl(p, (0, 0.2, 0), 0.24, 0.22, 1, 0.07), (92, 50, 17), rough=0.12, spec=1.0),
+        Part(lambda p: cyl(p, (0, 0.52, 0), 0.19, 0.17, 1, 0.04), (24, 26, 26), rough=0.45, spec=0.5, bump=0.02, bump_f=70),
+        Part(lambda p: cyl(p, (0, 0.82, 0), 0.075, 0.2, 1, 0.03), (32, 34, 34), rough=0.35, spec=0.7),
+    ]
+    img = render(parts, size=SIZE, ss=2, rot_fn=view(0.22, -0.5), extent=1.2)
+    save(img, 'oil')
+
+
+def pouch(label, col, name, hh=0.46, with_rod=False, with_parts=False):
+    lab = decal(512, 128, [('rect', (0, 0, 512, 128), (58, 62, 50, 255)), ('text', (256, 64), label, 54, (214, 212, 192, 255))])
+    zip_fn = lambda P, a, N: np.where(((np.abs(P[:, 1] - 0.12) < 0.016) & (N[:, 2] > 0.4))[:, None], np.array([0.06, 0.06, 0.055]), a)
+    stitch = lambda P, a, N: np.where((((np.abs(P[:, 0]) > 0.62) & (np.abs(P[:, 0]) < 0.635)) | ((np.abs(P[:, 1] + 0.30) < 0.008) & (np.abs(P[:, 0]) < 0.62)))[:, None] & (N[:, 2] > 0.4)[:, None], a * 0.55 + 0.35, a)
+    tint = chain(stitch, zip_fn, planar(lab, 0, -0.13, 0.62, 0.155))
+    parts = [Part(lambda p: rbox(p, (0, -0.05, 0), (0.78, hh, 0.26), 0.09), col, rough=0.85, spec=0.08, bump=0.07, bump_f=90, tint_fn=tint),
+             Part(lambda p: rbox(p, (0.56, 0.12, 0.27), (0.07, 0.04, 0.012), 0.008), (30, 30, 28), rough=0.4, spec=0.7)]
+    if with_rod:
+        parts += [Part(lambda p: capsule(p, (0.3, 0.3, 0), (0.3, 1.05, 0), 0.025), (190, 192, 196), rough=0.2, spec=0.9, metal=0.9),
+                  Part(lambda p: cyl(p, (0.3, 0.98, 0), 0.075, 0.1, 1, 0.03), (150, 110, 42), rough=0.9, spec=0.1, bump=0.15, bump_f=120),
+                  Part(lambda p: cyl(p, (0.3, 0.3, 0), 0.06, 0.07, 1, 0.02), (30, 30, 28), rough=0.5, spec=0.4)]
+    if with_parts:
+        parts += [Part(lambda p: capsule(p, (-0.45, 0.28, 0), (-0.45, 0.85, 0), 0.03), (176, 178, 180), rough=0.2, spec=0.9, metal=0.9),
+                  Part(lambda p: cyl(p, (-0.45, 0.3, 0), 0.07, 0.04, 1, 0.02), (110, 112, 114), rough=0.3, spec=0.8, metal=0.8),
+                  Part(lambda p: capsule(p, (0.15, 0.28, 0.0), (0.15, 0.7, 0.0), 0.018), (170, 136, 80), rough=0.3, spec=0.8, metal=0.7)]
+    img = render(parts, size=SIZE, ss=2, rot_fn=view(0.5, -0.42), extent=1.28)
+    save(img, name)
 
 
 def lens_cloth():
-    img = canvas()
-    shadow(img, (28, 196, 228, 228), 9)
-    d = ImageDraw.Draw(img)
-    # alt kat
-    box3(img, 40, 96, 150, 88, 22, (92, 106, 118), (118, 132, 144), (66, 78, 90), r=6, tex=5, nylon=True)
-    # ust kat (katlanmis)
-    box3(img, 56, 78, 150, 88, 22, (118, 134, 146), (146, 160, 170), (84, 98, 110), r=6, tex=5, nylon=True)
-    # kat gölgesi
-    ov = Image.new('RGBA', img.size, (0, 0, 0, 0))
-    od = ImageDraw.Draw(ov)
-    od.rectangle([s(128), s(80), s(134), s(164)], fill=(0, 0, 0, 60))
-    od.polygon([(s(56), s(84)), (s(206), s(78)), (s(206), s(84)), (s(56), s(90))], fill=(255, 255, 255, 40))
-    img.alpha_composite(ov.filter(ImageFilter.GaussianBlur(s(2.2))))
-    # kenar dikisi
-    stitches(img, [(64, 87), (198, 87), (198, 158), (64, 158), (64, 87)], (200, 210, 218, 150), 5.5, 2.6)
-    # etiket
-    patch(img, (150, 138, 192, 152), 'LENS', 7.5, (60, 66, 62, 255), (205, 208, 195, 255))
-    finish(img, 'lens_cloth')
+    lab = decal(256, 64, [('rect', (0, 0, 256, 64), (58, 62, 60, 255)), ('text', (128, 32), 'LENS', 36, (205, 208, 196, 255))])
+    parts = [
+        Part(lambda p: rbox(rot(p - np.array([0.03, -0.1, 0.0]), 0, 0, -0.06), (0, 0, 0), (0.62, 0.025, 0.46), 0.02), (84, 98, 110), rough=0.92, spec=0.05, bump=0.1, bump_f=130),
+        Part(lambda p: rbox(rot(p - np.array([-0.04, 0.05, 0.02]), 0, 0, 0.03), (0, 0, 0), (0.62, 0.03, 0.46), 0.02), (112, 128, 140), rough=0.92, spec=0.05, bump=0.1, bump_f=130,
+             tint_fn=lambda P, a, N: np.where(((np.abs(P[:, 0] - 0.30) < 0.14) & (np.abs(P[:, 2]) < 0.26) & (N[:, 1] > 0.5))[:, None], np.array([0.24, 0.26, 0.24]), a)),
+        Part(lambda p: rbox(p, (-0.02, 0.095, 0.02), (0.012, 0.012, 0.44), 0.01), (70, 82, 92), rough=0.95, spec=0.03),
+    ]
+    img = render(parts, size=SIZE, ss=2, rot_fn=view(0.85, -0.35, 0.0), extent=1.15)
+    save(img, 'lens_cloth')
 
 
-def pouch(img, x0, y0, w, h, color, top, side, label, zip_y, nylon=True):
-    box3(img, x0, y0, w, h, 20, color, top, side, r=9, tex=7, nylon=nylon)
-    d = ImageDraw.Draw(img, 'RGBA')
-    # fermuar
-    d.line([s(x0 + 8), s(zip_y), s(x0 + w - 8), s(zip_y)], fill=(18, 18, 16, 235), width=s(3))
-    for x in np.arange(x0 + 10, x0 + w - 8, 3.2):
-        d.line([s(x), s(zip_y - 1.8), s(x), s(zip_y + 1.8)], fill=(170, 172, 168, 200), width=s(0.9))
-    d.rounded_rectangle([s(x0 + w - 24), s(zip_y - 4), s(x0 + w - 12), s(zip_y + 7)], radius=s(2), fill=(28, 28, 26, 255), outline=(120, 122, 118, 255), width=s(1))
-    # dikis ve MOLLE sirasi
-    stitches(img, [(x0 + 8, y0 + 8), (x0 + w - 8, y0 + 8), (x0 + w - 8, y0 + h - 8), (x0 + 8, y0 + h - 8), (x0 + 8, y0 + 8)], (225, 218, 190, 120), 5, 2.4)
-    patch(img, (x0 + w / 2 - 38, y0 + h * 0.58, x0 + w / 2 + 38, y0 + h * 0.58 + 22), label, 8.5, (60, 64, 52, 255), (212, 210, 190, 255))
-    scuffs(img, (x0 + 8, y0 + 8, x0 + w - 8, y0 + h - 8), 26, True)
+def bcu():
+    plate = decal(512, 384, [('rect', (0, 0, 512, 384), (198, 200, 190, 255)),
+                             ('rect', (20, 20, 492, 80), (176, 150, 52, 255))] +
+                  [('poly', [(20 + i * 44, 80), (20 + i * 44 + 24, 20), (20 + i * 44 + 44, 20), (20 + i * 44 + 20, 80)], (22, 22, 20, 255)) for i in range(11)] +
+                  [('text', (256, 130), 'BCU  BA-4B', 54, (30, 32, 28, 255)), ('rect', (30, 190, 360, 200), (60, 62, 56, 255)),
+                   ('rect', (30, 225, 300, 235), (60, 62, 56, 255)), ('rect', (30, 260, 240, 270), (60, 62, 56, 255)),
+                   ('rect', (395, 190, 470, 330), (40, 42, 36, 255)), ('text', (256, 340), '28V DC  4.2Ah', 30, (30, 32, 28, 255))])
+    parts = [
+        Part(lambda p: rbox(p, (0, -0.1, 0), (0.78, 0.55, 0.34), 0.07), (78, 86, 64), rough=0.8, spec=0.1, bump=0.06, bump_f=80,
+             tint_fn=planar(plate, 0, -0.14, 1.0, 0.62)),
+        Part(lambda p: rbox(p, (0, 0.55, 0), (0.42, 0.08, 0.16), 0.03), (38, 40, 42), rough=0.6, spec=0.3),
+    ]
+    for x in (-0.24, -0.08, 0.08, 0.24):
+        parts.append(Part((lambda x: lambda p: capsule(p, (x, 0.58, 0), (x, 0.92, 0), 0.035))(x), (186, 156, 68), rough=0.25, spec=0.9, metal=0.9))
+    for x in (-0.55, -0.40, 0.40, 0.55):
+        parts.append(Part((lambda x: lambda p: rbox(p, (x, -0.1, 0.34), (0.018, 0.48, 0.02), 0.01))(x), (52, 58, 42), rough=0.85, spec=0.05))
+    parts.append(Part(lambda p: sphere(p, (-0.62, 0.34, 0.34), 0.035), (70, 160, 76), rough=0.2, spec=0.9))
+    img = render(parts, size=SIZE, ss=2, rot_fn=view(0.35, -0.5), extent=1.25)
+    save(img, 'missile_battery')
 
 
-def cleaning_kit():
-    img = canvas()
-    shadow(img, (26, 198, 230, 230), 9)
-    # cubuk (arkada)
-    cylinder(img, 156, 22, 164, 118, (190, 192, 196), True, r=2, spec=0.8, tex=5)
-    cylinder(img, 150, 22, 170, 44, (176, 132, 52), True, r=3, spec=0.3, tex=14)
-    cylinder(img, 148, 112, 172, 124, (30, 30, 28), True, r=3, spec=0.2, tex=5)
-    pouch(img, 34, 100, 168, 100, (88, 98, 66), (110, 120, 86), (60, 68, 46), 'CLEANING KIT', 132)
-    finish(img, 'cleaning_kit')
+def glove():
+    leather = (116, 92, 62)
+    cloth = (62, 60, 56)
+    def fingers(p):
+        d = capsule(p, (-0.42, 0.18, 0), (-0.46, 0.78, 0), 0.115)
+        d = smin(d, capsule(p, (-0.15, 0.2, 0), (-0.16, 0.92, 0), 0.115), 0.04)
+        d = smin(d, capsule(p, (0.12, 0.2, 0), (0.13, 0.9, 0), 0.115), 0.04)
+        d = smin(d, capsule(p, (0.38, 0.15, 0), (0.43, 0.7, 0), 0.105), 0.04)
+        return d
+    def palm(p):
+        return rbox(p, (0, -0.15, 0), (0.58, 0.42, 0.16), 0.14)
+    def thumb(p):
+        return capsule(p, (0.5, -0.2, 0.0), (0.9, 0.22, 0.02), 0.13)
+    def glove_all(p):
+        return smin(smin(fingers(p), palm(p), 0.12), thumb(p), 0.1)
+    stitch = lambda P, a, N: np.where((((np.abs(np.hypot(P[:, 0] - 0.02, P[:, 1] + 0.05) - 0.34) < 0.008)) & (N[:, 2] > 0.4))[:, None], a * 0.5 + 0.4, a)
+    pad = decal(64, 64, [('rect', (0, 0, 64, 64), (255, 255, 255, 255))])
+    def patch(P, a, N):
+        m = (np.abs(P[:, 0] - 0.0) < 0.38) & (P[:, 1] > -0.46) & (P[:, 1] < 0.34) & (N[:, 2] > 0.35)
+        m = m & (np.hypot((P[:, 0]) / 0.42, (P[:, 1] + 0.05) / 0.44) < 1)
+        n = noise3(P, 40.0)[:, None] * 0.25
+        return np.where(m[:, None], (np.array(leather, dtype='float32') / 255.0) * (0.85 + n), a)
+    cuff = lambda p: cyl(p, (0, -0.72, 0), 0.5, 0.2, 1, 0.07)
+    tag = decal(128, 48, [('rect', (0, 0, 128, 48), (176, 112, 38, 255)), ('text', (64, 24), '250C', 30, (30, 22, 10, 255))])
+    parts = [
+        Part(glove_all, cloth, rough=0.9, spec=0.05, bump=0.11, bump_f=110, tint_fn=chain(patch, stitch)),
+        Part(cuff, (46, 48, 50), rough=0.8, spec=0.1, bump=0.08, bump_f=100,
+             tint_fn=lambda P, a, N: np.where(((np.sin(P[:, 1] * 90) > 0.6) & (N[:, 2] > 0.3))[:, None], a * 0.6, a)),
+        Part(lambda p: rbox(p, (0.0, -0.7, 0.505), (0.17, 0.065, 0.012), 0.005), (176, 112, 38), rough=0.6, spec=0.2,
+             tint_fn=planar(tag, 0.0, -0.7, 0.34, 0.13)),
+    ]
+    img = render(parts, size=SIZE, ss=2, rot_fn=view(0.12, -0.2), extent=1.3)
+    save(img, 'heat_glove')
 
 
-def oil():
-    img = canvas()
-    shadow(img, (62, 208, 198, 234), 7)
-    # govde (koyu kehribar sise, parlak)
-    cylinder(img, 82, 100, 174, 222, (112, 62, 22), True, r=14, spec=1.0, tex=6)
-    cylinder(img, 106, 74, 150, 112, (108, 60, 22), True, r=9, spec=1.0, tex=6)
-    cylinder(img, 108, 44, 148, 80, (26, 28, 28), True, r=6, spec=0.6, tex=5)
-    for y in (50, 58, 66):
-        cylinder(img, 108, y, 148, y + 2.2, (60, 62, 62), True, r=1, spec=0.5, tex=3)
-    cylinder(img, 120, 18, 136, 50, (36, 38, 38), True, r=3, spec=0.8, tex=4)
-    d = ImageDraw.Draw(img, 'RGBA')
-    d.ellipse([s(124), s(12), s(132), s(22)], fill=(20, 20, 20, 255))
-    # etiket (govdeyi saran, kenarlara dogru kararir)
-    lab = shade_cyl(s(84), s(60), (222, 218, 200), True, spec=0.1, tex=4)
-    paste_arr(img, lab, s(86), s(132), rr_mask(s(84), s(60), s(3)))
-    print_text(img, (128, 147), 'GUN OIL', 10, (36, 36, 32, 255), alpha=240)
-    print_text(img, (128, 162), 'CLP', 8, (36, 36, 32, 255), alpha=220)
-    d.rectangle([s(94), s(172), s(162), s(175)], fill=(36, 36, 32, 210))
-    print_text(img, (128, 184), '118 ml', 6.5, (36, 36, 32, 255), alpha=200)
-    # cam parlamasi
-    ov = Image.new('RGBA', img.size, (0, 0, 0, 0))
-    ImageDraw.Draw(ov).rounded_rectangle([s(90), s(108), s(98), s(214)], radius=s(4), fill=(255, 240, 215, 70))
-    img.alpha_composite(ov.filter(ImageFilter.GaussianBlur(s(1.5))))
-    finish(img, 'oil')
-
-
-def spare_parts():
-    img = canvas()
-    shadow(img, (24, 200, 232, 232), 9)
-    d = ImageDraw.Draw(img, 'RGBA')
-    # ceptan tasan metal parcalar: piston, yay, pim
-    cylinder(img, 62, 54, 72, 132, (176, 178, 180), True, r=3, spec=0.9, tex=5)
-    cylinder(img, 56, 50, 78, 66, (110, 112, 114), True, r=4, spec=0.7, tex=6)
-    for i in range(9):
-        y = 40 + i * 6
-        d.arc([s(96), s(y), s(126), s(y + 12)], 180, 360, fill=(150, 154, 158, 255), width=s(2.6))
-        d.arc([s(96), s(y + 3), s(126), s(y + 15)], 0, 180, fill=(86, 90, 94, 255), width=s(2.6))
-    cylinder(img, 150, 62, 156, 130, (160, 140, 90), True, r=2, spec=0.7, tex=6)
-    cylinder(img, 146, 56, 160, 66, (100, 84, 50), True, r=3, spec=0.5, tex=6)
-    pouch(img, 30, 112, 176, 92, (126, 108, 78), (148, 130, 98), (92, 78, 54), 'SPARE PARTS', 140)
-    finish(img, 'spare_parts')
-
-
-def heat_glove():
-    img = canvas()
-    shadow(img, (44, 208, 214, 234), 8)
-    d = ImageDraw.Draw(img, 'RGBA')
-
-    def fill_poly(poly, c1, c2, tex=9):
-        pts = [(s(x), s(y)) for x, y in poly]
-        ys = [p[1] for p in poly]
-        xs = [p[0] for p in poly]
-        x0, x1, y0, y1 = s(min(xs)), s(max(xs)), s(min(ys)), s(max(ys))
-        w, h = x1 - x0, y1 - y0
-        yy = np.linspace(0, 1, h)[:, None, None]
-        xx = np.linspace(0, 1, w)[None, :, None]
-        base = np.array(c1, dtype='float32')[None, None, :] * (1 - yy) + np.array(c2, dtype='float32')[None, None, :] * yy
-        rgb = base * (1.05 - 0.2 * xx) + grain(w, h, tex)[..., None] + weave(w, h, 4)[..., None]
-        arr = np.clip(np.concatenate([rgb, np.full((h, w, 1), 255, dtype='float32')], axis=2), 0, 255).astype('uint8')
-        m = Image.new('L', img.size, 0)
-        ImageDraw.Draw(m).polygon(pts, fill=255)
-        m = m.crop((x0, y0, x1, y1))
-        paste_arr(img, arr, x0, y0, m)
-        d.line(pts + [pts[0]], fill=(10, 10, 10, 210), width=s(2), joint='curve')
-
-    thumb = [(74, 116), (46, 100), (30, 112), (36, 146), (80, 160)]
-    fill_poly(thumb, (96, 86, 70), (66, 58, 46))
-    palm = [(72, 124), (72, 74), (82, 46), (110, 40), (120, 30), (152, 30), (164, 42), (178, 50), (188, 82), (188, 122), (172, 172), (152, 190), (100, 190), (82, 172)]
-    fill_poly(palm, (88, 84, 76), (52, 50, 46))
-    # parmak ayrimlari
-    for x in (112, 142, 166):
-        d.line([s(x), s(52), s(x), s(112)], fill=(10, 10, 10, 170), width=s(1.6))
-    # avuc ici deri yama (isiya dayanikli)
-    fill_poly([(92, 118), (92, 82), (116, 70), (168, 76), (176, 118), (164, 160), (110, 164)], (118, 98, 68), (80, 64, 42), tex=11)
-    stitches(img, [(92, 118), (92, 82), (116, 70), (168, 76), (176, 118), (164, 160), (110, 164), (92, 118)], (225, 215, 180, 150), 5, 2.4)
-    # kolluk (orgulu)
-    cuff = [(82, 182), (172, 182), (176, 218), (78, 218)]
-    fill_poly(cuff, (58, 60, 62), (30, 32, 34), tex=6)
-    for y in range(188, 216, 5):
-        d.line([s(84), s(y), s(172), s(y)], fill=(0, 0, 0, 110), width=s(1.2))
-    # ince uyari etiketi
-    patch(img, (112, 196, 148, 210), '250C', 7, (190, 120, 40, 255), (30, 22, 10, 255))
-    scuffs(img, (74, 40, 186, 190), 24, True)
-    finish(img, 'heat_glove')
-
-
-def missile_battery():
-    img = canvas()
-    shadow(img, (28, 198, 230, 232), 9)
-    d = ImageDraw.Draw(img, 'RGBA')
-    # baglanti ucu (ust)
-    box3(img, 84, 52, 88, 22, 10, (40, 42, 44), (60, 62, 64), (24, 26, 28), r=3, tex=5)
-    for x in (96, 112, 128, 144):
-        cylinder(img, x, 28, x + 6, 56, (190, 160, 70), True, r=2, spec=0.9, tex=5)
-    # govde
-    box3(img, 34, 72, 176, 128, 24, (84, 92, 70), (106, 114, 90), (58, 64, 48), r=8, tex=9)
-    # yan kaburgalar
-    for x in (44, 54, 190, 200):
-        d.line([s(x), s(86), s(x), s(186)], fill=(0, 0, 0, 95), width=s(2.4))
-        d.line([s(x + 1.5), s(86), s(x + 1.5), s(186)], fill=(255, 255, 255, 25), width=s(1))
-    # uyari etiketi (soluk sari / siyah)
-    d.rectangle([s(72), s(86), s(172), s(104)], fill=(176, 150, 52, 255))
-    for i in range(9):
-        x = 72 + i * 12
-        d.polygon([(s(x), s(104)), (s(x + 7), s(86)), (s(x + 14), s(86)), (s(x + 7), s(104))], fill=(22, 22, 20, 255))
-    # veri plakasi
-    d.rounded_rectangle([s(68), s(112), s(176), s(184)], radius=s(3), fill=(198, 200, 190, 255), outline=(20, 20, 18, 230), width=s(1.2))
-    print_text(img, (122, 124), 'BCU  BA-4B', 10, (30, 32, 28, 255), alpha=240)
-    for i in range(4):
-        d.rectangle([s(76), s(136 + i * 9), s(76 + 70 - i * 9), s(139 + i * 9)], fill=(60, 62, 56, 170))
-    d.rectangle([s(152), s(138), s(168), s(172)], outline=(40, 42, 36, 230), width=s(1.2))
-    d.polygon([(s(160), s(142)), (s(154), s(158)), (s(160), s(158)), (s(157), s(170)), (s(167), s(152)), (s(161), s(152)), (s(164), s(142))], fill=(40, 42, 36, 230))
-    # LED
-    d.ellipse([s(46), s(78), s(56), s(88)], fill=(70, 150, 74, 255), outline=(10, 10, 10, 255), width=s(1.2))
-    d.ellipse([s(48), s(80), s(52), s(84)], fill=(190, 235, 190, 220))
-    scuffs(img, (38, 76, 206, 196), 40, True)
-    finish(img, 'missile_battery')
+def gear_sdf(p, c, rad, n=11, hh=0.05):
+    q = p - np.asarray(c)
+    th = np.arctan2(q[..., 2], q[..., 0])
+    r = np.hypot(q[..., 0], q[..., 2]) - rad * (1 + 0.1 * np.tanh(4 * np.sin(n * th)))
+    return np.maximum(r, np.abs(q[..., 1]) - hh)
 
 
 def barrel(name, heavy):
-    img = canvas()
-    shadow(img, (22, 156, 238, 190), 9)
-    th = 44 if heavy else 28
-    y0 = 128 - th / 2
-    steel = (96, 100, 106)
-    # ana gövde (yatay silindir)
-    cylinder(img, 30, y0, 214, y0 + th, steel, False, r=5, spec=0.9, tex=7)
-    # isi renklenmesi (haznede mavi-kahve)
-    ov = Image.new('RGBA', img.size, (0, 0, 0, 0))
-    od = ImageDraw.Draw(ov)
-    for i in range(40):
-        a = int(70 * (1 - i / 40))
-        od.rectangle([s(30 + i * 1.2), s(y0), s(31 + i * 1.2), s(y0 + th)], fill=(90, 70, 120, a))
-    img.alpha_composite(ov)
+    rad = 0.30 if heavy else 0.20
+    parts = []
+    body = lambda p: cyl(p, (-0.1, 0, 0), rad, 0.9, 0, 0.04)
     if heavy:
-        # sogutma oluklari: tekrar eden halkalar
-        for x in range(72, 196, 11):
-            cylinder(img, x, y0 - 5, x + 5.5, y0 + th + 5, (120, 124, 130), False, r=2, spec=0.9, tex=5)
-            cylinder(img, x + 5.5, y0 - 1, x + 11, y0 + th + 1, (60, 62, 68), False, r=1, spec=0.4, tex=5)
-        cylinder(img, 30, y0 - 7, 66, y0 + th + 7, (84, 88, 94), False, r=4, spec=0.8, tex=7)
-        for x in (36, 46, 56):
-            cylinder(img, x, y0 - 7, x + 3, y0 + th + 7, (40, 42, 46), False, r=1, spec=0.3, tex=4)
+        def fins(p):
+            q = p.copy()
+            q[..., 0] = ((p[..., 0] + 0.55) % 0.17) - 0.085
+            return cyl(q, (0, 0, 0), rad + 0.07, 0.04, 0, 0.012)
+        def heavy_body(p):
+            d = body(p)
+            f = fins(p)
+            f = np.maximum(f, np.abs(p[..., 0] - 0.05) - 0.55)
+            return np.minimum(d, f)
+        parts.append(Part(heavy_body, (96, 100, 106), rough=0.35, spec=0.7, bump=0.02, bump_f=70, metal=0.8,
+                          tint_fn=lambda P, a, N: np.where((P[:, 0] < -0.55)[:, None], a * 0.55 + np.array([0.18, 0.16, 0.26]) * 0.45, a)))
     else:
-        # delikli koruyucu
-        cylinder(img, 56, y0 - 3, 178, y0 + th + 3, (80, 84, 90), False, r=4, spec=0.8, tex=7)
-        d = ImageDraw.Draw(img, 'RGBA')
-        for x in np.arange(66, 172, 12):
-            for yy in (y0 + 7, y0 + th - 11):
-                d.ellipse([s(x), s(yy), s(x + 6), s(yy + 4.5)], fill=(8, 8, 8, 235))
-        cylinder(img, 30, y0 - 4, 56, y0 + th + 4, (70, 74, 80), False, r=3, spec=0.8, tex=7)
-    # gaz blogu ve uc
-    cylinder(img, 176, y0 - 10, 196, y0 + th + 10, (62, 64, 70), False, r=3, spec=0.8, tex=6)
-    cylinder(img, 206, y0 + 2, 238, y0 + th - 2, (44, 46, 50), False, r=4, spec=0.7, tex=6)
-    d = ImageDraw.Draw(img, 'RGBA')
-    for i in range(4):
-        d.line([s(212 + i * 6), s(y0 + 4), s(212 + i * 6), s(y0 + th - 4)], fill=(4, 4, 4, 240), width=s(2))
-    # tel etiket (sari cizgi, soluk) ve isimlendirme
-    d.rectangle([s(74), s(y0 + th + 12), s(112), s(y0 + th + 18)], fill=(176, 150, 52, 235))
-    print_text(img, (150, y0 + th + 15), '7.62' if heavy else '5.56', 8, (210, 212, 200, 255), alpha=200)
-    scuffs(img, (34, y0, 214, y0 + th), 30, True)
-    finish(img, name)
+        def light_body(p):
+            d = body(p)
+            for x in np.arange(-0.4, 0.5, 0.17):
+                for sgn in (1, -1):
+                    hole = capsule(p, (x, sgn * 0.0, -0.4), (x, sgn * 0.0, 0.4), 0.035) if False else 1e3
+            # koruyucu delikleri: iki sira (on / arka), z yonunde
+            hs = np.full(p.shape[:-1], 1e3)
+            for x in np.arange(-0.38, 0.5, 0.15):
+                hs = np.minimum(hs, np.hypot(p[..., 0] - x, p[..., 1] - 0.0) - 0.04)
+            hs = np.where(np.abs(p[..., 2]) > 0.05, hs, 1e3)
+            return np.maximum(d, -hs)
+        parts.append(Part(light_body, (92, 96, 102), rough=0.4, spec=0.7, bump=0.02, bump_f=70, metal=0.8,
+                          tint_fn=lambda P, a, N: np.where((P[:, 0] < -0.55)[:, None], a * 0.6 + np.array([0.18, 0.16, 0.26]) * 0.4, a)))
+    parts += [
+        Part(lambda p: cyl(p, (0.62, 0, 0), rad + 0.07, 0.07, 0, 0.02), (58, 60, 66), rough=0.4, spec=0.7, metal=0.8),
+        Part(lambda p: np.maximum(cyl(p, (0.95, 0, 0), rad * 0.9, 0.2, 0, 0.03), -(np.abs(((p[..., 0] - 0.78) % 0.09) - 0.045) - 0.012) * 0 - 1e3 * 0), (40, 42, 46), rough=0.5, spec=0.6, metal=0.7),
+    ]
+    img = render(parts, size=SIZE, ss=2, rot_fn=view(0.35, 0.0, 0.18), extent=1.3)
+    save(img, name)
 
 
-for tag, lith in (('nvg_aa', False), ('nvg_li', True)):
-    for p in (100, 75, 50, 25, 10):
-        battery('%s_%d' % (tag, p), lith, p / 100.0)
-battery('nvg_dead', False, 0, dead=True)
-lens_cloth()
-cleaning_kit()
-oil()
-spare_parts()
-heat_glove()
-missile_battery()
-barrel('barrel_light', False)
-barrel('barrel_heavy', True)
-print(len(os.listdir(OUT)), 'ikon yazildi:', os.path.normpath(OUT))
+if __name__ == '__main__':
+    for tag, lith in (('nvg_aa', False), ('nvg_li', True)):
+        for pc in (100, 75, 50, 25, 10):
+            battery('%s_%d' % (tag, pc), lith, pc)
+    battery('nvg_dead', False, 0, dead=True)
+    lens_cloth()
+    oil()
+    pouch('CLEANING KIT', (84, 94, 62), 'cleaning_kit', with_rod=True)
+    pouch('SPARE PARTS', (120, 102, 74), 'spare_parts', with_parts=True)
+    glove()
+    bcu()
+    barrel('barrel_light', False)
+    barrel('barrel_heavy', True)
+    print(len(os.listdir(OUT)), 'ikon yazildi:', os.path.normpath(OUT))
