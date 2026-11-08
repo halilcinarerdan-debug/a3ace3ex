@@ -4,6 +4,7 @@
 
     Fırlatıcıya ve yüklü BAŞLIĞA özel atış hazırlığı prosedürü adımları.
     1) Fırlatıcı ailesine göre (classname alt dizesi): RPG-7 (emniyet kapağı, başlık-itici birleştirme, horoz),
+       M72 / M136 AT4 / M141 BDM: ABD ordusu FM 3-23.25 (2006) sırasına göre,
        M72 / RPG-18/22/26/75 (pim, tüpü uzat), M136/AT4, NLAW/APILAS, SMAW/Mk153, MAAWS/Carl Gustaf/MRAWS,
        Panzerfaust, Javelin (BCU, CLU gücü, soğutma), Stinger (soğutucu kartuş, güç, IFF), Igla/Strela
        (pil-soğutma ünitesi), Titan/Vorona/Metis/TOW. Tanınmayan fırlatıcı: türe göre genel süre (3 / 5 / 6 sn).
@@ -26,8 +27,9 @@ private _category = ([_weapon] call TAC_fnc_rktProfile) select 0;
 private _table = [
     [["rpg7", "rpg32"], [["Emniyet kapağını çıkar", 2], ["Başlığı itici barutla birleştir", 3], ["Horozu kur", 2]]],
     [["panzerfaust", "pf60"], [["Emniyet çevirmesini aç", 2], ["Tüpü ve nişangahı kaldır", 2]]],
-    [["m72"], [["Emniyet pimini çek", 1.5], ["Tüpü uzat, nişangahı aç", 2]]],
-    [["m136", "at4"], [["Ön ve arka kapakları çıkar", 2], ["Emniyeti aç, nişangahı kaldır", 2]]],
+    [["m141", "bdm"], [["Nakliye kilit pimini çek", 1.5], ["İç tüpü ters yönde uzat, mandalı bırak", 2.5], ["İç tüpü saat yönünde kilitle, kilidi dene", 2], ["Omuz dayanağını ve nişangahı aç", 2.5], ["Ateşleme kapağını ARMED konumuna aç", 1.5]]],
+    [["m72"], [["Emniyet pimini çek", 1.5], ["Arka kapağı indir, tüpü sertçe uzat", 2.5], ["Tüpün kilitlendiğini dene", 1.5], ["Nişangahı aç", 1.5]]],
+    [["m136", "at4"], [["Nakliye emniyet pimini çek", 1.5], ["Omuz dayanağını aç", 1.5], ["Ön ve arka nişangahı kaldır, menzili ayarla", 3], ["Horoz kolunu aç, kur", 2]]],
     [["rpg18", "rpg22", "rpg26", "rpg75"], [["Emniyet pimini çek", 1.5], ["Tüpü uzat, emniyeti aç", 2.5]]],
     [["nlaw", "apilas"], [["Emniyet kapaklarını aç", 2], ["Nişangahı kaldır, sistemi çalıştır", 2.5]]],
     [["smaw", "mk153"], [["Fırlatma tüpü kilidini kontrol et", 2], ["Fünye ayarı ve emniyeti aç", 2], ["Horozu kur", 1.5]]],

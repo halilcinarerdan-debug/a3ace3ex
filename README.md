@@ -916,6 +916,8 @@ MG besleme ve roketatar atış hazırlığı artık tek bir "hazırla" düğmesi
 **Başlığa özel ek adım (güdümsüz roketlerde, son adımdan önce):** mühimmatın `warheadName` / sınıf adına göre: **tandem** -> çift fünye kontrolü (2.5), **termobarik** -> emniyet halkası kontrolü (2), **HE / parçalı** (OG-7 vb.) -> fünye ayarı ani / gecikmeli (2). HEAT'te ek adım yok.
 Sıralar ve süreler gerçek prosedürlere yaklaşık, oyun temposuna göre ayarlandı (tahmin). Değiştirmek için `weapon/fn_wpnFeedSteps.sqf` ve `rocket/fn_rktPrepSteps.sqf` içindeki tablolar.
 
+**Kaynak (FM 3-23.25, ABD Ordusu, 2006):** M136 AT4, M72 ve M141 BDM hazırlık adımları ve misfire bekleme süreleri bu kılavuzdan alındı (AT4: pim, omuz dayanağı, nişangah+menzil, horoz; M72: pim, tüpü uzat, kilidi dene; M141: iç tüp kilidi, ARMED kapağı). Kılavuzun yalnızca güdümsüz omuz silahlarını kapsadığını unutma; Javelin/Stinger/TOW/Igla adımları hâlâ tahmin.
+
 ## Özellik 10 – Koop yardımı (arkadaş silah hazırlığına yardım eder) ve MP uyumluluğu
 
 **Kullanım:** yardım edeceğin arkadaşa bak, **ACE etkileşim tuşuna** (varsayılan sol Windows) bas > **Silah yardımı**. Arkadaşın durumuna göre altta:
@@ -1043,7 +1045,7 @@ Silahçı ayrıca taban ihtimali, atış sayısını ve ateşlenmeme sayısını
 | `TAC_rkt_prepare` (atış öncesi hazırlık gerekli) | açık |
 | `TAC_rkt_scale` (ateşlenmeme ölçeği) | 1 |
 | `TAC_rkt_dudChance` (hedefte patlamama, %) | 1.5 |
-| `TAC_rkt_waitTime` (bekleme, sn) | 30 |
+| `TAC_rkt_waitTime` (bekleme, sn) | 30 (AT4 için 120, M72 için 70, M141 için 60 sn: FM 3-23.25 değerleri; ayar bunlara ölçek olur: 30 = kılavuz, 15 = yarısı) |
 | `TAC_rkt_table` (`classname=yüzde, ...`) | boş |
 | `TAC_rkt_testChance` (test: asgari ihtimal %) | 0 |
 | `TAC_rkt_debug` (test göstergesi) | kapalı, kişisel |
