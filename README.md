@@ -900,8 +900,8 @@ MG besleme ve roketatar atış hazırlığı artık tek bir "hazırla" düğmesi
 
 | Silah | Adımlar |
 |-------|---------|
-| M249 / Minimi / Mk46 | kutuyu tak (2) > kapağı aç (1.5) > kayışı besleme tepsisine yerleştir (2) > kapat (1) > sürgüyü çek (1.5) |
-| M240 / Mk48 / M60 | kapağı aç (1.5) > kayışı yerleştir, açık yan aşağı (2.5) > kapat (1) > sürgüyü çek (1.5) |
+| M249 / Minimi / Mk46 | kapağı aç (1.5) > tepsiyi kaldır, yatağı kontrol et (2) > kutuyu tak (2) > kayışı yerleştir (2.5) > kapat, kilidi kontrol et (1.5) > sürgüyü çek (1.5). **Kaynak: TM 9-1005-201-10 (Loading)** |
+| M240 / Mk48 / M60 | kapağı aç (1.5) > tepsiyi kaldır, yatağı kontrol et (2) > kayışı yerleştir, açık yan aşağı (2.5) > kapat, kilidi kontrol et (1.5) > sürgüyü çek (1.5). **Kaynak (M240): TM 9-1005-313-10 (Loading)**; Mk48 / M60 aynı sıra = tahmin |
 | PKM / PKP / Zafir | kapağı aç (1.5) > kayışı tepsiye yerleştir (2.5) > kapat (1) > sürgüyü çek (1.5) |
 | MG3 / MG42 / UK59 | kapağı kaldır (1.5) > kayışı yerleştir (2.5) > indir (1) > kolu çek (2) |
 | Navid / SPMG (ağır MMG) | aynı adımlar, daha uzun (2 / 3 / 1.5 / 2) |
