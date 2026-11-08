@@ -51,7 +51,7 @@ class TAC_HeatGlove: CBA_MiscItem
     scope = 2;
     displayName = "Isi Eldiveni";
     descriptionShort = "Sicak makineli tufek namlusunu degistirirken eli yanmaktan korur.<br/>Envanterde bulunmasi yeterlidir.";
-    picture = "\a3\ui_f\data\gui\rsc\rscdisplayarsenal\itemacc_ca.paa";
+    picture = "\z\tac\addons\main\data\icons\heat_glove_ca.paa";
 
     class ItemInfo: CBA_MiscItem_ItemInfo
     {

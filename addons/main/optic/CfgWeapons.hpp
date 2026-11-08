@@ -4,7 +4,7 @@ class TAC_LensCloth: CBA_MiscItem
     scope = 2;
     displayName = "Lens Bezi";
     descriptionShort = "Optik lensi icin yumusak bez. Optigi silmek icin gerekir, tukenmez.<br/>Kullanmak icin: ACE self-menu > Silah Bakimi > Optigi sil.";
-    picture = "\a3\ui_f\data\gui\rsc\rscdisplayarsenal\itemacc_ca.paa";
+    picture = "\z\tac\addons\main\data\icons\lens_cloth_ca.paa";
 
     class ItemInfo: CBA_MiscItem_ItemInfo
     {

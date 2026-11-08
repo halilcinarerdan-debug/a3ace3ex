@@ -658,6 +658,12 @@ Görsel, `rktPrepSteps` ile aynı ailelerde çalışır; başlığa özel ek ad�
 
 `addons/main/sound/` içinde beş mono 44,1 kHz `.ogg` var (Python ile üretildi; harmonikler azaltılmış, sıkıştırıcı + limiter ile dinamik aralık daraltılmış, tepe -4,4 dBFS): `tac_seeker_search` (600 Hz titreşimli), `tac_seeker_locking` (1,2 kHz, 4 bip/sn), `tac_seeker_locked` (2 kHz sabit), `tac_rwr_lock` (1 kHz, 2,5 bip/sn), `tac_rwr_launch` (2,2 kHz, 8 bip/sn). **Bağlananlar:** `rhs_weap_fim92` (`tac_compat_rhs.pbo`) ve `rhs_weap_igla` (`tac_compat_rhs_afrf.pbo`): arama sesi `tac_seeker_locking`, kilit sesi `tac_seeker_locked` (hacim 0,35; ilgili config dosyasında ayarlanır). Motor yalnızca "arama" ve "kilit" olmak üzere iki ses kullanır; `tac_seeker_search` ve RWR sesleri henüz bağlı değil. Üst sınıf adları (`launch_O_Titan_F`, `rhs_weap_strela`) ve `requiredAddons` değerleri ACE'nin RHS uyumluluk yamalarından alındı. Diğer fırlatıcılar için önce `["titan"] call TAC_fnc_lockScan` (fırlatıcılar) ve uçakta `[vehicle player] call TAC_fnc_lockScan` ile hangi sınıfların kilit sesi tanımladığı taranır, çıktıya göre config yaması yazılır. Kilit sesini susturmak değil, değiştirmek mümkün.
 
+### Envanter ikonları (0.33.0)
+
+Tüm TAC eşyalarının kendi ikonu var (`addons/main/data/icons/*_ca.png`, 256x256, şeffaf zemin): AA ve lityum NVG pili (%100 / 75 / 50 / 25 / 10 kademeleri ayrı, altta şarj çubuğu; bitik pil kırmızı çarpılı), lens bezi, silah bakım kiti, silah yağı, yedek parça seti, ısı eldiveni, füze pili (BCU), hafif ve ağır yedek namlu. İkonlar `tools/gen_icons.py` ile üretilir (`python3 tools/gen_icons.py`; Pillow gerekir); beğenmediğini script'te değiştirip yeniden çalıştır.
+
+**Önemli:** config `.paa` yoluna bakar (`..._ca.paa`), repoda ise `.png` kaynaklar durur. Paketlerken PNG'lerin `.paa`'ya çevrilmesi gerekir: **Mikero pboProject** bunu otomatik yapar (`_ca` son eki = renk + alfa). Addon Builder kullanıyorsan "Binarize all textures" seçeneğini aç ya da PNG'leri TexView 2 ile `.paa` olarak kaydet (aynı klasöre, aynı adla). Çevrilmezse eşya çalışır ama envanterde ikon boş görünür.
+
 Beğenmediğin bir değeri CBA'daki `MRBS tablosu` ayarına `classname=MRBS` yazarak (ör. `rhs_weap_m4a1=2500, CUP_arifle_AK74=4000`) ezebilirsin; Silahı incele kartında silahçı, silahın profilini (etiket, MRBS, kalite) görür.
 
 **Kaynaklar:**

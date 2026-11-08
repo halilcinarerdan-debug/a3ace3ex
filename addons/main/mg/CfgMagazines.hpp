@@ -18,6 +18,7 @@ class TAC_SpareBarrel_Light: ACE_SpareBarrel
 {
     author = "TAC";
     displayName = "Yedek Namlu (Hafif MG)";
+    picture = "\z\tac\addons\main\data\icons\barrel_light_ca.paa";
     descriptionShort = "5.56 / 6.5 mm hafif makineli tufek icin yedek namlu. Yaklasik 1.9 kg.";
     mass = 42;
 };
@@ -26,6 +27,7 @@ class TAC_SpareBarrel_Heavy: ACE_SpareBarrel
 {
     author = "TAC";
     displayName = "Yedek Namlu (Agir MG)";
+    picture = "\z\tac\addons\main\data\icons\barrel_heavy_ca.paa";
     descriptionShort = "Buyuk kalibreli (9.3 / .338) makineli tufek icin yedek namlu. Yaklasik 3.8 kg.";
     mass = 84;
 };
