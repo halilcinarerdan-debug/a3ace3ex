@@ -677,6 +677,7 @@ Eşyalar: `TAC_WeaponCleaningKit`, `TAC_WeaponOil`, `TAC_WeaponSpareParts`. Hede
 | `TAC_wpn_dirtRate` (1000 atışta kir %) | 60 |
 | `TAC_wpn_lubeLoss` (1000 atışta yağ kaybı %) | 50 |
 | `TAC_wpn_jamScale` (arıza ihtimali ölçeği; 1 = gerçek MRBS) | 1 |
+| `TAC_wpn_jamCooldown` (iki arıza arası asgari atış) | 60 |
 | `TAC_wpn_mrbsTable` (elle MRBS: `classname=MRBS, ...`) | boş |
 | `TAC_wpn_wearLife` (parça ömrü, atış) | 15000 |
 | `TAC_wpn_suppressorMult` | 1.6 |
@@ -840,7 +841,7 @@ Sıcaklık vanilla `ambientTemperature` ile okunur (ACE hava durumu gerekmez).
 
 | Ayar | Varsayılan |
 |------|-----------|
-| `TAC_opt_enabled` | açık |
+| `TAC_opt_enabled` | **kapalı** (varsayılan; açınca sistem devreye girer) |
 | `TAC_opt_fogRate` (saniyede % buğulanma) | 1.5 |
 | `TAC_opt_shotDirt` (atış başına % kir) | 0.05 |
 | `TAC_opt_rainDirt` (yağmurda saniyede % damlacık) | 0.15 |
@@ -939,6 +940,13 @@ Koşullar: aynı taraf, oyuncu, 4 m içinde, ikisi de yaşıyor ve bilinci açı
 ### Tek başına test
 
 CBA'da silah bakımı **Test modu**nu aç: ACE self-menüsünde **Silah yardımı (test: kendi silahım)** çıkar. Yardımcı da hedef de sen olursun, adım yine olay yoluyla (gerçek koop yolu) uygulanır. Adımları yardımlı yoldan (kısaltılmış süreyle) uygula; kendi prosedür menünle karşılaştır. Gerçek iki kişilik testte (arkadaşın makinesi) aynı akış çalışır; tek kişilikte ağ gecikmesi / yerellik farkları test edilemez.
+
+## Arıza sıklığı ve MG menüsü (0.26)
+
+- **Optik buğu / kir modülü varsayılan olarak KAPALI.** CBA > Optik (buğu / kir) > "Optik buğu / kir sistemi aktif" ile açılır; kapalıyken lens kirlenmez, görüntü bozulmaz, "Optiği sil" menüsü çıkmaz.
+- **Arızalar arası asgari atış** (`TAC_wpn_jamCooldown`, varsayılan 60): bu sistemden çıkan iki arıza arasında en az bu kadar atış geçer, kirli silahta peş peşe tutukluk zinciri olmaz. ACE'nin kendi ısı arızası bundan bağımsızdır (kaynağı test göstergesi yazar: "KAYNAK: ACE" ya da bizim sistem).
+- **Test modu açık kalmışsa** (silah bakım `Test modu`, x20) kirlenme, yağ kaybı ve aşınma 20 kat hızlanır ve ~100 atışta silah tam kirli olup sık tutukluk yapar: normal oyunda KAPALI olmalı.
+- **Kayışlı MG ölçütü sıkılaştı:** MG kategorisi + en büyük şarjör / kayış kapasitesi >= 75 + (ACE namlu değiştirme işareti veya profil M60 / M240 / M249 / PKM / MG3 ailesi) + adı tamburlu / MX SW değil. Tüfekler (60-70 mermilik tambur taşıyanlar dahil) besleme prosedürü menüsü görmez.
 
 ## Etkileşim kuralı: silah ELDE olmalı
 

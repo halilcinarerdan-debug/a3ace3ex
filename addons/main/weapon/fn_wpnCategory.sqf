@@ -13,7 +13,7 @@
     Parametreler:
         0: STRING - silah classname
 
-    Dönüş: ARRAY - [kategori, kirlenme çarpanı, temizlik süresi (sn), MG mi], takip edilmiyorsa []
+    Dönüş: ARRAY - [kategori, kirlenme çarpanı, temizlik süresi (sn), MG mi, en büyük şarjör kapasitesi], takip edilmiyorsa []
 */
 
 params [["_weapon", "", [""]]];
@@ -34,6 +34,7 @@ if (isNil "_result") then {
 
     if (_type == 1 || {_type == 2}) then {
         private _isMG = false;
+        private _maxCount = 0;
 
         if (_type == 1) then {
             private _mags = getArray (_cfg >> "magazines");
@@ -44,7 +45,6 @@ if (isNil "_result") then {
                 } forEach (configProperties [configFile >> "CfgMagazineWells" >> _x, "isArray _x", true]);
             } forEach (getArray (_cfg >> "magazineWell"));
 
-            private _maxCount = 0;
             {
                 _maxCount = _maxCount max (getNumber (configFile >> "CfgMagazines" >> _x >> "count"));
             } forEach _mags;
@@ -61,9 +61,9 @@ if (isNil "_result") then {
         };
 
         _result = if (_type == 2) then {
-            ["pistol", 0.5, 15, false]
+            ["pistol", 0.5, 15, false, 0]
         } else {
-            if (_isMG) then {["mg", 1.3, 45, true]} else {["rifle", 1, 25, false]}
+            if (_isMG) then {["mg", 1.3, 45, true, _maxCount]} else {["rifle", 1, 25, false, _maxCount]}
         };
     };
 

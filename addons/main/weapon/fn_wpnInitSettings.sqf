@@ -53,6 +53,15 @@ private _category = ["TAC - Gerçekçilik Paketi", "Silah bakım ve arıza"];
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_wpn_jamCooldown",
+    "SLIDER",
+    ["Arızalar arası asgari atış", "Bu sistemden çıkan iki arıza arasında en az bu kadar atış olur (kirli silahta peş peşe tutukluk zinciri engellenir). 0 = kapalı. ACE'nin kendi ısı arızası bundan bağımsızdır."],
+    _category,
+    [0, 300, 60, 0],
+    true
+] call CBA_settings_fnc_init;
+
+[
     "TAC_wpn_mrbsTable",
     "EDITBOX",
     ["MRBS tablosu (classname=MRBS, ...)", "Bir silahın temiz-yağlı iki tıkanma arası ortalama atışını (MRBS) elle ata; yerleşik tabloyu ezer. Virgülle ayır. Örn: rhs_weap_m4a1=2500, CUP_arifle_AK74=4000"],

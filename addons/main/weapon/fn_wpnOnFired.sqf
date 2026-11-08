@@ -54,6 +54,8 @@ _dirt = (_dirt + ((TAC_wpn_dirtRate / 1000) * _dirtMult * _env * _suppMult * _du
 _lube = (_lube - ((TAC_wpn_lubeLoss / 1000) * _accel)) max 0;
 _wear = _wear + _accel;
 _since = _since + 1;
+private _sinceJam = (_state param [9, 9999]) + 1;
+_state set [9, _sinceJam];
 
 _state set [0, _dirt];
 _state set [1, _lube];
@@ -83,6 +85,9 @@ if (TAC_mg_feedStep && {[_weapon] call TAC_fnc_wpnIsBeltFed} && {!(_state param 
     };
 };
 
+// Iki ARIZA arasi en az "Arizalar arasi asgari atis" kadar atis (kirli silahta ardisik tutukluk zinciri olmasin).
+if (_sinceJam < TAC_wpn_jamCooldown) exitWith {};
+
 private _p = [_state, _env, _weapon] call TAC_fnc_wpnJamChance;
 
 if (random 1 >= _p) exitWith {};
@@ -102,6 +107,7 @@ private _type = selectRandomWeighted [
 
 missionNamespace setVariable ["TAC_wpn_ownJam", time];
 [_unit, _weapon, _type] call ace_overheating_fnc_jamWeapon;
+_state set [9, 0];
 
 if (TAC_wpn_debug) then {
     systemChat format [

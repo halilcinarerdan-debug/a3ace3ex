@@ -8,7 +8,7 @@
 
     Durum dizisi: [kir 0..100, yağ 0..100, aşınma (atış), son temizlikten atış, son arıza türü,
                    son arıza zamanı (time), arıza sayısı, besleme hazır mı (MG), besleme prosedürü ilerlemesi]
-    Varsayılan: [5, 70, 0, 0, "", -1000, 0, true, 0]
+    Varsayılan: [5, 70, 0, 0, "", -1000, 0, true, 0, 9999] (9: bu silahta bizim sistemin son arızasından beri atış)
 
     Parametreler:
         0: OBJECT - birim
@@ -30,7 +30,7 @@ private _key = toLower _weapon;
 private _state = _all get _key;
 
 if (isNil "_state") then {
-    _state = [5, 70, 0, 0, "", -1000, 0, true, 0];
+    _state = [5, 70, 0, 0, "", -1000, 0, true, 0, 9999];
     _all set [_key, _state];
 };
 

@@ -16,9 +16,9 @@ private _category = ["TAC - Gerçekçilik Paketi", "Optik (buğu / kir)"];
 [
     "TAC_opt_enabled",
     "CHECKBOX",
-    ["Optik buğu / kir sistemi aktif", "Kapalıysa optik durumu takip edilmez ve görüntü bozulmaz."],
+    ["Optik buğu / kir sistemi aktif", "Varsayılan KAPALI. Kapalıyken optik durumu takip edilmez, lens kirlenmez ve görüntü bozulmaz."],
     _category,
-    true,
+    false,
     true
 ] call CBA_settings_fnc_init;
 
