@@ -1,6 +1,6 @@
 # TAC – Realism Pack (CBA_A3 + ACE3)
 
-Tek bir mod (`@TAC`): ana PBO `tac_main.pbo` + iki **opsiyonel** uyumluluk PBO'su (`tac_compat_rhs.pbo`, `tac_compat_cup.pbo`). Yalnızca **CBA_A3** ve **ACE3**
+Tek bir mod (`@TAC`): ana PBO `tac_main.pbo` + üç **opsiyonel** uyumluluk PBO'su (`tac_compat_rhs.pbo`, `tac_compat_rhs_afrf.pbo`, `tac_compat_cup.pbo`). Yalnızca **CBA_A3** ve **ACE3**
 (ACE overheating dahil, ACE ile gelir) gerektirir; RHS, CUP, Project OPFOR, ACM, LAMBS, ACRE2 ile birlikte kullanılır. Uyumluluk PBO'ları dışında hiçbir mod zorunlu bağımlılık değildir.
 Mission dosyasına (`initPlayerLocal.sqf`, `description.ext` vb.) **hiçbir şey eklemek gerekmez**.
 
@@ -126,7 +126,8 @@ addons/main/                             -> tac_main.pbo   (prefix: z\tac\addons
         fn_rktProfile / rktGetState / rktParseTable   tür profili, durum, elle tablo
         fn_rktMisfireCheck / rktMisfireDo / rktOnFired / rktOnReloaded
         fn_rktRemoveRound / rktInspect / rktDebug
-addons/compat_rhs/                       -> tac_compat_rhs.pbo (OPSİYONEL; RHS Minimi ailesine hafif namlu)
+addons/compat_rhs/                       -> tac_compat_rhs.pbo (OPSİYONEL; RHS Minimi ailesine hafif namlu + FIM-92 kilit sesleri)
+addons/compat_rhs_afrf/                  -> tac_compat_rhs_afrf.pbo (OPSİYONEL; RHS AFRF Igla kilit sesleri)
 addons/compat_cup/                       -> tac_compat_cup.pbo (OPSİYONEL; CUP Minimi / M249 ailesine hafif namlu)
 ```
 
@@ -150,12 +151,12 @@ addons/compat_cup/                       -> tac_compat_cup.pbo (OPSİYONEL; CUP 
 ### Opsiyonel uyumluluk PBO'ları (RHS, CUP)
 
 `addons/compat_rhs` ve `addons/compat_cup` küçük, **opsiyonel** PBO'lardır; `tac_main` ile aynı yöntemle derlenir
-(kaynak: `P:\z\tac\addons\compat_rhs`, prefix `$PBOPREFIX$` dosyasından okunur: `z\tac\addons\compat_rhs`; aynısı `compat_cup` için).
+(kaynak: `P:\z\tac\addons\compat_rhs`, prefix `$PBOPREFIX$` dosyasından okunur: `z\tac\addons\compat_rhs`; aynısı `compat_rhs_afrf` ve `compat_cup` için).
 Her biri `skipWhenMissingDependencies = 1` taşır: ilgili mod (RHS USAF / CUP Weapons) yüklü değilse config'leri **sessizce atlanır**, hata vermez.
 Bu PBO'ları `@TAC\addons` içine koymazsan o modun MG'leri yalnızca varsayılan orta namluyu kullanır. İçerik: 7. özellik bölümü.
 pboProject `requiredAddons` uyarısı verirse (örn. `rhsusf_main_loadorder`, `CUP_Weapons_LoadOrder`), yukarıdaki 5. adımdaki gibi ilgili modu P: sürücüsüne aç ya da denetimi gevşet.
 
-Sonuç: `@TAC\addons\tac_main.pbo` (+ varsa `tac_compat_rhs.pbo`, `tac_compat_cup.pbo`, `.bisign` dosyaları) ve `@TAC\mod.cpp`.
+Sonuç: `@TAC\addons\tac_main.pbo` (+ varsa `tac_compat_rhs.pbo`, `tac_compat_rhs_afrf.pbo`, `tac_compat_cup.pbo`, `.bisign` dosyaları) ve `@TAC\mod.cpp`.
 
 ## Kurulum / başlatma
 
@@ -653,7 +654,7 @@ Görsel, `rktPrepSteps` ile aynı ailelerde çalışır; başlığa özel ek ad�
 
 ### Kilit / uyarı sesleri (hazırlık, 0.31.0)
 
-`addons/main/sound/` içinde beş mono 44,1 kHz `.ogg` var (Python ile üretildi; harmonikler azaltılmış, sıkıştırıcı + limiter ile dinamik aralık daraltılmış, tepe -4,4 dBFS): `tac_seeker_search` (600 Hz titreşimli), `tac_seeker_locking` (1,2 kHz, 4 bip/sn), `tac_seeker_locked` (2 kHz sabit), `tac_rwr_lock` (1 kHz, 2,5 bip/sn), `tac_rwr_launch` (2,2 kHz, 8 bip/sn). Henüz config'e bağlı değil: önce `["titan"] call TAC_fnc_lockScan` (fırlatıcılar) ve uçakta `[vehicle player] call TAC_fnc_lockScan` ile hangi sınıfların kilit sesi tanımladığı taranır, çıktıya göre config yaması yazılır. Kilit sesini susturmak değil, değiştirmek mümkün.
+`addons/main/sound/` içinde beş mono 44,1 kHz `.ogg` var (Python ile üretildi; harmonikler azaltılmış, sıkıştırıcı + limiter ile dinamik aralık daraltılmış, tepe -4,4 dBFS): `tac_seeker_search` (600 Hz titreşimli), `tac_seeker_locking` (1,2 kHz, 4 bip/sn), `tac_seeker_locked` (2 kHz sabit), `tac_rwr_lock` (1 kHz, 2,5 bip/sn), `tac_rwr_launch` (2,2 kHz, 8 bip/sn). **Bağlananlar:** `rhs_weap_fim92` (`tac_compat_rhs.pbo`) ve `rhs_weap_igla` (`tac_compat_rhs_afrf.pbo`): arama sesi `tac_seeker_locking`, kilit sesi `tac_seeker_locked` (hacim 0,35; ilgili config dosyasında ayarlanır). Motor yalnızca "arama" ve "kilit" olmak üzere iki ses kullanır; `tac_seeker_search` ve RWR sesleri henüz bağlı değil. Üst sınıf adları (`launch_O_Titan_F`, `rhs_weap_strela`) ve `requiredAddons` değerleri ACE'nin RHS uyumluluk yamalarından alındı. Diğer fırlatıcılar için önce `["titan"] call TAC_fnc_lockScan` (fırlatıcılar) ve uçakta `[vehicle player] call TAC_fnc_lockScan` ile hangi sınıfların kilit sesi tanımladığı taranır, çıktıya göre config yaması yazılır. Kilit sesini susturmak değil, değiştirmek mümkün.
 
 Beğenmediğin bir değeri CBA'daki `MRBS tablosu` ayarına `classname=MRBS` yazarak (ör. `rhs_weap_m4a1=2500, CUP_arifle_AK74=4000`) ezebilirsin; Silahı incele kartında silahçı, silahın profilini (etiket, MRBS, kalite) görür.
 
