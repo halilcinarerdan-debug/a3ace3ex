@@ -85,6 +85,24 @@ private _category = ["TAC - Gerçekçilik Paketi", "Roketatar / füze"];
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_rkt_panel",
+    "CHECKBOX",
+    ["Hazırlık: interaktif panel", "Açıksa panel desteği olan fırlatıcılarda (şimdilik M136 AT4) 'Atışa hazırla' bir panel açar: parçalara kılavuz sırasıyla tıklanır. Kapalıysa ACE menüsündeki adım listesi kullanılır. Panelde adımlar süre beklemez."],
+    _category,
+    true,
+    true
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_rkt_panelHint",
+    "CHECKBOX",
+    ["Panel: eğitim modu", "Açıksa panelde sıradaki parçanın adı sarı yanar (yeni personel için). Kapalıyken hiçbir ipucu yoktur: sırayı oyuncu bilmelidir."],
+    _category,
+    false,
+    true
+] call CBA_settings_fnc_init;
+
+[
     "TAC_rkt_waitTime",
     "SLIDER",
     ["Ateşlenmeme bekleme süresi (sn)", "Mühimmat ateşlenmezse (tık sesi), çıkarmadan önce beklenmesi gereken süre (gecikmeli ateşleme riski). Bekleme sırasında tetiğe tekrar basılırsa süre yeniden başlar."],

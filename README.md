@@ -640,6 +640,16 @@ Bilinmeyen silahlar için **kalibre** (ilk şarjörün mühimmat adından) ve **
 **tahmin**dir ve tabloda öyle işaretlidir. Aşırı toz testinin kendisi tartışmalıdır: Ordu'nun kendi sunumunda iki koşuda M4 için 296 ve 863 tıkanma çıkmış, yani protokol tekrarlanabilir değil. Rakamlar oyun dengesi için makul bir başlangıçtır, kesin bilgi değildir.
 > _0.26.2_: adında `arifle_` geçen tüm tüfekler (`ef_arifle_*`, `CUP_arifle_*`...) MG / kayışlı sayılmaz (ilk mermide besleme arızası düzeltmesi).
 
+### İnteraktif hazırlık paneli (0.28.0)
+
+M136 AT4 için ACE self-menü > Roketatar > **Atışa hazırla** artık adım listesi yerine sade bir panel açar (`TAC_rkt_panel`, açık). Panelde fırlatıcının yalnızca prosedürde dokunulan parçaları çizilidir: nakliye pimi, omuz dayanağı, ön/arka nişangah, arka bölge (backblast), horoz kolu. Parçalara FM 3-23.25 sırasıyla tıklanır: pim → omuz dayanağı → nişangah/menzil → arka bölge kontrolü → horoz kolu.
+
+- Sıradaki parça gösterilmez. Yanlış sırada tıklanırsa durum satırında "Hatalı sıra" yazar ve prosedür baştan başlar. Yapılan parçalar açık konumda çizilir (pim çıkar, dayanak açılır, nişangah kalkar, arka bölge yeşil olur).
+- `TAC_rkt_panelHint` (kapalı): eğitim modu, sıradaki parçanın adı sarı yanar.
+- ESC ile kapanır; ilerleme saklanır, panel yeniden açılınca kaldığı yerden devam eder. Panelde adımlar süre beklemez (ilerleme çubuğu yok).
+- Başlığa özel ek adım geldiyse (adım sayısı 5'ten farklıysa) ya da başka fırlatıcıda panel kullanılmaz; ACE menüdeki adım listesi aynen çalışır. Arkadaş yardımı (assist) de aynı adım mantığını kullanır.
+- Panel yeni parça eklemek için: `rocket/fn_rktPanelLayout.sqf` içindeki çizim tablosu (şekiller 1.6 x 0.9 tasarım alanında).
+
 Beğenmediğin bir değeri CBA'daki `MRBS tablosu` ayarına `classname=MRBS` yazarak (ör. `rhs_weap_m4a1=2500, CUP_arifle_AK74=4000`) ezebilirsin; Silahı incele kartında silahçı, silahın profilini (etiket, MRBS, kalite) görür.
 
 **Kaynaklar:**

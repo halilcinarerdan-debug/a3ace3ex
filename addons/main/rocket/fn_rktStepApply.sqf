@@ -9,11 +9,12 @@
     Parametreler:
         0: OBJECT - fırlatıcının sahibi (yerel birim)
         1: NUMBER - adımın prosedürdeki sıra numarası
+        2: BOOL   - (isteğe bağlı) true ise hatalı sıra mesajı gösterilmez (panel kendi metnini verir)
 
     Dönüş: yok
 */
 
-params [["_unit", objNull, [objNull]], ["_index", 0, [0]]];
+params [["_unit", objNull, [objNull]], ["_index", 0, [0]], ["_silent", false, [false]]];
 
 if (!local _unit) exitWith {};
 
@@ -34,7 +35,7 @@ if (_index != _progress) exitWith {
     _state set [10, 0];
     [_unit, _weapon] call TAC_fnc_rktPublish;
 
-    if (_unit isEqualTo ACE_player) then {
+    if (!_silent && {_unit isEqualTo ACE_player}) then {
         ["Hatalı sıra: prosedür baştan başlamalı."] call ace_common_fnc_displayTextStructured;
     };
 };

@@ -69,6 +69,7 @@ private _prepare = [
         && {time >= (_player getVariable ["TAC_wpn_busyUntil", 0])}
         && {(_player ammo _weapon) > 0}
         && {!(([_player, _weapon] call TAC_fnc_rktGetState) select 5)}
+        && {([_player] call TAC_fnc_rktPanelLayout) isEqualTo []}
     },
     {
         params ["_target", "_player"];
@@ -106,6 +107,30 @@ private _prepare = [
 ] call ace_interact_menu_fnc_createAction;
 
 ["CAManBase", 1, ["ACE_SelfActions", "TAC_rkt_menu"], _prepare, true] call ace_interact_menu_fnc_addActionToClass;
+
+// Interaktif panel (destekleyen firlaticilar): ayni prosedur, parcalara tiklanarak.
+private _panel = [
+    "TAC_rkt_panelOpen",
+    "Atışa hazırla",
+    "",
+    {
+        params ["_target", "_player"];
+        [_player] call TAC_fnc_rktPanel;
+    },
+    {
+        params ["_target", "_player"];
+
+        private _weapon = secondaryWeapon _player;
+
+        TAC_rkt_prepare
+        && {time >= (_player getVariable ["TAC_wpn_busyUntil", 0])}
+        && {(_player ammo _weapon) > 0}
+        && {!(([_player, _weapon] call TAC_fnc_rktGetState) select 5)}
+        && {!(([_player] call TAC_fnc_rktPanelLayout) isEqualTo [])}
+    }
+] call ace_interact_menu_fnc_createAction;
+
+["CAManBase", 1, ["ACE_SelfActions", "TAC_rkt_menu"], _panel, true] call ace_interact_menu_fnc_addActionToClass;
 
 private _dry = [
     "TAC_rkt_dry",
