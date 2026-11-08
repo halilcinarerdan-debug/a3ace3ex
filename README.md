@@ -651,6 +651,10 @@ Görsel, `rktPrepSteps` ile aynı ailelerde çalışır; başlığa özel ek ad�
 | M136 AT4, M72, M141 BDM | pim, omuz dayanağı / tüp, nişangah, horoz / ateşleme kapağı | **FM 3-23.25 (2006)** |
 | RPG-7, RPG-18/22/26, Panzerfaust, NLAW, SMAW, Carl Gustaf, SPG-9, Javelin, Stinger, Igla, TOW, Metis / Kornet, Titan | genel çalışma sırası | **kaynaksız, tahmin**; resmi kılavuz gelince düzeltilmeli |
 
+### Kilit / uyarı sesleri (hazırlık, 0.31.0)
+
+`addons/main/sound/` içinde beş mono 44,1 kHz `.ogg` var (Python ile üretildi; harmonikler azaltılmış, sıkıştırıcı + limiter ile dinamik aralık daraltılmış, tepe -4,4 dBFS): `tac_seeker_search` (600 Hz titreşimli), `tac_seeker_locking` (1,2 kHz, 4 bip/sn), `tac_seeker_locked` (2 kHz sabit), `tac_rwr_lock` (1 kHz, 2,5 bip/sn), `tac_rwr_launch` (2,2 kHz, 8 bip/sn). Henüz config'e bağlı değil: önce `["titan"] call TAC_fnc_lockScan` (fırlatıcılar) ve uçakta `[vehicle player] call TAC_fnc_lockScan` ile hangi sınıfların kilit sesi tanımladığı taranır, çıktıya göre config yaması yazılır. Kilit sesini susturmak değil, değiştirmek mümkün.
+
 Beğenmediğin bir değeri CBA'daki `MRBS tablosu` ayarına `classname=MRBS` yazarak (ör. `rhs_weap_m4a1=2500, CUP_arifle_AK74=4000`) ezebilirsin; Silahı incele kartında silahçı, silahın profilini (etiket, MRBS, kalite) görür.
 
 **Kaynaklar:**
