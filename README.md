@@ -660,7 +660,7 @@ Görsel, `rktPrepSteps` ile aynı ailelerde çalışır; başlığa özel ek ad�
 
 ### Envanter ikonları (0.33.0)
 
-Tüm TAC eşyalarının kendi ikonu var (`addons/main/data/icons/*_ca.png`, 256x256, şeffaf zemin): AA ve lityum NVG pili (%100 / 75 / 50 / 25 / 10 kademeleri ayrı, altta şarj çubuğu; bitik pil kırmızı çarpılı), lens bezi, silah bakım kiti, silah yağı, yedek parça seti, ısı eldiveni, füze pili (BCU), hafif ve ağır yedek namlu. İkonlar `tools/gen_icons.py` ile üretilir (`python3 tools/gen_icons.py`; Pillow gerekir); beğenmediğini script'te değiştirip yeniden çalıştır.
+Tüm TAC eşyalarının kendi ikonu var (`addons/main/data/icons/*_ca.png`, 256x256, şeffaf zemin; mat, soluk renkli, gerçekçi ışık ve doku; sade çizgi film stili değil): AA ve lityum NVG pili (%100 / 75 / 50 / 25 / 10 kademeleri ayrı, altta sade tek renkli 5 çizgilik şarj göstergesi; bitik pil sızıntılı ve kararmış), lens bezi, silah bakım kiti, silah yağı, yedek parça seti, ısı eldiveni, füze pili (BCU), hafif ve ağır yedek namlu. İkonlar `tools/gen_icons.py` ile üretilir (`python3 tools/gen_icons.py`; Pillow gerekir); beğenmediğini script'te değiştirip yeniden çalıştır.
 
 **Önemli:** config `.paa` yoluna bakar (`..._ca.paa`), repoda ise `.png` kaynaklar durur. Paketlerken PNG'lerin `.paa`'ya çevrilmesi gerekir: **Mikero pboProject** bunu otomatik yapar (`_ca` son eki = renk + alfa). Addon Builder kullanıyorsan "Binarize all textures" seçeneğini aç ya da PNG'leri TexView 2 ile `.paa` olarak kaydet (aynı klasöre, aynı adla). Çevrilmezse eşya çalışır ama envanterde ikon boş görünür.
 
