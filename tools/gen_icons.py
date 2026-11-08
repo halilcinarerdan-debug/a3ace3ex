@@ -98,7 +98,7 @@ def cell_parts(cx, base_y, body, bandc, label, dead, lithium):
         body_tint = chain(body_tint, corr)
     parts = [
         Part(lambda p: cyl(p, (cx, cy, 0), rad, hh, 1, 0.045), body, rough=0.35 if not dead else 0.8, spec=0.6 if not dead else 0.1,
-             bump=0.01 if not dead else 0.05, bump_f=60, tint_fn=body_tint, metal=0.3),
+             bump=0.01 if not dead else 0.05, bump_f=60, tint_fn=body_tint, metal=0.3, wear=0.45, wear_color=(190, 190, 185)),
         Part(lambda p: cyl(p, (cx, cy + hh + 0.035, 0), 0.075, 0.04, 1, 0.02), (205, 205, 200), rough=0.2, spec=0.9, metal=0.9),
         Part(lambda p: cyl(p, (cx, cy + hh - 0.1, 0), rad + 0.004, 0.035, 1, 0.01), (175, 176, 175), rough=0.25, spec=0.8, metal=0.8),
         Part(lambda p: cyl(p, (cx, cy - hh + 0.06, 0), rad + 0.004, 0.035, 1, 0.01), (165, 165, 163), rough=0.25, spec=0.8, metal=0.8),
@@ -114,7 +114,7 @@ def battery(name, lithium, pct, dead=False):
     else:
         body, bnd, lab = (34, 36, 38), (150, 98, 40), '%d%%' % pct
     parts = cell_parts(-0.27, -0.12, body, bnd, lab, dead, lithium) + cell_parts(0.27, -0.28, body, bnd, lab, dead, lithium)
-    img = render(parts, size=SIZE, ss=2, rot_fn=view(0.30, -0.45), extent=1.15)
+    img = render(parts, size=SIZE, ss=3, rot_fn=view(0.30, -0.45), extent=1.15)
     save(img, name)
 
 
@@ -124,13 +124,13 @@ def oil():
                            ('text', (128, 125), 'CLP', 40, (34, 34, 30, 255)), ('rect', (30, 160, 226, 168), (34, 34, 30, 255)),
                            ('text', (128, 200), '118 ml', 30, (34, 34, 30, 255))])
     parts = [
-        Part(lambda p: cyl(p, (0, -0.42, 0), 0.5, 0.52, 1, 0.14), (96, 54, 18), rough=0.12, spec=1.0,
+        Part(lambda p: cyl(p, (0, -0.42, 0), 0.5, 0.52, 1, 0.14), (96, 54, 18), rough=0.12, spec=1.0, wear=0.25, wear_color=(200, 150, 90),
              tint_fn=wrap(lab, 0, 0, -0.78, 0.78, 0.9)),
         Part(lambda p: cyl(p, (0, 0.2, 0), 0.24, 0.22, 1, 0.07), (92, 50, 17), rough=0.12, spec=1.0),
         Part(lambda p: cyl(p, (0, 0.52, 0), 0.19, 0.17, 1, 0.04), (24, 26, 26), rough=0.45, spec=0.5, bump=0.02, bump_f=70),
         Part(lambda p: cyl(p, (0, 0.82, 0), 0.075, 0.2, 1, 0.03), (32, 34, 34), rough=0.35, spec=0.7),
     ]
-    img = render(parts, size=SIZE, ss=2, rot_fn=view(0.22, -0.5), extent=1.2)
+    img = render(parts, size=SIZE, ss=3, rot_fn=view(0.22, -0.5), extent=1.2)
     save(img, 'oil')
 
 
@@ -139,7 +139,7 @@ def pouch(label, col, name, hh=0.46, with_rod=False, with_parts=False):
     zip_fn = lambda P, a, N: np.where(((np.abs(P[:, 1] - 0.12) < 0.016) & (N[:, 2] > 0.4))[:, None], np.array([0.06, 0.06, 0.055]), a)
     stitch = lambda P, a, N: np.where((((np.abs(P[:, 0]) > 0.62) & (np.abs(P[:, 0]) < 0.635)) | ((np.abs(P[:, 1] + 0.30) < 0.008) & (np.abs(P[:, 0]) < 0.62)))[:, None] & (N[:, 2] > 0.4)[:, None], a * 0.55 + 0.35, a)
     tint = chain(stitch, zip_fn, planar(lab, 0, -0.13, 0.62, 0.155))
-    parts = [Part(lambda p: rbox(p, (0, -0.05, 0), (0.78, hh, 0.26), 0.09), col, rough=0.85, spec=0.08, bump=0.07, bump_f=90, tint_fn=tint),
+    parts = [Part(lambda p: rbox(p, (0, -0.05, 0), (0.78, hh, 0.26), 0.09), col, rough=0.85, spec=0.08, bump=0.07, bump_f=90, tint_fn=tint, wear=0.55, wear_color=(150, 150, 120), dirt=0.8),
              Part(lambda p: rbox(p, (0.56, 0.12, 0.27), (0.07, 0.04, 0.012), 0.008), (30, 30, 28), rough=0.4, spec=0.7)]
     if with_rod:
         parts += [Part(lambda p: capsule(p, (0.3, 0.3, 0), (0.3, 1.05, 0), 0.025), (190, 192, 196), rough=0.2, spec=0.9, metal=0.9),
@@ -149,7 +149,7 @@ def pouch(label, col, name, hh=0.46, with_rod=False, with_parts=False):
         parts += [Part(lambda p: capsule(p, (-0.45, 0.28, 0), (-0.45, 0.85, 0), 0.03), (176, 178, 180), rough=0.2, spec=0.9, metal=0.9),
                   Part(lambda p: cyl(p, (-0.45, 0.3, 0), 0.07, 0.04, 1, 0.02), (110, 112, 114), rough=0.3, spec=0.8, metal=0.8),
                   Part(lambda p: capsule(p, (0.15, 0.28, 0.0), (0.15, 0.7, 0.0), 0.018), (170, 136, 80), rough=0.3, spec=0.8, metal=0.7)]
-    img = render(parts, size=SIZE, ss=2, rot_fn=view(0.5, -0.42), extent=1.28)
+    img = render(parts, size=SIZE, ss=3, rot_fn=view(0.5, -0.42), extent=1.28)
     save(img, name)
 
 
@@ -161,7 +161,7 @@ def lens_cloth():
              tint_fn=lambda P, a, N: np.where(((np.abs(P[:, 0] - 0.30) < 0.14) & (np.abs(P[:, 2]) < 0.26) & (N[:, 1] > 0.5))[:, None], np.array([0.24, 0.26, 0.24]), a)),
         Part(lambda p: rbox(p, (-0.02, 0.095, 0.02), (0.012, 0.012, 0.44), 0.01), (70, 82, 92), rough=0.95, spec=0.03),
     ]
-    img = render(parts, size=SIZE, ss=2, rot_fn=view(0.85, -0.35, 0.0), extent=1.15)
+    img = render(parts, size=SIZE, ss=3, rot_fn=view(0.85, -0.35, 0.0), extent=1.15)
     save(img, 'lens_cloth')
 
 
@@ -173,7 +173,7 @@ def bcu():
                    ('rect', (30, 225, 300, 235), (60, 62, 56, 255)), ('rect', (30, 260, 240, 270), (60, 62, 56, 255)),
                    ('rect', (395, 190, 470, 330), (40, 42, 36, 255)), ('text', (256, 340), '28V DC  4.2Ah', 30, (30, 32, 28, 255))])
     parts = [
-        Part(lambda p: rbox(p, (0, -0.1, 0), (0.78, 0.55, 0.34), 0.07), (78, 86, 64), rough=0.8, spec=0.1, bump=0.06, bump_f=80,
+        Part(lambda p: rbox(p, (0, -0.1, 0), (0.78, 0.55, 0.34), 0.07), (78, 86, 64), rough=0.8, spec=0.1, bump=0.06, bump_f=80, wear=0.85, wear_color=(140, 142, 136), dirt=0.9,
              tint_fn=planar(plate, 0, -0.14, 1.0, 0.62)),
         Part(lambda p: rbox(p, (0, 0.55, 0), (0.42, 0.08, 0.16), 0.03), (38, 40, 42), rough=0.6, spec=0.3),
     ]
@@ -182,7 +182,7 @@ def bcu():
     for x in (-0.55, -0.40, 0.40, 0.55):
         parts.append(Part((lambda x: lambda p: rbox(p, (x, -0.1, 0.34), (0.018, 0.48, 0.02), 0.01))(x), (52, 58, 42), rough=0.85, spec=0.05))
     parts.append(Part(lambda p: sphere(p, (-0.62, 0.34, 0.34), 0.035), (70, 160, 76), rough=0.2, spec=0.9))
-    img = render(parts, size=SIZE, ss=2, rot_fn=view(0.35, -0.5), extent=1.25)
+    img = render(parts, size=SIZE, ss=3, rot_fn=view(0.35, -0.5), extent=1.25)
     save(img, 'missile_battery')
 
 
@@ -211,13 +211,13 @@ def glove():
     cuff = lambda p: cyl(p, (0, -0.72, 0), 0.5, 0.2, 1, 0.07)
     tag = decal(128, 48, [('rect', (0, 0, 128, 48), (176, 112, 38, 255)), ('text', (64, 24), '250C', 30, (30, 22, 10, 255))])
     parts = [
-        Part(glove_all, cloth, rough=0.9, spec=0.05, bump=0.11, bump_f=110, tint_fn=chain(patch, stitch)),
+        Part(glove_all, cloth, rough=0.9, spec=0.05, bump=0.11, bump_f=110, tint_fn=chain(patch, stitch), wear=0.4, wear_color=(120, 116, 106), dirt=0.9),
         Part(cuff, (46, 48, 50), rough=0.8, spec=0.1, bump=0.08, bump_f=100,
              tint_fn=lambda P, a, N: np.where(((np.sin(P[:, 1] * 90) > 0.6) & (N[:, 2] > 0.3))[:, None], a * 0.6, a)),
         Part(lambda p: rbox(p, (0.0, -0.7, 0.505), (0.17, 0.065, 0.012), 0.005), (176, 112, 38), rough=0.6, spec=0.2,
              tint_fn=planar(tag, 0.0, -0.7, 0.34, 0.13)),
     ]
-    img = render(parts, size=SIZE, ss=2, rot_fn=view(0.12, -0.2), extent=1.3)
+    img = render(parts, size=SIZE, ss=3, rot_fn=view(0.12, -0.2), extent=1.3)
     save(img, 'heat_glove')
 
 
@@ -242,7 +242,7 @@ def barrel(name, heavy):
             f = fins(p)
             f = np.maximum(f, np.abs(p[..., 0] - 0.05) - 0.55)
             return np.minimum(d, f)
-        parts.append(Part(heavy_body, (96, 100, 106), rough=0.35, spec=0.7, bump=0.02, bump_f=70, metal=0.8,
+        parts.append(Part(heavy_body, (96, 100, 106), rough=0.35, spec=0.7, bump=0.02, bump_f=70, metal=0.8, wear=0.7, wear_color=(170, 172, 176), dirt=0.9,
                           tint_fn=lambda P, a, N: np.where((P[:, 0] < -0.55)[:, None], a * 0.55 + np.array([0.18, 0.16, 0.26]) * 0.45, a)))
     else:
         def light_body(p):
@@ -256,13 +256,13 @@ def barrel(name, heavy):
                 hs = np.minimum(hs, np.hypot(p[..., 0] - x, p[..., 1] - 0.0) - 0.04)
             hs = np.where(np.abs(p[..., 2]) > 0.05, hs, 1e3)
             return np.maximum(d, -hs)
-        parts.append(Part(light_body, (92, 96, 102), rough=0.4, spec=0.7, bump=0.02, bump_f=70, metal=0.8,
+        parts.append(Part(light_body, (92, 96, 102), rough=0.4, spec=0.7, bump=0.02, bump_f=70, metal=0.8, wear=0.7, wear_color=(170, 172, 176), dirt=0.9,
                           tint_fn=lambda P, a, N: np.where((P[:, 0] < -0.55)[:, None], a * 0.6 + np.array([0.18, 0.16, 0.26]) * 0.4, a)))
     parts += [
         Part(lambda p: cyl(p, (0.62, 0, 0), rad + 0.07, 0.07, 0, 0.02), (58, 60, 66), rough=0.4, spec=0.7, metal=0.8),
         Part(lambda p: np.maximum(cyl(p, (0.95, 0, 0), rad * 0.9, 0.2, 0, 0.03), -(np.abs(((p[..., 0] - 0.78) % 0.09) - 0.045) - 0.012) * 0 - 1e3 * 0), (40, 42, 46), rough=0.5, spec=0.6, metal=0.7),
     ]
-    img = render(parts, size=SIZE, ss=2, rot_fn=view(0.35, 0.0, 0.18), extent=1.3)
+    img = render(parts, size=SIZE, ss=3, rot_fn=view(0.35, 0.0, 0.18), extent=1.3)
     save(img, name)
 
 

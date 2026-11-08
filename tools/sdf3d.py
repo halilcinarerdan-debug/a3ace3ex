@@ -60,8 +60,9 @@ def label_image(w, h, draw_fn, bg=(0, 0, 0, 0)):
 
 # ---- cizici ---------------------------------------------------------------------
 class Part:
-    def __init__(self, sdf, albedo, rough=0.6, spec=0.2, bump=0.0, bump_f=40.0, tint_fn=None, metal=0.0):
+    def __init__(self, sdf, albedo, rough=0.6, spec=0.2, bump=0.0, bump_f=40.0, tint_fn=None, metal=0.0, wear=0.0, wear_color=(170, 170, 165), dirt=0.5):
         self.sdf, self.albedo, self.rough, self.spec, self.bump, self.bump_f, self.tint_fn, self.metal = sdf, np.asarray(albedo, dtype='float32') / 255.0, rough, spec, bump, bump_f, tint_fn, metal
+        self.wear, self.wear_color, self.dirt = wear, np.asarray(wear_color, dtype='float32') / 255.0, dirt
 
 def scene_eval(parts, p):
     ds = np.stack([pt.sdf(p) for pt in parts], axis=0)
@@ -105,6 +106,7 @@ def render(parts, size=256, ss=2, cam_dist=4.2, fov_scale=1.0, light=(-0.6, 0.7,
     N = N / np.maximum(np.linalg.norm(N, axis=-1, keepdims=True), 1e-9)
     _, mid = scene_eval(parts, Pr)
     albedo = np.zeros((P.shape[0], 3), dtype='float32'); rough = np.zeros(P.shape[0]); spec = np.zeros(P.shape[0]); metal = np.zeros(P.shape[0])
+    wear_a = np.zeros(P.shape[0]); wear_c = np.zeros((P.shape[0], 3), dtype='float32'); dirt_a = np.zeros(P.shape[0])
     for i, pt in enumerate(parts):
         m = mid == i
         if not m.any():
@@ -119,6 +121,7 @@ def render(parts, size=256, ss=2, cam_dist=4.2, fov_scale=1.0, light=(-0.6, 0.7,
             jitter = np.stack([hash3(Pr[m], 91.0), hash3(Pr[m], 53.0), hash3(Pr[m], 17.0)], axis=-1) - 0.5
             N[m] = N[m] + jitter * pt.bump * 0.7
         albedo[m] = a; rough[m] = pt.rough; spec[m] = pt.spec; metal[m] = pt.metal
+        wear_a[m] = pt.wear; wear_c[m] = pt.wear_color; dirt_a[m] = pt.dirt
     N = N / np.maximum(np.linalg.norm(N, axis=-1, keepdims=True), 1e-9)
     L = np.asarray(light, dtype='float64'); L = L / np.linalg.norm(L)
     Rm = rot_fn(np.eye(3)).T if rot_fn else np.eye(3)
@@ -139,13 +142,31 @@ def render(parts, size=256, ss=2, cam_dist=4.2, fov_scale=1.0, light=(-0.6, 0.7,
         d = scene_eval(parts, Pr + N * hd)[0]
         ao -= (hd - d) * 0.5 / (2 ** k) * 4 * ao_strength
     ao = np.clip(ao, 0.25, 1)
+    # --- eskitme: kenar (konveks egrilik) asinmasi, carpma / cizik, girinti kiri ---
+    e2 = 0.014
+    lap = (f(Pr + [e2, 0, 0]) + f(Pr - [e2, 0, 0]) + f(Pr + [0, e2, 0]) + f(Pr - [0, e2, 0]) + f(Pr + [0, 0, e2]) + f(Pr - [0, 0, e2])) / (e2 * e2)
+    edge = np.clip(lap * 0.035, 0, 1)
+    scr = np.zeros(P.shape[0])
+    for (dx, dy, dz, fq) in ((0.8, 0.5, 0.3, 58.0), (-0.3, 0.9, 0.4, 47.0), (0.5, -0.4, 0.8, 66.0)):
+        dvec = np.array([dx, dy, dz]); dvec = dvec / np.linalg.norm(dvec)
+        band = hash3(np.floor((Pr @ dvec)[:, None] * fq * np.ones((1, 3))), 1.0) > 0.955
+        brk = hash3(np.floor(Pr * 17.0), 1.0) > 0.45
+        scr = np.maximum(scr, (band & brk).astype('float64'))
+    chip = (noise3(Pr, 70.0) > 0.78).astype('float64')
+    wmask = np.clip(edge * (0.55 + 0.9 * noise3(Pr, 55.0)) * 1.8 + 0.55 * scr * (wear_a > 0) + 0.7 * chip * edge, 0, 1) * np.clip(wear_a, 0, 1)
+    albedo = albedo * (1 - wmask[:, None]) + wear_c * wmask[:, None]
+    spec = np.where(wmask > 0.3, np.maximum(spec, 0.55), spec)
+    rough = np.where(wmask > 0.3, np.minimum(rough, 0.35), rough)
+    crev = np.clip((1 - ao) * 1.6, 0, 1) * dirt_a
+    albedo = albedo * (1 - 0.55 * crev[:, None] * (0.7 + 0.5 * noise3(Pr, 30.0))[:, None])
     diff = np.clip(Ncam @ L, 0, 1)
-    fill = np.clip(Ncam @ np.array([0.6, -0.2, 0.5]) / 0.8, 0, 1) * 0.22
-    sky = (0.5 + 0.5 * Ncam[..., 1]) * 0.20
+    fill = np.clip(Ncam @ np.array([0.6, -0.2, 0.5]) / 0.8, 0, 1) * 0.12
+    sky = (0.5 + 0.5 * Ncam[..., 1]) * 0.12
+    rim = np.clip(Ncam @ np.array([0.75, 0.55, -0.35]), 0, 1) ** 2 * 0.22
     Hh = (L + np.array([0, 0, 1.0])); Hh = Hh / np.linalg.norm(Hh)
     shin = 12 + (1 - rough) * 90
     sp = np.clip(Ncam @ Hh, 0, 1) ** shin * spec * (0.4 + 0.6 * sh)
-    light_t = ((0.10 + diff * sh * 0.95 + fill + sky) * ao)[:, None]
+    light_t = ((0.07 + diff * sh * 1.08 + fill + sky + rim) * ao ** 1.4)[:, None]
     rgb = albedo * light_t * (1 - 0.3 * metal[:, None]) + sp[:, None] * (1 + metal[:, None] * 0.6) * (albedo * 0.7 + 0.3)
     rgb = np.clip(rgb, 0, 1)
     rgb = rgb ** (1 / 1.05)
@@ -155,4 +176,7 @@ def render(parts, size=256, ss=2, cam_dist=4.2, fov_scale=1.0, light=(-0.6, 0.7,
     img = img.reshape(W, W, 4)
     # zemin golgesi (yumusak elips) arka planda
     out = Image.fromarray((img * 255).astype('uint8'), 'RGBA')
-    return out.resize((size, size), Image.LANCZOS)
+    out = out.resize((size, size), Image.LANCZOS)
+    rgb_img = out.convert('RGB').filter(ImageFilter.UnsharpMask(radius=1.1, percent=70, threshold=2))
+    rgb_img.putalpha(out.getchannel('A'))
+    return rgb_img
