@@ -24,6 +24,7 @@ class weapon
     class wpnOnReloaded {};
     class wpnFeedStep {};
     class wpnFeedApply {};
+    class wpnFeedHint {};
     class wpnPublish {};
     class wpnOnPut {};
     class stashPush {};

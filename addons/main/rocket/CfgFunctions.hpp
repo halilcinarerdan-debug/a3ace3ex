@@ -22,6 +22,8 @@ class rocket
     class rktStepApply {};
     class rktHint {};
     class rktHintLayout {};
+    class procHint {};
+    class procHintBuild {};
     class lockScan {};
     class rktPublish {};
     class rktPrepDone {};

@@ -647,6 +647,8 @@ Adımlar yine ACE self-menü > Roketatar > **Atışa hazırla** altından yapıl
 
 Görsel, `rktPrepSteps` ile aynı ailelerde çalışır; başlığa özel ek adım gelirse "Başlık fünyesi" parçası otomatik eklenir. Çizim tablosu: `rocket/fn_rktHintLayout.sqf` (parça türleri dosya başlığında).
 
+**Kayışlı makineli tüfekler (0.32.0):** aynı görsel besleme prosedürü için de çıkar (`TAC_mg_feedStep` açıkken). Parçalar silaha özel adım metinlerinden anahtar sözcükle seçilir: besleme kapağı, yatak (tepsiyi kaldır / yatağı kontrol et), kutu, kayış, kapak kilidi, kurma kolu. Yeni kayış takılınca (R) parçalar katlanmış görünür. Ayarlar roketle ortak (`TAC_rkt_hint`, boyut, köşe, süre). Adım sırası M240 ve M249 için TM 9-1005-313-10 / 201-10'dan, diğerleri tahmin.
+
 | Aile | Adım sırası | Kaynak |
 |------|-------------|--------|
 | M136 AT4, M72, M141 BDM | pim, omuz dayanağı / tüp, nişangah, horoz / ateşleme kapağı | **FM 3-23.25 (2006)** |

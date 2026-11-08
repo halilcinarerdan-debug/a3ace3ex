@@ -32,6 +32,8 @@ if (_index != _progress) exitWith {
     if (_unit isEqualTo ACE_player) then {
         ["Hatalı sıra: prosedür baştan başlamalı."] call ace_common_fnc_displayTextStructured;
     };
+
+    [_unit] call TAC_fnc_wpnFeedHint;
 };
 
 if ((_progress + 1) >= _count) then {
@@ -42,3 +44,6 @@ if ((_progress + 1) >= _count) then {
 };
 
 [_unit, _weapon] call TAC_fnc_wpnPublish;
+
+// Parca gorseli (yalnizca oyuncunun kendisi)
+[_unit] call TAC_fnc_wpnFeedHint;
