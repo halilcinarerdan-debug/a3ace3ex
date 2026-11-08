@@ -145,7 +145,7 @@ def render(parts, size=256, ss=2, cam_dist=4.2, fov_scale=1.0, light=(-0.6, 0.7,
     # --- eskitme: kenar (konveks egrilik) asinmasi, carpma / cizik, girinti kiri ---
     e2 = 0.014
     lap = (f(Pr + [e2, 0, 0]) + f(Pr - [e2, 0, 0]) + f(Pr + [0, e2, 0]) + f(Pr - [0, e2, 0]) + f(Pr + [0, 0, e2]) + f(Pr - [0, 0, e2])) / (e2 * e2)
-    edge = np.clip(lap * 0.035, 0, 1)
+    edge = np.clip((lap - 9.0) * 0.045, 0, 1)   # yalniz sikI bevel / kose: duz ve genis egrilikli yuzeyler asinmaz
     scr = np.zeros(P.shape[0])
     for (dx, dy, dz, fq) in ((0.8, 0.5, 0.3, 58.0), (-0.3, 0.9, 0.4, 47.0), (0.5, -0.4, 0.8, 66.0)):
         dvec = np.array([dx, dy, dz]); dvec = dvec / np.linalg.norm(dvec)
@@ -153,7 +153,7 @@ def render(parts, size=256, ss=2, cam_dist=4.2, fov_scale=1.0, light=(-0.6, 0.7,
         brk = hash3(np.floor(Pr * 17.0), 1.0) > 0.45
         scr = np.maximum(scr, (band & brk).astype('float64'))
     chip = (noise3(Pr, 70.0) > 0.78).astype('float64')
-    wmask = np.clip(edge * (0.55 + 0.9 * noise3(Pr, 55.0)) * 1.8 + 0.55 * scr * (wear_a > 0) + 0.7 * chip * edge, 0, 1) * np.clip(wear_a, 0, 1)
+    wmask = np.clip(edge * (0.55 + 0.9 * noise3(Pr, 55.0)) * 1.5 + 0.30 * scr * (wear_a > 0) + 0.5 * chip * edge, 0, 1) * np.clip(wear_a, 0, 1)
     albedo = albedo * (1 - wmask[:, None]) + wear_c * wmask[:, None]
     spec = np.where(wmask > 0.3, np.maximum(spec, 0.55), spec)
     rough = np.where(wmask > 0.3, np.minimum(rough, 0.35), rough)
