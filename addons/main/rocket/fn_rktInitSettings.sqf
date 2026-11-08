@@ -87,19 +87,37 @@ private _category = ["TAC - Gerçekçilik Paketi", "Roketatar / füze"];
 [
     "TAC_rkt_hint",
     "CHECKBOX",
-    ["Hazırlık: parça görseli", "Açıksa destekli fırlatıcılarda (şimdilik M136 AT4) hazırlık adımı yapılınca fırlatıcının ilgili parçaları kısa süre ekranda gösterilir (pim çıkar, omuz dayanağı açılır, gez/arpacık kalkar, horoz kolu kalkar). Yalnızca görsel geri bildirimdir; adımlar ACE menüsünden yapılır."],
+    ["Hazırlık: parça görseli", "Açıksa destekli fırlatıcılarda hazırlık adımı yapılınca fırlatıcının ilgili parçaları kısa süre ekranın köşesinde gösterilir. Yalnızca görsel geri bildirimdir; adımlar ACE menüsünden yapılır. İstemci ayarı (her oyuncu kendisi seçer)."],
     _category,
     true,
-    true
+    false
 ] call CBA_settings_fnc_init;
 
 [
     "TAC_rkt_hintTime",
     "SLIDER",
-    ["Hazırlık görseli: süre (sn)", "Görselin ekranda kalma süresi."],
+    ["Hazırlık görseli: süre (sn)", "Görselin ekranda kalma süresi. İstemci ayarı."],
     _category,
     [1, 10, 3, 0],
-    true
+    false
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_rkt_hintSize",
+    "SLIDER",
+    ["Hazırlık görseli: boyut (%)", "Görselin boyutu (ekran yüksekliğine göre). İstemci ayarı."],
+    _category,
+    [15, 60, 30, 0],
+    false
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_rkt_hintCorner",
+    "LIST",
+    ["Hazırlık görseli: konum", "Görselin ekranda durduğu köşe. İstemci ayarı."],
+    _category,
+    [[0, 1, 2, 3], ["Sağ üst", "Sol üst", "Sağ alt", "Sol alt"], 0],
+    false
 ] call CBA_settings_fnc_init;
 
 [

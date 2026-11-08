@@ -6,7 +6,7 @@
     bloklar. Etkileşim YOKTUR: adımlar ACE menüsünden yapılır, bu yalnızca görsel geri bildirimdir.
     Yapılan adımların parçaları "açık" çizilir (pim çıkar, omuz dayanağı açılır, gez ve arpacık kalkar, horoz
     kolu kalkar); hatalı sırada ya da yeniden yüklemede (R) ilerleme sıfırlanınca hepsi "kapalı" görünür.
-    Görsel TAC_rkt_hintTime sn sonra solarak kaybolur. Kontroller (display 46) ilk gösterimde bir kez kurulur.
+    Görsel TAC_rkt_hintTime sn sonra hızla (0.2 sn) solar. Boyut ve köşe istemci ayarı (TAC_rkt_hintSize, TAC_rkt_hintCorner). Kontroller (display 46) ilk gösterimde bir kez kurulur.
 
     Parametreler:
         0: OBJECT - oyuncu birimi (yalnızca ACE_player için gösterilir)
@@ -26,12 +26,18 @@ if (isNull _display) exitWith {};
 
 _layout params ["_layoutKey", "_title", "_statics", "_parts"];
 
-private _s = (safeZoneH min (safeZoneW / 1.6)) * 0.5;
-private _ox = safeZoneX + ((safeZoneW - (1.6 * _s)) / 2);
-private _oy = safeZoneY + (0.06 * safeZoneH);
+// Boyut ve kose (istemci ayari): zemin 1.5 x 0.78 tasarim biriminde, secilen kosede kenar boslugu birakir
+private _s = (safeZoneH min (safeZoneW / 1.6)) * (TAC_rkt_hintSize / 100);
+private _corner = TAC_rkt_hintCorner;   // 0 sag ust, 1 sol ust, 2 sag alt, 3 sol alt
+private _margin = 0.03 * safeZoneH;
+private _left = if (_corner in [1, 3]) then {safeZoneX + _margin} else {safeZoneX + safeZoneW - _margin - (1.5 * _s)};
+private _top = if (_corner in [0, 1]) then {safeZoneY + _margin} else {safeZoneY + safeZoneH - _margin - (0.78 * _s)};
+private _ox = _left - (0.05 * _s);
+private _oy = _top - (0.06 * _s);
+private _textSize = (_s * 1.6) max 0.45;
 
 private _built = uiNamespace getVariable ["TAC_hint_data", []];
-private _geoKey = [_layoutKey, safeZoneW, safeZoneH];
+private _geoKey = [_layoutKey, safeZoneW, safeZoneH, _corner, _s];
 
 if (
     _built isEqualTo []
@@ -62,7 +68,7 @@ if (
         params ["_rect", "_text", "_size"];
         private _c = _display ctrlCreate ["RscStructuredText", -1];
         _c ctrlSetPosition ([_rect] call _fnRect);
-        _c ctrlSetStructuredText parseText format ["<t align='center' size='%1' color='#dddddd'>%2</t>", _size, _text];
+        _c ctrlSetStructuredText parseText format ["<t align='center' size='%1' color='#dddddd'>%2</t>", _size * _textSize, _text];
         _c ctrlSetFade 1;
         _c ctrlCommit 0;
         _all pushBack _c;
@@ -70,15 +76,15 @@ if (
     };
 
     // Siyah zemin
-    [[0, 0, 1.6, 0.9], [0, 0, 0, 0.92]] call _fnBlock;
-    [[0.05, 0.03, 1.5, 0.07], _title, 0.8] call _fnText;
+    [[0.05, 0.06, 1.5, 0.78], [0, 0, 0, 0.92]] call _fnBlock;
+    [[0.05, 0.065, 1.5, 0.07], _title, 1] call _fnText;
 
     {
         _x params ["_rect", "_color"];
         [_rect, _color] call _fnBlock;
     } forEach _statics;
 
-    [[1.30, 0.52, 0.25, 0.04], "ÖN", 0.7] call _fnText;
+    [[1.30, 0.52, 0.25, 0.04], "ÖN", 0.9] call _fnText;
 
     private _partData = [];
 
@@ -93,7 +99,7 @@ if (
 
         {
             _x params ["_rect", "_text"];
-            [_rect, _text, 0.7] call _fnText;
+            [_rect, _text, 0.9] call _fnText;
         } forEach _labels;
 
         _partData pushBack [_step, _shapeData];
@@ -122,10 +128,10 @@ private _progress = _state param [10, 0];
     } forEach _shapeData;
 } forEach _partData;
 
-// Tum kontroller gorunur; parca konumlari ve renkleri yumusakca gecer (sade: 0.25 sn)
+// Tum kontroller gorunur; parca konumlari ve renkleri yumusakca gecer (sade: 0.15 sn)
 {
     _x ctrlSetFade 0;
-    _x ctrlCommit 0.25;
+    _x ctrlCommit 0.15;
 } forEach _ctrls;
 
 private _token = (uiNamespace getVariable ["TAC_hint_token", 0]) + 1;
@@ -138,6 +144,6 @@ uiNamespace setVariable ["TAC_hint_token", _token];
 
     {
         _x ctrlSetFade 1;
-        _x ctrlCommit 0.5;
+        _x ctrlCommit 0.2;
     } forEach ((uiNamespace getVariable ["TAC_hint_data", [0, []]]) select 1);
 }, [_token], TAC_rkt_hintTime] call CBA_fnc_waitAndExecute;
