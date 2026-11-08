@@ -57,6 +57,10 @@ if (isNil "_result") then {
                 private _rifleLike = ["sar308", "sar223", "sar56", "kcr", "mpt5", "mpt7", "knt7", "hk416", "hk417", "g3a", "hk33", "m4a1", "m16", "sr25", "m110", "scar", "tar21", "sig516", "bora"];
 
                 if (_rifleLike findIf {(_key find _x) >= 0} >= 0) then {_isMG = false};
+
+                // Vanilla "arifle_*" silahlari (MX, MX SW, Katiba, Mk20, SPAR...) tufek sayilir: ortak magazineWell'lerindeki
+                // 100-200 mermilik tambur / kutu sarjorler onlari MG yapmasin. Vanilla kayisli MG'ler LMG_* / MMG_* adlidir.
+                if ((_key select [0, 7]) isEqualTo "arifle_") then {_isMG = false};
             };
         };
 

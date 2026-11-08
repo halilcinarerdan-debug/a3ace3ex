@@ -946,6 +946,7 @@ CBA'da silah bakımı **Test modu**nu aç: ACE self-menüsünde **Silah yardım�
 - **Optik buğu / kir modülü varsayılan olarak KAPALI.** CBA > Optik (buğu / kir) > "Optik buğu / kir sistemi aktif" ile açılır; kapalıyken lens kirlenmez, görüntü bozulmaz, "Optiği sil" menüsü çıkmaz.
 - **Arızalar arası asgari atış** (`TAC_wpn_jamCooldown`, varsayılan 60): bu sistemden çıkan iki arıza arasında en az bu kadar atış geçer, kirli silahta peş peşe tutukluk zinciri olmaz. ACE'nin kendi ısı arızası bundan bağımsızdır (kaynağı test göstergesi yazar: "KAYNAK: ACE" ya da bizim sistem).
 - **Test modu açık kalmışsa** (silah bakım `Test modu`, x20) kirlenme, yağ kaybı ve aşınma 20 kat hızlanır ve ~100 atışta silah tam kirli olup sık tutukluk yapar: normal oyunda KAPALI olmalı.
+- **Vanilla `arifle_*` silahlar (MX, MX SW, Katiba, Mk20, SPAR...) artık hiçbir zaman MG / kayışlı sayılmaz** (0.26.1): ortak şarjör kümelerindeki (magazineWell) 100-200 mermilik tambur ve kutu şarjörler yüzünden tüfekler MG sanılıyor, her reload sonrası ilk mermide "besleme prosedürü" istenip ilk atışta besleme arızası çıkıyordu. Vanilla kayışlı MG'ler `LMG_*` / `MMG_*` adlıdır.
 - **Kayışlı MG ölçütü sıkılaştı:** MG kategorisi + en büyük şarjör / kayış kapasitesi >= 75 + (ACE namlu değiştirme işareti veya profil M60 / M240 / M249 / PKM / MG3 ailesi) + adı tamburlu / MX SW değil. Tüfekler (60-70 mermilik tambur taşıyanlar dahil) besleme prosedürü menüsü görmez.
 
 ## Etkileşim kuralı: silah ELDE olmalı
