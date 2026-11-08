@@ -4,7 +4,7 @@
 
     Silah kayışlı / besleme kapaklı bir MG mi? (besleme kapağı adımı yalnızca bunlara uygulanır)
     Ölçüt (sınıf başına bir kez, önbellekli): MG kategorisi VE (ACE'nin namlu değiştirilebilir MG olarak işaretlediği
-    silah: config ace_overheating_allowSwapBarrel = 1; VEYA güvenilirlik profili kayışlı bir aileden: M60, M240, M249 / Minimi, PKM, MG3) VE en büyük şarjör / kayış kapasitesi >= 75 (60-70 mermilik tambur / şarjör taşıyan tüfekler kayışlı sayılmaz) VE adı vanilla "arifle_*" (MX, MX SW...) olmayan, tamburlu
+    silah: config ace_overheating_allowSwapBarrel = 1; VEYA güvenilirlik profili kayışlı bir aileden: M60, M240, M249 / Minimi, PKM, MG3) VE en büyük şarjör / kayış kapasitesi >= 75 (60-70 mermilik tambur / şarjör taşıyan tüfekler kayışlı sayılmaz) VE adında "arifle_" geçmeyen (vanilla ve ef_arifle_* gibi mod tüfekleri) (MX, MX SW...) olmayan, tamburlu
     / MX SW tipi olmayan ("drum", "mx_sw"). Tüfekler, tabancalar, tamburlu SW'ler ve diğer MG'ler dışarıda kalır.
 
     Parametreler:
@@ -36,7 +36,7 @@ if (isNil "_result") then {
         && {(getNumber (configFile >> "CfgWeapons" >> _weapon >> "ace_overheating_allowSwapBarrel")) == 1 || {_label in _belt}}
         && {(_key find "drum") < 0}
         && {(_key find "mx_sw") < 0}
-        && {(_key select [0, 7]) != "arifle_"};
+        && {(_key find "arifle_") < 0};
 
     TAC_wpn_beltCache set [_key, _result];
 };

@@ -617,6 +617,7 @@ Bilinmeyen silahlar için **kalibre** (ilk şarjörün mühimmat adından) ve **
 
 | Silah ailesi (örnek sınıflar) | Temiz MRBS | Kir duyarlılığı | Veri kalitesi |
 |-------------------------------|-----------:|----------------:|---------------|
+| _(0.26.2)_ `ef_arifle_*`, `CUP_arifle_*` gibi adında `arifle_` geçen tüm tüfekler MG / kayışlı sayılmaz | - | - | Expeditionary Forces vb. mod tüfeklerinde ilk mermide besleme arızası düzeltmesi |
 | M16A2/A4 (`rhs_weap_m16a4`, `CUP_arifle_M16*`), M4/M4A1/Mk18 | 3600 | 1.0 | **kaynak**: M4A1 + M855 taban değeri 3.592 MRBS; aşırı tozda M4 ~68-195 |
 | M16A1 / XM16E1 | 1500 | 1.2 | tahmin (erken hizmet sorunları) |
 | HK416 / M27 | 4500 | 0.41 | **kaynak**: aşırı tozda ~257 MRBS |

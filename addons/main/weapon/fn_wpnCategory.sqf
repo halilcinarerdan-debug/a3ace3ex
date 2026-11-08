@@ -60,7 +60,7 @@ if (isNil "_result") then {
 
                 // Vanilla "arifle_*" silahlari (MX, MX SW, Katiba, Mk20, SPAR...) tufek sayilir: ortak magazineWell'lerindeki
                 // 100-200 mermilik tambur / kutu sarjorler onlari MG yapmasin. Vanilla kayisli MG'ler LMG_* / MMG_* adlidir.
-                if ((_key select [0, 7]) isEqualTo "arifle_") then {_isMG = false};
+                if ((_key find "arifle_") >= 0) then {_isMG = false};
             };
         };
 
