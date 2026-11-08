@@ -9,12 +9,11 @@
     Parametreler:
         0: OBJECT - fırlatıcının sahibi (yerel birim)
         1: NUMBER - adımın prosedürdeki sıra numarası
-        2: BOOL   - (isteğe bağlı) true ise hatalı sıra mesajı gösterilmez (panel kendi metnini verir)
 
     Dönüş: yok
 */
 
-params [["_unit", objNull, [objNull]], ["_index", 0, [0]], ["_silent", false, [false]]];
+params [["_unit", objNull, [objNull]], ["_index", 0, [0]]];
 
 if (!local _unit) exitWith {};
 
@@ -35,9 +34,11 @@ if (_index != _progress) exitWith {
     _state set [10, 0];
     [_unit, _weapon] call TAC_fnc_rktPublish;
 
-    if (!_silent && {_unit isEqualTo ACE_player}) then {
+    if (_unit isEqualTo ACE_player) then {
         ["Hatalı sıra: prosedür baştan başlamalı."] call ace_common_fnc_displayTextStructured;
     };
+
+    [_unit] call TAC_fnc_rktHint;
 };
 
 if ((_progress + 1) >= _count) then {
@@ -47,3 +48,6 @@ if ((_progress + 1) >= _count) then {
 };
 
 [_unit, _weapon] call TAC_fnc_rktPublish;
+
+// Parca gorseli (yalnizca oyuncunun kendisi; destekli firlaticida): yapilan / sifirlanan adimi gosterir
+[_unit] call TAC_fnc_rktHint;

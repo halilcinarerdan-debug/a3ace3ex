@@ -20,10 +20,8 @@ class rocket
 
     class rktStep {};
     class rktStepApply {};
-    class rktPanel {};
-    class rktPanelLayout {};
-    class rktPanelClick {};
-    class rktPanelRefresh {};
+    class rktHint {};
+    class rktHintLayout {};
     class rktPublish {};
     class rktPrepDone {};
     class rktPrepSteps {};

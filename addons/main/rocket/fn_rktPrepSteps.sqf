@@ -29,7 +29,7 @@ private _table = [
     [["panzerfaust", "pf60"], [["Emniyet çevirmesini aç", 2], ["Tüpü ve nişangahı kaldır", 2]]],
     [["m141", "bdm"], [["Nakliye kilit pimini çek", 1.5], ["İç tüpü ters yönde uzat, mandalı bırak", 2.5], ["İç tüpü saat yönünde kilitle, kilidi dene", 2], ["Omuz dayanağını ve nişangahı aç", 2.5], ["Ateşleme kapağını ARMED konumuna aç", 1.5]]],
     [["m72"], [["Emniyet pimini çek", 1.5], ["Arka kapağı indir, tüpü sertçe uzat", 2.5], ["Tüpün kilitlendiğini dene", 1.5], ["Nişangahı aç", 1.5]]],
-    [["m136", "at4"], [["Nakliye emniyet pimini çek", 1.5], ["Omuz dayanağını aç", 1.5], ["Ön ve arka nişangahı kaldır, menzili ayarla", 3], ["Arka bölgeyi (backblast) kontrol et", 1.5], ["Horoz kolunu aç, kur", 2]]],
+    [["m136", "at4"], [["Nakliye emniyet pimini çek", 1.5], ["Omuz dayanağını aç", 1.5], ["Ön ve arka nişangahı kaldır, menzili ayarla", 3], ["Horoz kolunu aç, kur", 2]]],
     [["rpg18", "rpg22", "rpg26", "rpg75"], [["Emniyet pimini çek", 1.5], ["Tüpü uzat, emniyeti aç", 2.5]]],
     [["nlaw", "apilas"], [["Emniyet kapaklarını aç", 2], ["Nişangahı kaldır, sistemi çalıştır", 2.5]]],
     [["smaw", "mk153"], [["Fırlatma tüpü kilidini kontrol et", 2], ["Fünye ayarı ve emniyeti aç", 2], ["Horozu kur", 1.5]]],

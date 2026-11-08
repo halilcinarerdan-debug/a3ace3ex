@@ -19,9 +19,9 @@ class CfgPatches
         magazines[] = {"TAC_SpareBarrel_Light", "TAC_SpareBarrel_Heavy"};
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu", "ace_overheating"};
-        version = 0.28;
-        versionStr = "0.28.0";
-        versionAr[] = {0,28,0};
+        version = 0.29;
+        versionStr = "0.29.0";
+        versionAr[] = {0,29,0};
     };
 };
 
@@ -56,53 +56,6 @@ class TAC_RscNotepadEdit
 class TAC_NotepadDialog
 {
     idd = 91700;
-    movingEnable = 0;
-    enableSimulation = 1;
-    class controlsBackground {};
-    class controls {};
-};
-
-// ----------------------------------------------------------------------------
-//  Prosedur paneli (roket atis hazirligi): bos diyalog + seffaf tiklama dugmesi.
-//  Cizim ve kontroller scriptte (ctrlCreate) kurulur: rocket\fn_rktPanel.sqf
-// ----------------------------------------------------------------------------
-class TAC_RscHit
-{
-    idc = -1;
-    type = 1;
-    style = 2;
-    x = 0;
-    y = 0;
-    w = 0.1;
-    h = 0.1;
-    font = "PuristaMedium";
-    sizeEx = 0.03;
-    shadow = 0;
-    text = "";
-    action = "";
-    default = 0;
-    borderSize = 0;
-    offsetX = 0;
-    offsetY = 0;
-    offsetPressedX = 0;
-    offsetPressedY = 0;
-    colorText[] = {1,1,1,0};
-    colorDisabled[] = {1,1,1,0};
-    colorBackground[] = {0,0,0,0};
-    colorBackgroundDisabled[] = {0,0,0,0};
-    colorBackgroundActive[] = {1,1,1,0.12};
-    colorFocused[] = {0,0,0,0};
-    colorShadow[] = {0,0,0,0};
-    colorBorder[] = {0,0,0,0};
-    soundEnter[] = {"",0.09,1};
-    soundPush[] = {"",0.09,1};
-    soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1};
-    soundEscape[] = {"",0.09,1};
-};
-
-class TAC_ProcDialog
-{
-    idd = 91701;
     movingEnable = 0;
     enableSimulation = 1;
     class controlsBackground {};
