@@ -640,13 +640,16 @@ Bilinmeyen silahlar için **kalibre** (ilk şarjörün mühimmat adından) ve **
 **tahmin**dir ve tabloda öyle işaretlidir. Aşırı toz testinin kendisi tartışmalıdır: Ordu'nun kendi sunumunda iki koşuda M4 için 296 ve 863 tıkanma çıkmış, yani protokol tekrarlanabilir değil. Rakamlar oyun dengesi için makul bir başlangıçtır, kesin bilgi değildir.
 > _0.26.2_: adında `arifle_` geçen tüm tüfekler (`ef_arifle_*`, `CUP_arifle_*`...) MG / kayışlı sayılmaz (ilk mermide besleme arızası düzeltmesi).
 
-### Hazırlık görseli (0.29.0)
+### Hazırlık görseli (0.30.0)
 
-Adımlar yine ACE self-menü > Roketatar > **Atışa hazırla** altından yapılır (etkileşim yalnızca menüdedir). M136 AT4 için her adımdan sonra ekranda kısa süre (`TAC_rkt_hintTime`, 3 sn) siyah zeminli sade bir görsel belirir: fırlatıcının yalnızca prosedürde dokunulan parçaları. Yapılan adımın parçası "açık" konuma geçer: nakliye pimi çıkar, omuz dayanağı açılır, gez ve arpacık kalkar, horoz kolu kalkar. Hatalı sırada ya da yeniden yüklemede (R) hazırlık sıfırlanınca parçalar katlanmış görünür. Sıradaki adım hiç gösterilmez; yalnızca yapılanlar görünür. Kapatmak için `TAC_rkt_hint`.
+Adımlar yine ACE self-menü > Roketatar > **Atışa hazırla** altından yapılır (etkileşim yalnızca menüdedir). Her adımdan sonra ekranda kısa süre (`TAC_rkt_hintTime`, 3 sn) siyah zeminli sade bir görsel belirir: fırlatıcının yalnızca prosedürde dokunulan parçaları. Yapılan adımın parçası "açık" konuma geçer (pim çıkar, dayanak açılır, nişangah / horoz kolu kalkar, iç tüp uzar, takılan birim tüpe oturur, durum ışığı kırmızıdan yeşile döner). Hatalı sırada ya da yeniden yüklemede (R) hazırlık sıfırlanınca parçalar katlanmış görünür. Sıradaki adım hiç gösterilmez. Kapatmak için `TAC_rkt_hint`. Arka bölge (backblast) kontrolü adım değildir; oyuncu kendisi ayarlar.
 
-- AT4 prosedürü (FM 3-23.25): nakliye pimi → omuz dayanağı → nişangah (gez ve arpacık, menzil) → horoz kolu. Arka bölge (backblast) kontrolü adım değildir; oyuncu kendisi ayarlar.
-- Başlığa özel ek adım geldiyse (adım sayısı 4'ten farklıysa) ya da başka fırlatıcıda görsel çıkmaz; menü aynen çalışır.
-- Yeni fırlatıcı eklemek için: `rocket/fn_rktHintLayout.sqf` içindeki çizim tablosu (şekiller 1.6 x 0.9 tasarım alanında).
+Görsel, `rktPrepSteps` ile aynı ailelerde çalışır; başlığa özel ek adım gelirse "Başlık fünyesi" parçası otomatik eklenir. Çizim tablosu: `rocket/fn_rktHintLayout.sqf` (parça türleri dosya başlığında).
+
+| Aile | Adım sırası | Kaynak |
+|------|-------------|--------|
+| M136 AT4, M72, M141 BDM | pim, omuz dayanağı / tüp, nişangah, horoz / ateşleme kapağı | **FM 3-23.25 (2006)** |
+| RPG-7, RPG-18/22/26, Panzerfaust, NLAW, SMAW, Carl Gustaf, SPG-9, Javelin, Stinger, Igla, TOW, Metis / Kornet, Titan | genel çalışma sırası | **kaynaksız, tahmin**; resmi kılavuz gelince düzeltilmeli |
 
 Beğenmediğin bir değeri CBA'daki `MRBS tablosu` ayarına `classname=MRBS` yazarak (ör. `rhs_weap_m4a1=2500, CUP_arifle_AK74=4000`) ezebilirsin; Silahı incele kartında silahçı, silahın profilini (etiket, MRBS, kalite) görür.
 
