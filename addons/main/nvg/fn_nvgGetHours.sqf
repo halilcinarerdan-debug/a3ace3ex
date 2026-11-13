@@ -17,4 +17,9 @@ if (isNil "TAC_nvg_batteryMap") then {
     [TAC_nvg_batteryTable] call TAC_fnc_nvgParseBatteryTable;
 };
 
-TAC_nvg_batteryMap getOrDefault [toLower _class, TAC_nvg_batteryHours]
+private _key = toLower _class;
+
+// Soguk Savas modu: lityum AA pil donem disi, alkalin gibi davranir
+if (!isNil "TAC_coldWar" && {TAC_coldWar} && {(_key find "lithium") >= 0}) then {_key = "tac_nvgbattery"};
+
+TAC_nvg_batteryMap getOrDefault [_key, TAC_nvg_batteryHours]

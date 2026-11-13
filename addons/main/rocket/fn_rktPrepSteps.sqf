@@ -26,7 +26,7 @@ private _category = ([_weapon] call TAC_fnc_rktProfile) select 0;
 
 private _table = [
     [["rpg7", "rpg32"], [["Emniyet kapağını çıkar", 2], ["Başlığı itici barutla birleştir", 3], ["Horozu kur", 2]]],
-    [["panzerfaust", "pf60"], [["Emniyet çevirmesini aç", 2], ["Tüpü ve nişangahı kaldır", 2]]],
+    [["panzerfaust", "pf60", "pzf44"], [["Emniyet çevirmesini aç", 2], ["Tüpü ve nişangahı kaldır", 2]]],
     [["m141", "bdm"], [["Nakliye kilit pimini çek", 1.5], ["İç tüpü ters yönde uzat, mandalı bırak", 2.5], ["İç tüpü saat yönünde kilitle, kilidi dene", 2], ["Omuz dayanağını ve nişangahı aç", 2.5], ["Ateşleme kapağını ARMED konumuna aç", 1.5]]],
     [["m72"], [["Emniyet pimini çek", 1.5], ["Arka kapağı indir, tüpü sertçe uzat", 2.5], ["Tüpün kilitlendiğini dene", 1.5], ["Nişangahı aç", 1.5]]],
     [["m136", "at4"], [["Nakliye emniyet pimini çek", 1.5], ["Omuz dayanağını aç", 1.5], ["Ön ve arka nişangahı kaldır, menzili ayarla", 3], ["Horoz kolunu aç, kur", 2]]],

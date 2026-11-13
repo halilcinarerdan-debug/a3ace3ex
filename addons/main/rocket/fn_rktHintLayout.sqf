@@ -40,7 +40,7 @@ private _key = [_weapon] call TAC_fnc_wpnSearchKey;
 // Aile tablosu: [desenler, baslik, [[tur, etiket, (x)], ...]]  -- rktPrepSteps ile AYNI sira
 private _table = [
     [["rpg7", "rpg32"], "RPG-7", [["cover", "Emniyet kapağı"], ["box", "Başlık"], ["lever", "Horoz"]]],
-    [["panzerfaust", "pf60"], "Panzerfaust", [["lever", "Emniyet"], ["sight", "Nişangah"]]],
+    [["panzerfaust", "pf60", "pzf44"], "Panzerfaust", [["lever", "Emniyet"], ["sight", "Nişangah"]]],
     [["m141", "bdm"], "M141 BDM", [["pin", "Nakliye pimi"], ["ext", "İç tüp"], ["light", "Tüp kilidi"], ["sight", "Nişangah"], ["cover", "Ateşleme kapağı"]]],
     [["m72"], "M72 LAW", [["pin", "Emniyet pimi"], ["ext", "Tüp"], ["light", "Kilit"], ["sight", "Nişangah"]]],
     [["m136", "at4"], "M136 AT4", [["pin", "Nakliye pimi", 0.60], ["stop", "Omuz dayanağı", 0.30], ["sights", "Gez|Arpacık"], ["lever", "Horoz kolu", 0.78]]],

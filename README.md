@@ -665,6 +665,17 @@ Tüm TAC eşyalarının kendi ikonu var (`addons/main/data/icons/*_ca.png`, 256x
 
 **Önemli:** config `.paa` yoluna bakar (`..._ca.paa`), repoda ise `.png` kaynaklar durur. Paketlerken PNG'lerin `.paa`'ya çevrilmesi gerekir: **Mikero pboProject** bunu otomatik yapar (`_ca` son eki = renk + alfa). Addon Builder kullanıyorsan "Binarize all textures" seçeneğini aç ya da PNG'leri TexView 2 ile `.paa` olarak kaydet (aynı klasöre, aynı adla). Çevrilmezse eşya çalışır ama envanterde ikon boş görünür.
 
+### Soğuk Savaş modu (0.36.0)
+
+CBA ayarı **Soğuk Savaş modu** (`TAC_coldWar`, varsayılan kapalı, sunucu zorlayabilir): S.O.G. Prairie Fire, Global Mobilization (GM) ve CSLA gibi içeriklerle kullanmak için sistemi döneme uydurur. Açıkken:
+
+- **Erken M16 ailesi:** `M16` (A2 / A4 değil) M16A1 güvenilirliğine düşer (MRBS 1500, kir duyarlılığı 1.2; Vietnam dönemi tozlanma ve temizlik sorunları), `XM177` / `CAR-15` ayrı profil alır (2200). M16A2 / A4 modern değerinde kalır.
+- **Lityum AA pil dönem dışı:** NVG pil ömrü hesabında lityum pil alkalin gibi davranır.
+- Modern M4 / HK416 / SCAR gibi aileler tabloda durur ama dönem içeriklerinde zaten bulunmaz.
+- Ek olarak mod bağımsız tanıma eklendi: `gm_mg3` (MG3), `pzf44` (Panzerfaust 44, hazırlık adımları ve görsel dahil). Değerler kaynaksız tahmindir.
+
+Dönem içeriğinin silahları (S.O.G. `vn_*`, GM `gm_*`, CSLA `CSLA_*`) kalibre ve alt dize eşleşmeleriyle büyük ölçüde tanınır; tabloda adı bulunamayanlar "GENEL" profile düşer. Hangilerinin düştüğünü görmek için mod yüklüyken tarama aracı çalıştırılır (`["vn_"] call TAC_fnc_wpnScan`, `["gm_"] ...`, `["csla"] ...`); çıktıya göre eşleşmeler eklenir.
+
 Beğenmediğin bir değeri CBA'daki `MRBS tablosu` ayarına `classname=MRBS` yazarak (ör. `rhs_weap_m4a1=2500, CUP_arifle_AK74=4000`) ezebilirsin; Silahı incele kartında silahçı, silahın profilini (etiket, MRBS, kalite) görür.
 
 **Kaynaklar:**

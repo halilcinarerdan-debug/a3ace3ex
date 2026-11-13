@@ -26,6 +26,20 @@ private _category = ["TAC - Gerçekçilik Paketi", "Silah bakım ve arıza"];
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_coldWar",
+    "CHECKBOX",
+    ["Soğuk Savaş modu", "Açıksa sistem dönemin teknolojisine uyar: erken M16 ailesi (M16A1 / XM177 güvenilirliği, Vietnam dönemi), lityum AA pil dönem dışı sayılır (alkalin gibi davranır). S.O.G. Prairie Fire, Global Mobilization ve CSLA gibi Soğuk Savaş içerikleriyle kullanmak içindir. Sunucu zorlayabilir."],
+    _category,
+    false,
+    true,
+    {
+        // dönem değişince önbellekleri temizle (profil, pil bilgisi)
+        TAC_wpn_profileCache = nil;
+        TAC_nvg_infoCache = nil;
+    }
+] call CBA_settings_fnc_init;
+
+[
     "TAC_wpn_dirtRate",
     "SLIDER",
     ["Kirlenme hızı (1000 atışta %)", "Tüfek için 1000 atışta biriken kir yüzdesi. 60 = yaklaşık 1700 atışta tam kirli. MG x1.3, tabanca x0.5, susturucu ve ortam ayrıca çarpar."],

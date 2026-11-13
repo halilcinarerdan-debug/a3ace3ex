@@ -48,7 +48,7 @@ private _table = [
     [["m240", "mk48"], 2900, 0.55, 0.5, "M240 / Mk48", "kaynak"],
     [["m249", "minimi", "mk46", "saw_base", "lmg_03"], 1000, 0.6, 0.6, "M249 / Minimi", "tahmin"],
     [["pkm", "pkp", "pecheneg", "zafir"], 3000, 0.35, 0.4, "PKM / PKP", "tahmin"],
-    [["lmg_mg3", "tmt_mg3", "mg42", "uk59"], 2500, 0.5, 0.5, "MG3 / MG42", "tahmin"],
+    [["lmg_mg3", "tmt_mg3", "gm_mg3", "mg42", "uk59"], 2500, 0.5, 0.5, "MG3 / MG42", "tahmin"],
     [["rpk"], 4500, 0.3, 0.3, "RPK", "tahmin"],
     [["arifle_mx_sw"], 1800, 0.6, 0.6, "MX SW", "tahmin"],
     // --- Dogrudan gazli AR (M16 / M4 / AR-15 ailesi) ---
@@ -92,6 +92,16 @@ private _table = [
 ];
 
 private _profile = [];
+
+// Soguk Savas modu: donem tablosu once bakilir (modern M16 / M4 ayrimi: erken M16 ailesi)
+if (!isNil "TAC_coldWar" && {TAC_coldWar}) then {
+    private _era = [
+        [["m16a2", "m16a4", "m16_a2", "m16_a4"], 3600, 1.0, 1.0, "M16A2", "kaynak"],
+        [["xm177", "car15", "car_15", "car-15"], 2200, 1.1, 1.0, "XM177 / CAR-15", "tahmin"],
+        [["m16"], 1500, 1.2, 1.0, "M16A1 (Soğuk Savaş)", "tahmin"]
+    ];
+    _table = _era + _table;
+};
 
 {
     _x params ["_patterns", "_mrbs", "_dirtSens", "_lubeSens", "_label", "_quality"];
