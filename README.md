@@ -676,6 +676,15 @@ CBA ayarı **Soğuk Savaş modu** (`TAC_coldWar`, varsayılan kapalı, sunucu zo
 
 Dönem içeriğinin silahları (S.O.G. `vn_*`, GM `gm_*`, CSLA `CSLA_*`) kalibre ve alt dize eşleşmeleriyle büyük ölçüde tanınır; tabloda adı bulunamayanlar "GENEL" profile düşer. Hangilerinin düştüğünü görmek için mod yüklüyken tarama aracı çalıştırılır (`["vn_"] call TAC_fnc_wpnScan`, `["gm_"] ...`, `["csla"] ...`); çıktıya göre eşleşmeler eklenir.
 
+**S.O.G. Prairie Fire taraması (`vn_`, 0.36.1):** taramada 129 silah "GENEL" profile düşmüştü; düzeltmeler:
+- Mühimmatsız "silahlar" (bıçak, kazma, el aleti: `vn_m_*`) artık takip edilmez (arıza / bakım menüsü çıkmaz).
+- `vn_xm177*`, `vn_type56*`, `vn_ak_01`, `vn_kbkg*`, `vn_ppsh41`, `vn_k50m`, `vn_gau5a*`, `vn_type64*` MG değil tüfek sayılır (büyük tambur şarjörler yüzünden MG çıkıyordu); `vn_mg42` MG sayılır.
+- `vn_m16*` M16A1 (MRBS 1500) profilindedir (mod açık / kapalı fark etmez), `xm177` ayrı profil; `xm148` eki yüzünden M14 sanılan `vn_xm177_xm148*` ve `vn_l34a1_xm148` düzeltildi.
+- Yeni dönem profilleri (hepsi **tahmin**): Stoner 63, BAR M1918, Bren L4, RPD, DP-28, PK, M79, pompalı / av tüfeği, dönem SMG'leri (PPSh, PPS, MAT-49, Sterling, Thompson, vz.61...), M1 / M2 Carbine, Garand, SKS M4956, M21 / L2A1, dönem sürgülü tüfekleri (Springfield, Kar98k, MAS-36, Mosin, vz.54).
+- Fırlatıcılar: `vn_rpg2` ve `vn_m20a1b1` (bazuka) güdümlü sanılıyordu, güdümsüz yeniden doldurulabilir oldu.
+- `vn_sa7`, `vn_rpg7`, `vn_m72` zaten doğru tanınıyordu. Statik silahlar (M2, M1919, M60, DShK, PK, RPD, SGM, MG42, ZPU-4, ZGU-1, Maxim) doğru türde.
+GM (`gm_`) ve CSLA taramaları bekleniyor.
+
 Beğenmediğin bir değeri CBA'daki `MRBS tablosu` ayarına `classname=MRBS` yazarak (ör. `rhs_weap_m4a1=2500, CUP_arifle_AK74=4000`) ezebilirsin; Silahı incele kartında silahçı, silahın profilini (etiket, MRBS, kalite) görür.
 
 **Kaynaklar:**

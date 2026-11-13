@@ -41,6 +41,23 @@ if (!isNil "_result") exitWith {_result};
 
 // [alt dizeler, MRBS, kir duyarliligi, yag duyarliligi, etiket, kalite]
 private _table = [
+    // --- Donem silahlari (S.O.G. Prairie Fire vb.): "m14" alt dizesinin xm148 hedefliyle yanlis eslesmesini onlemek icin EN USTTE ---
+    [["xm177", "car15", "car_15"], 2200, 1.1, 1.0, "XM177 / CAR-15", "tahmin"],
+    [["l34a1", "l2a3", "sterling"], 3500, 0.5, 0.5, "Sterling SMG", "tahmin"],
+    [["vn_m16", "vn_xm16"], 1500, 1.2, 1.0, "M16A1 (Vietnam)", "tahmin"],
+    [["vn_m63a"], 1500, 0.9, 0.7, "Stoner 63", "tahmin"],
+    [["vn_m1918"], 2500, 0.5, 0.5, "BAR M1918", "tahmin"],
+    [["vn_l4"], 3500, 0.5, 0.5, "Bren L4", "tahmin"],
+    [["vn_rpd"], 4500, 0.3, 0.3, "RPD", "tahmin"],
+    [["vn_dp28", "dp28"], 3500, 0.35, 0.3, "DP-28", "tahmin"],
+    [["=vn_pk"], 3000, 0.35, 0.4, "PK / PKM", "tahmin"],
+    [["vn_m79", "m79"], 8000, 0.2, 0.2, "M79 (kırma namlulu)", "tahmin"],
+    [["vn_m1897", "izh54", "vn_m37"], 6000, 0.3, 0.3, "Pompalı / av tüfeği", "tahmin"],
+    [["pps52", "pps43", "ppsh", "k50m", "mat49", "vn_m3sd", "vz61", "type64_smg", "type64_f_smg", "tommy", "m1928"], 3500, 0.4, 0.4, "SMG (dönem)", "tahmin"],
+    [["m1carbine", "m2carbine", "m3carbine"], 3500, 0.5, 0.5, "M1 / M2 Carbine", "tahmin"],
+    [["m1_garand", "vn_m4956", "m4956"], 3000, 0.5, 0.5, "Garand / SKS (dönem)", "tahmin"],
+    [["vn_m21", "vn_l2a1"], 3200, 0.55, 0.55, "M14 / FAL türevi (dönem)", "tahmin"],
+    [["vn_m1903", "vn_k98k", "vn_m36", "vn_m1891", "vn_m9130", "vn_vz54"], 15000, 0.2, 0.3, "Sürgülü tüfek (dönem)", "tahmin"],
     // --- Surgulu tufekler (ilk: "mosin_sbr", "cz750" gibi adlar baska satirlara carpmasin) ---
     [["remington700", "awm", "cz550", "cz750", "l115", "jng90", "m200", "bora_12", "tmt_accuracy", "leeenfield", "mosin", "kar98", "m38", "t5000", "orsis", "m2010", "xm2010", "lrr", "m24sws", "cup_srifle_m24", "m40a"], 15000, 0.2, 0.3, "Sürgülü tüfek", "tahmin"],
     // --- Makineli tufekler ---

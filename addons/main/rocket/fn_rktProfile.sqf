@@ -33,7 +33,7 @@ private _table = [
     [["m72", "rpg18", "rpg22", "rpg26", "rpg75", "rshg"], "disposable", 0.02, "Tek kullanımlık (eski / Doğu)"],
     [["m136", "at4", "nlaw", "apilas"], "disposable", 0.01, "Tek kullanımlık (modern)"],
     [["panzerfaust", "pf60", "pzf44"], "disposable", 0.05, "Panzerfaust (eski)"],
-    [["rpg7", "rpg32", "spg9"], "reloadable", 0.02, "RPG-7 tipi"],
+    [["rpg7", "rpg32", "spg9", "vn_rpg2", "m20a1b1", "bazooka"], "reloadable", 0.02, "RPG-7 tipi / bazuka"],
     [["smaw", "maaws", "mk153", "mraws", "carl"], "reloadable", 0.008, "Modern omuz atarı"],
     [["javelin", "titan", "stinger", "fim92", "igla", "strela", "metis", "vorona", "tow", "9k", "eryx", "kornet", "konkurs", "fagot", "spike", "stugna", "mapats"], "guided", 0.025, "Güdümlü füze"]
 ];
