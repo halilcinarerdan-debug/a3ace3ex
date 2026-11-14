@@ -39,7 +39,7 @@ private _key = [_weapon] call TAC_fnc_wpnSearchKey;
 
 // Aile tablosu: [desenler, baslik, [[tur, etiket, (x)], ...]]  -- rktPrepSteps ile AYNI sira
 private _table = [
-    [["rpg7", "rpg32"], "RPG-7", [["cover", "Emniyet kapağı"], ["box", "Başlık"], ["lever", "Horoz"]]],
+    [["rpg7", "rpg32", "csla_p27"], "RPG-7", [["cover", "Emniyet kapağı"], ["box", "Başlık"], ["lever", "Horoz"]]],
     [["panzerfaust", "pf60", "pzf44"], "Panzerfaust", [["lever", "Emniyet"], ["sight", "Nişangah"]]],
     [["m141", "bdm"], "M141 BDM", [["pin", "Nakliye pimi"], ["ext", "İç tüp"], ["light", "Tüp kilidi"], ["sight", "Nişangah"], ["cover", "Ateşleme kapağı"]]],
     [["m72"], "M72 LAW", [["pin", "Emniyet pimi"], ["ext", "Tüp"], ["light", "Kilit"], ["sight", "Nişangah"]]],
@@ -47,12 +47,12 @@ private _table = [
     [["rpg18", "rpg22", "rpg26", "rpg75"], "RPG-18/22/26", [["pin", "Emniyet pimi"], ["ext", "Tüp"]]],
     [["nlaw", "apilas"], "NLAW / APILAS", [["cover", "Kapaklar"], ["sight", "Nişangah"]]],
     [["smaw", "mk153"], "SMAW", [["light", "Tüp kilidi"], ["lever", "Fünye ayarı"], ["lever", "Horoz"]]],
-    [["maaws", "carl", "mraws"], "Carl Gustaf", [["light", "Kama kilidi"], ["lever", "Emniyet / mod"], ["lever", "Horoz"]]],
+    [["maaws", "carl", "mraws", "pzf84", "pzf3"], "Carl Gustaf", [["light", "Kama kilidi"], ["lever", "Emniyet / mod"], ["lever", "Horoz"]]],
     [["javelin"], "Javelin", [["box", "BCU"], ["light", "CLU güç"], ["light", "Soğutma"]]],
     [["stinger", "fim92"], "Stinger", [["box", "BCU / soğutucu"], ["light", "Güç"], ["light", "IFF / arayıcı"]]],
-    [["igla", "strela", "9k38", "9k32", "9k34"], "Igla / Strela", [["box", "Pil-soğutma"], ["light", "Güç"], ["light", "Arayıcı"]]],
+    [["igla", "strela", "9k38", "9k32", "9k34", "fim43", "redeye"], "Igla / Strela", [["box", "Pil-soğutma"], ["light", "Güç"], ["light", "Arayıcı"]]],
     [["tow"], "TOW", [["box", "Fırlatma tüpü"], ["box", "Kablo / optik"], ["light", "Gece nişangahı"], ["light", "Güç"]]],
-    [["metis", "eryx", "kornet", "konkurs", "fagot", "spike", "stugna", "mapats", "9k133", "9k113", "9k115", "9k111", "9m133", "9m113"], "ATGM", [["box", "Füze tüpü"], ["box", "Yönlendirme birimi"], ["light", "Güç / soğutma"]]],
+    [["milan", "metis", "eryx", "kornet", "konkurs", "fagot", "spike", "stugna", "mapats", "9k133", "9k113", "9k115", "9k111", "9m133", "9m113"], "ATGM", [["box", "Füze tüpü"], ["box", "Yönlendirme birimi"], ["light", "Güç / soğutma"]]],
     [["spg9", "spg-9", "recoilless"], "SPG-9", [["light", "Namlu kilidi"], ["box", "Mermi / kama"], ["lever", "Emniyet / tetik"]]],
     [["titan", "vorona"], "Titan / Vorona", [["light", "Güç"], ["light", "Arayıcı"]]]
 ];

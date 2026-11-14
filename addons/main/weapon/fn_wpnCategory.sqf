@@ -52,12 +52,12 @@ if (isNil "_result") then {
                 _maxCount = _maxCount max (getNumber (configFile >> "CfgMagazines" >> _x >> "count"));
             } forEach _mags;
 
-            _isMG = _maxCount >= TAC_wpn_mgThreshold || {TAC_wpn_mgSet getOrDefault [_key, false]} || {(_key find "vn_mg42") >= 0};
+            _isMG = _maxCount >= TAC_wpn_mgThreshold || {TAC_wpn_mgSet getOrDefault [_key, false]} || {(_key find "vn_mg42") >= 0} || {(_key find "csla_uk59") >= 0};
 
             // Bilinen TUFEK aileleri: magazineWell'lerinde tambur / kutu sarjor olsa da MG sayilmaz
             // (elle "MG olarak zorla" tablosundakiler hariç).
             if (_isMG && {!(TAC_wpn_mgSet getOrDefault [_key, false])}) then {
-                private _rifleLike = ["sar308", "sar223", "sar56", "kcr", "mpt5", "mpt7", "knt7", "hk416", "hk417", "g3a", "hk33", "m4a1", "m16", "sr25", "m110", "scar", "tar21", "sig516", "bora", "xm177", "xm16", "vn_m16", "type56", "vn_ak", "kbkg", "ppsh", "k50m", "gau5a", "vn_type64", "kbk"];
+                private _rifleLike = ["sar308", "sar223", "sar56", "kcr", "mpt5", "mpt7", "knt7", "hk416", "hk417", "g3a", "hk33", "m4a1", "m16", "sr25", "m110", "scar", "tar21", "sig516", "bora", "xm177", "xm16", "vn_m16", "type56", "vn_ak", "kbkg", "ppsh", "k50m", "gau5a", "vn_type64", "kbk", "mp5", "mpikm", "mpiak", "akm", "gm_ak", "hk53", "c7a1", "gvm", "mpm85"];
 
                 if (_rifleLike findIf {(_key find _x) >= 0} >= 0) then {_isMG = false};
 

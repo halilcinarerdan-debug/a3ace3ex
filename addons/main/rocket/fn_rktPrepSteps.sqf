@@ -25,7 +25,7 @@ private _key = [_weapon] call TAC_fnc_wpnSearchKey;
 private _category = ([_weapon] call TAC_fnc_rktProfile) select 0;
 
 private _table = [
-    [["rpg7", "rpg32"], [["Emniyet kapağını çıkar", 2], ["Başlığı itici barutla birleştir", 3], ["Horozu kur", 2]]],
+    [["rpg7", "rpg32", "csla_p27"], [["Emniyet kapağını çıkar", 2], ["Başlığı itici barutla birleştir", 3], ["Horozu kur", 2]]],
     [["panzerfaust", "pf60", "pzf44"], [["Emniyet çevirmesini aç", 2], ["Tüpü ve nişangahı kaldır", 2]]],
     [["m141", "bdm"], [["Nakliye kilit pimini çek", 1.5], ["İç tüpü ters yönde uzat, mandalı bırak", 2.5], ["İç tüpü saat yönünde kilitle, kilidi dene", 2], ["Omuz dayanağını ve nişangahı aç", 2.5], ["Ateşleme kapağını ARMED konumuna aç", 1.5]]],
     [["m72"], [["Emniyet pimini çek", 1.5], ["Arka kapağı indir, tüpü sertçe uzat", 2.5], ["Tüpün kilitlendiğini dene", 1.5], ["Nişangahı aç", 1.5]]],
@@ -33,12 +33,12 @@ private _table = [
     [["rpg18", "rpg22", "rpg26", "rpg75"], [["Emniyet pimini çek", 1.5], ["Tüpü uzat, emniyeti aç", 2.5]]],
     [["nlaw", "apilas"], [["Emniyet kapaklarını aç", 2], ["Nişangahı kaldır, sistemi çalıştır", 2.5]]],
     [["smaw", "mk153"], [["Fırlatma tüpü kilidini kontrol et", 2], ["Fünye ayarı ve emniyeti aç", 2], ["Horozu kur", 1.5]]],
-    [["maaws", "carl", "mraws"], [["Kama kilidini kontrol et", 2], ["Emniyeti ve ateşleme modunu ayarla", 2.5], ["Horozu kur", 1]]],
+    [["maaws", "carl", "mraws", "pzf84", "pzf3"], [["Kama kilidini kontrol et", 2], ["Emniyeti ve ateşleme modunu ayarla", 2.5], ["Horozu kur", 1]]],
     [["javelin"], [["BCU'yu bağla", 2], ["CLU'ya güç ver", 2], ["Arayıcı soğutmasını başlat", 2]]],
     [["stinger", "fim92"], [["BCU / soğutucu kartuşunu tak", 2.5], ["Güç ver", 1.5], ["IFF ve arayıcıyı başlat", 2]]],
-    [["igla", "strela", "9k38", "9k32", "9k34"], [["Pil-soğutma ünitesini tak", 2.5], ["Güç ver", 1.5], ["Arayıcıyı başlat", 2]]],
+    [["igla", "strela", "9k38", "9k32", "9k34", "fim43", "redeye"], [["Pil-soğutma ünitesini tak", 2.5], ["Güç ver", 1.5], ["Arayıcıyı başlat", 2]]],
     [["tow"], [["Fırlatma tüpünü yerleştir ve kilitle", 3], ["Kablo ve optik bağlantıyı yap", 2.5], ["Gece nişangahı soğutmasını başlat", 2.5], ["Güç ver", 1.5]]],
-    [["metis", "eryx", "kornet", "konkurs", "fagot", "spike", "stugna", "mapats", "9k133", "9k113", "9k115", "9k111", "9m133", "9m113"], [["Füze tüpünü raya yerleştir ve kilitle", 3], ["Yönlendirme birimini bağla", 2.5], ["Güç ver, termal soğutmayı başlat", 2.5]]],
+    [["milan", "metis", "eryx", "kornet", "konkurs", "fagot", "spike", "stugna", "mapats", "9k133", "9k113", "9k115", "9k111", "9m133", "9m113"], [["Füze tüpünü raya yerleştir ve kilitle", 3], ["Yönlendirme birimini bağla", 2.5], ["Güç ver, termal soğutmayı başlat", 2.5]]],
     [["spg9", "spg-9", "recoilless"], [["Namlu kilidini kontrol et", 2], ["Mermiyi yerleştir, kamayı kilitle", 3], ["Emniyeti aç, tetik halatını kur", 2]]],
     [["titan", "vorona"], [["Güç ve sistem kontrolü", 2.5], ["Arayıcıyı başlat", 2]]]
 ];

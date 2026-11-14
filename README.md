@@ -685,6 +685,13 @@ Dönem içeriğinin silahları (S.O.G. `vn_*`, GM `gm_*`, CSLA `CSLA_*`) kalibre
 - `vn_sa7`, `vn_rpg7`, `vn_m72` zaten doğru tanınıyordu. Statik silahlar (M2, M1919, M60, DShK, PK, RPD, SGM, MG42, ZPU-4, ZGU-1, Maxim) doğru türde.
 GM (`gm_`) ve CSLA taramaları bekleniyor.
 
+**Global Mobilization (`gm_`) ve CSLA taraması (0.36.2):** 154 + 41 silahtan GENEL kalanlar için dönem profilleri eklendi (hepsi **tahmin**):
+- **Doğu Almanya:** `gm_mpikm*` / `mpiak*` AK ailesi, `gm_lmgk500*` RPK. **Batı Almanya / NATO:** `gm_g11` (HK G11), SIG 540 / 550 serisi, `PSG1` / `MSG90`, `HK G8` / `HK21`, `HK53`, `HK512` (pompalı), `C7A1`, `GVM75` / `GVM95`, `gm_lmgm62` (M60 / Danimarka M/62).
+- **MG sınıflaması:** `gm_mp5*`, `gm_akm*`, `gm_mpi*`, `gm_hk53*`, `gm_c7a1*`, `gm_gvm*`, `gm_mpm85` büyük şarjörleri yüzünden MG çıkıyordu; tüfek / SMG sayılır. `CSLA_UK59*` MG sayılır.
+- **CSLA:** vz.52 / vz.57 tüfekleri, Sa24 / Sa26 SMG, av tüfeği (sürgülü), `LK` hafif makineli tüfek ve CSLA / GM tabancaları dönem profili aldı. `UK59` zaten MG3 / MG42 ailesindeydi.
+- **Fırlatıcılar:** `gm_fim43` (Redeye) güdümlü ve Igla adımlarıyla, `gm_milan*` / `ace_compat_gm_milan*` güdümlü ATGM, `gm_pzf84` / `gm_pzf3` Carl Gustaf tipi omuz atarı, `CSLA_P27` RPG-7 tipi. `gm_rpg7`, `gm_rpg18`, `gm_m72a3`, `gm_pzf44`, `gm_9k32m`, `CSLA_RPG7`, `CSLA_RPG75`, `CSLA_9K32` zaten doğru tanınıyordu. Statik silahlar (MG3, DShK, SPG-9, Milan, Fagot, 9K113) doğru türde.
+- Tanınmayan / önemsiz: `gm_pallad_d`, `gm_pn3`, `gm_hk69a1` (takip edilmiyor), `CSLA_VG70`, `CSLA_OP54` / `OP63`, `CSLA_M52`, `CSLA_ZH59`, `*Pylons` (uçak askıları) hâlâ GENEL kalabilir.
+
 Beğenmediğin bir değeri CBA'daki `MRBS tablosu` ayarına `classname=MRBS` yazarak (ör. `rhs_weap_m4a1=2500, CUP_arifle_AK74=4000`) ezebilirsin; Silahı incele kartında silahçı, silahın profilini (etiket, MRBS, kalite) görür.
 
 **Kaynaklar:**
