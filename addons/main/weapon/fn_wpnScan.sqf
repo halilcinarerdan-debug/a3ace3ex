@@ -5,7 +5,7 @@
     Bir modun (TMT, RHS, CUP... fark etmez) silahlarını ve sabit silahlarını TARAR ve bu sistemin her biri için ne
     atadığını gösterir. Uyumluluğu doğrulamak ve genel (kalibre yedeği) profile düşen silahları bulmak içindir.
 
-    Her kişisel silah (tüfek / MG / tabanca / fırlatıcı) için: sınıf | kategori | güvenilirlik profili (etiket, MRBS,
+    Her kişisel silah (tüfek / MG / tabanca / fırlatıcı) için: sınıf [oyundaki görünen ad] | kategori | güvenilirlik profili (etiket, MRBS,
     kalite) | kayışlı MG mi | fırlatıcıysa tür ve taban ateşlenmeme. "GENEL" işareti = tabloda adı bulunamadı,
     kalibre / kategoriye göre genel değer atandı. Sabit silah araçları (StaticWeapon) için: araç | silah | tür.
     Çıktı ekrana özet, RPT'ye ("[TAC][SCAN]" önekli satırlar) ve panoya (Ctrl+V) gider.
@@ -40,16 +40,17 @@ private _weapons = ("getNumber (_x >> 'scope') >= 2" configClasses (configFile >
     private _weapon = configName _x;
     private _type = getNumber (_x >> "type");
     private _row = "";
+    private _name = format ["%1 [%2]", _weapon, getText (_x >> "displayName")];
 
     if (_type == 4) then {
         private _profile = [_weapon] call TAC_fnc_rktProfile;
-        _row = format ["%1 | firlatici | %2 | %3 | taban atesleneme %4%%", _weapon, _profile select 0, _profile select 2, (round ((_profile select 1) * 1000)) / 10];
+        _row = format ["%1 | firlatici | %2 | %3 | taban atesleneme %4%%", _name, _profile select 0, _profile select 2, (round ((_profile select 1) * 1000)) / 10];
 
         if ((_profile select 2) find "genel" >= 0 || {(_profile select 2) find "Genel" >= 0}) then {_generic = _generic + 1; _row = _row + " | GENEL"};
     } else {
         private _cat = [_weapon] call TAC_fnc_wpnCategory;
         private _profile = [_weapon] call TAC_fnc_wpnProfile;
-        _row = format ["%1 | %2 | %3 | MRBS %4 | %5 | kayisli MG: %6", _weapon, if (_cat isEqualTo []) then {"-"} else {_cat select 0}, _profile select 3, _profile select 0, _profile select 4, [_weapon] call TAC_fnc_wpnIsBeltFed];
+        _row = format ["%1 | %2 | %3 | MRBS %4 | %5 | kayisli MG: %6", _name, if (_cat isEqualTo []) then {"-"} else {_cat select 0}, _profile select 3, _profile select 0, _profile select 4, [_weapon] call TAC_fnc_wpnIsBeltFed];
 
         if ((_profile select 3) find "kalibreye" >= 0 || {(_profile select 3) isEqualTo "Genel"}) then {_generic = _generic + 1; _row = _row + " | GENEL"};
     };
@@ -70,7 +71,7 @@ private _statics = ("getNumber (_x >> 'scope') >= 2 && {configName _x isKindOf '
 
     if (!isNull _turret) then {_turretWeapon = (getArray (_turret >> "weapons")) param [0, _turretWeapon]};
 
-    _lines pushBack format ["[STATIK] %1 | silah %2 | tur %3", _vehClass, _turretWeapon, [_turretWeapon] call TAC_fnc_trtKind];
+    _lines pushBack format ["[STATIK] %1 [%4] | silah %2 | tur %3", _vehClass, _turretWeapon, [_turretWeapon] call TAC_fnc_trtKind, getText (_x >> "displayName")];
 } forEach _statics;
 
 private _summary = format ["Tarama '%1': %2 kisisel silah | %3 GENEL profile dustu | %4 statik silah", _filter, _total, _generic, count _statics];

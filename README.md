@@ -694,6 +694,8 @@ GM (`gm_`) ve CSLA taramaları bekleniyor.
 
 **İnternet araştırması (0.36.3):** `gm_lmgm62` M60 sanılıyordu; Danimarka M/62 = MG3 çıktı, profil MG3 (2500) yapıldı. M16 için yayımlanmış bir MRBS sayısı bulunamadı; yalnızca 1967 Ordu anketinde (yaklaşık %80 arıza bildirimi), WC 846 barutunun daha kirli yanması ve kromsuz yatak sorunları ile XM16E1 → M16A1 (28 Şubat 1967, kromlu yatak) geçişi doğrulandı. Buna göre kromsuz `xm16e1` 1000 MRBS ve kir duyarlılığı 1.3 (daha kötü), M16A1 1500 olarak tahmin edildi. CSLA `LK` (vz.52 / 52/57 LMG): 25 mermilik şarjör ve 50 mermilik kayış kullanır, saha yorumlarına göre kayış şarjörden kötüdür; MRBS değeri yine tahmin.
 
+**Tarama aracı (0.36.4):** `TAC_fnc_wpnScan` çıktısında artık her silahın / statiğin oyundaki **görünen adı** da yazar (`gm_mpikm72_brn [MPi KM 72]` gibi); sınıf adıyla gerçek silahın eşleşmesini doğrulamak için. İnternet araştırması GM ve CSLA'nın tam silah listesini sınıf adlarıyla vermedi; doğrulama oyundan yapılır.
+
 Beğenmediğin bir değeri CBA'daki `MRBS tablosu` ayarına `classname=MRBS` yazarak (ör. `rhs_weap_m4a1=2500, CUP_arifle_AK74=4000`) ezebilirsin; Silahı incele kartında silahçı, silahın profilini (etiket, MRBS, kalite) görür.
 
 **Kaynaklar:**
