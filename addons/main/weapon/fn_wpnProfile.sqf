@@ -46,7 +46,7 @@ private _table = [
     // --- Global Mobilization (gm_) ve CSLA (csla_) ---
     [["mpikm", "mpiak"], 5000, 0.25, 0.3, "AK ailesi (Doğu Almanya)", "tahmin"],
     [["lmgk500"], 4500, 0.3, 0.3, "RPK / LMG-K", "tahmin"],
-    [["lmgm62"], 850, 0.6, 0.6, "M60 (Danimarka M/62)", "tahmin"],
+    [["lmgm62"], 2500, 0.5, 0.5, "MG3 (Danimarka M/62)", "tahmin"],
     [["gm_g11", "g11k2"], 4000, 0.35, 0.4, "HK G11", "tahmin"],
     [["sg550", "sg551", "sg542", "sg540"], 4000, 0.4, 0.5, "SIG 540 serisi", "tahmin"],
     [["gm_psg1", "gm_msg90"], 4000, 0.4, 0.4, "PSG1 / MSG90", "tahmin"],
@@ -63,6 +63,7 @@ private _table = [
     [["csla_huntingrifle"], 15000, 0.2, 0.3, "Av tüfeği (sürgülü)", "tahmin"],
     [["csla_lk"], 3500, 0.45, 0.45, "LK (LMG, dönem)", "tahmin"],
     [["l34a1", "l2a3", "sterling"], 3500, 0.5, 0.5, "Sterling SMG", "tahmin"],
+    [["xm16e1"], 1000, 1.3, 1.0, "XM16E1 (kromsuz yatak, 1965-67)", "tahmin"],
     [["vn_m16", "vn_xm16"], 1500, 1.2, 1.0, "M16A1 (Vietnam)", "tahmin"],
     [["vn_m63a"], 1500, 0.9, 0.7, "Stoner 63", "tahmin"],
     [["vn_m1918"], 2500, 0.5, 0.5, "BAR M1918", "tahmin"],

@@ -665,7 +665,7 @@ Tüm TAC eşyalarının kendi ikonu var (`addons/main/data/icons/*_ca.png`, 256x
 
 **Önemli:** config `.paa` yoluna bakar (`..._ca.paa`), repoda ise `.png` kaynaklar durur. Paketlerken PNG'lerin `.paa`'ya çevrilmesi gerekir: **Mikero pboProject** bunu otomatik yapar (`_ca` son eki = renk + alfa). Addon Builder kullanıyorsan "Binarize all textures" seçeneğini aç ya da PNG'leri TexView 2 ile `.paa` olarak kaydet (aynı klasöre, aynı adla). Çevrilmezse eşya çalışır ama envanterde ikon boş görünür.
 
-### Soğuk Savaş modu (0.36.0)
+### Soğuk Savaş modu (0.36.0; M16 notu 0.36.3)
 
 CBA ayarı **Soğuk Savaş modu** (`TAC_coldWar`, varsayılan kapalı, sunucu zorlayabilir): S.O.G. Prairie Fire, Global Mobilization (GM) ve CSLA gibi içeriklerle kullanmak için sistemi döneme uydurur. Açıkken:
 
@@ -686,11 +686,13 @@ Dönem içeriğinin silahları (S.O.G. `vn_*`, GM `gm_*`, CSLA `CSLA_*`) kalibre
 GM (`gm_`) ve CSLA taramaları bekleniyor.
 
 **Global Mobilization (`gm_`) ve CSLA taraması (0.36.2):** 154 + 41 silahtan GENEL kalanlar için dönem profilleri eklendi (hepsi **tahmin**):
-- **Doğu Almanya:** `gm_mpikm*` / `mpiak*` AK ailesi, `gm_lmgk500*` RPK. **Batı Almanya / NATO:** `gm_g11` (HK G11), SIG 540 / 550 serisi, `PSG1` / `MSG90`, `HK G8` / `HK21`, `HK53`, `HK512` (pompalı), `C7A1`, `GVM75` / `GVM95`, `gm_lmgm62` (M60 / Danimarka M/62).
+- **Doğu Almanya:** `gm_mpikm*` / `mpiak*` AK ailesi, `gm_lmgk500*` RPK. **Batı Almanya / NATO:** `gm_g11` (HK G11), SIG 540 / 550 serisi, `PSG1` / `MSG90`, `HK G8` / `HK21`, `HK53`, `HK512` (pompalı), `C7A1`, `GVM75` / `GVM95`, `gm_lmgm62` (MG3 / Danimarka M/62; internet araştırmasıyla düzeltildi: M/62, MG3'ün Danimarka adlandırması).
 - **MG sınıflaması:** `gm_mp5*`, `gm_akm*`, `gm_mpi*`, `gm_hk53*`, `gm_c7a1*`, `gm_gvm*`, `gm_mpm85` büyük şarjörleri yüzünden MG çıkıyordu; tüfek / SMG sayılır. `CSLA_UK59*` MG sayılır.
 - **CSLA:** vz.52 / vz.57 tüfekleri, Sa24 / Sa26 SMG, av tüfeği (sürgülü), `LK` hafif makineli tüfek ve CSLA / GM tabancaları dönem profili aldı. `UK59` zaten MG3 / MG42 ailesindeydi.
 - **Fırlatıcılar:** `gm_fim43` (Redeye) güdümlü ve Igla adımlarıyla, `gm_milan*` / `ace_compat_gm_milan*` güdümlü ATGM, `gm_pzf84` / `gm_pzf3` Carl Gustaf tipi omuz atarı, `CSLA_P27` RPG-7 tipi. `gm_rpg7`, `gm_rpg18`, `gm_m72a3`, `gm_pzf44`, `gm_9k32m`, `CSLA_RPG7`, `CSLA_RPG75`, `CSLA_9K32` zaten doğru tanınıyordu. Statik silahlar (MG3, DShK, SPG-9, Milan, Fagot, 9K113) doğru türde.
 - Tanınmayan / önemsiz: `gm_pallad_d`, `gm_pn3`, `gm_hk69a1` (takip edilmiyor), `CSLA_VG70`, `CSLA_OP54` / `OP63`, `CSLA_M52`, `CSLA_ZH59`, `*Pylons` (uçak askıları) hâlâ GENEL kalabilir.
+
+**İnternet araştırması (0.36.3):** `gm_lmgm62` M60 sanılıyordu; Danimarka M/62 = MG3 çıktı, profil MG3 (2500) yapıldı. M16 için yayımlanmış bir MRBS sayısı bulunamadı; yalnızca 1967 Ordu anketinde (yaklaşık %80 arıza bildirimi), WC 846 barutunun daha kirli yanması ve kromsuz yatak sorunları ile XM16E1 → M16A1 (28 Şubat 1967, kromlu yatak) geçişi doğrulandı. Buna göre kromsuz `xm16e1` 1000 MRBS ve kir duyarlılığı 1.3 (daha kötü), M16A1 1500 olarak tahmin edildi. CSLA `LK` (vz.52 / 52/57 LMG): 25 mermilik şarjör ve 50 mermilik kayış kullanır, saha yorumlarına göre kayış şarjörden kötüdür; MRBS değeri yine tahmin.
 
 Beğenmediğin bir değeri CBA'daki `MRBS tablosu` ayarına `classname=MRBS` yazarak (ör. `rhs_weap_m4a1=2500, CUP_arifle_AK74=4000`) ezebilirsin; Silahı incele kartında silahçı, silahın profilini (etiket, MRBS, kalite) görür.
 
