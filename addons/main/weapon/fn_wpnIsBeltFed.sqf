@@ -27,7 +27,7 @@ if (isNil "_result") then {
 
     // ACE namlu degistirilebilir MG olarak isaretlediyse VEYA guvenilirlik profili kayisli bir aileden ise
     // (M60, M240, M249 / Minimi, PKM / PKP, MG3 / MG42): ACE isareti olmayan modlarin (TMT vb.) MG'leri de kayisli sayilir.
-    private _belt = ["M60", "M240 / Mk48", "M249 / Minimi", "PKM / PKP", "MG3 / MG42"];
+    private _belt = ["M60", "M240 / Mk48", "M249 / Minimi", "PKM / PKP", "MG3 / MG42", "M1919 (dönem)"];
     private _label = ([_weapon] call TAC_fnc_wpnProfile) select 3;
 
     _result = !(_cat isEqualTo [])

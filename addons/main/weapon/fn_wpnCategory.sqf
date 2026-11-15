@@ -33,7 +33,7 @@ if (isNil "_result") then {
     _result = [];
 
     // Sarjorsuz "silahlar" (bicak, kazma, el aleti: S.O.G. vn_m_* gibi) takip edilmez
-    private _hasMags = (count getArray (_cfg >> "magazines")) > 0 || {(count getArray (_cfg >> "magazineWell")) > 0};
+    private _hasMags = ((count getArray (_cfg >> "magazines")) > 0 || {(count getArray (_cfg >> "magazineWell")) > 0}) && {(_key find "flamethrower") < 0} && {(_key find "flammenwerfer") < 0};
 
     if ((_type == 1 || {_type == 2}) && {_hasMags}) then {
         private _isMG = false;
@@ -57,7 +57,7 @@ if (isNil "_result") then {
             // Bilinen TUFEK aileleri: magazineWell'lerinde tambur / kutu sarjor olsa da MG sayilmaz
             // (elle "MG olarak zorla" tablosundakiler hariç).
             if (_isMG && {!(TAC_wpn_mgSet getOrDefault [_key, false])}) then {
-                private _rifleLike = ["sar308", "sar223", "sar56", "kcr", "mpt5", "mpt7", "knt7", "hk416", "hk417", "g3a", "hk33", "m4a1", "m16", "sr25", "m110", "scar", "tar21", "sig516", "bora", "xm177", "xm16", "vn_m16", "type56", "vn_ak", "kbkg", "ppsh", "k50m", "gau5a", "vn_type64", "kbk", "mp5", "mpikm", "mpiak", "akm", "gm_ak", "hk53", "c7a1", "gvm", "mpm85"];
+                private _rifleLike = ["sar308", "sar223", "sar56", "kcr", "mpt5", "mpt7", "knt7", "hk416", "hk417", "g3a", "hk33", "m4a1", "m16", "sr25", "m110", "scar", "tar21", "sig516", "bora", "xm177", "xm16", "vn_m16", "type56", "vn_ak", "kbkg", "ppsh", "k50m", "gau5a", "vn_type64", "kbk", "stg44", "spe_g43", "spe_fg42", "mp5", "mpikm", "mpiak", "akm", "gm_ak", "hk53", "c7a1", "gvm", "mpm85"];
 
                 if (_rifleLike findIf {(_key find _x) >= 0} >= 0) then {_isMG = false};
 

@@ -56,6 +56,9 @@ if (isNil "_kind") then {
         if (_sim in ["shotgrenade", "shotshell"] && {_count >= 20}) then {_kind = "mg"};
     };
 
+    // Toplar (PaK 40, FlaK, leFH 18, 57 mm, havan obusleri): mermi yigini >= 20 olsa da kayisli MG degildir
+    if (_kind isEqualTo "mg" && {["pak40", "flak", "lefh18", "_57mm", "m1_57", "howitzer", "_cannon"] findIf {(_key find _x) >= 0} >= 0}) then {_kind = "other"};
+
     TAC_trt_kindCache set [_key, _kind];
 };
 

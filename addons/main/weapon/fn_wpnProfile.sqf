@@ -43,6 +43,22 @@ if (!isNil "_result") exitWith {_result};
 private _table = [
     // --- Donem silahlari (S.O.G. Prairie Fire vb.): "m14" alt dizesinin xm148 hedefliyle yanlis eslesmesini onlemek icin EN USTTE ---
     [["xm177", "car15", "car_15"], 2200, 1.1, 1.0, "XM177 / CAR-15", "tahmin"],
+    // --- Spearhead 1944 (spe_) ve diger II. Dunya Savasi silahlari ---
+    [["spe_mg42"], 2500, 0.5, 0.5, "MG3 / MG42", "tahmin"],
+    [["spe_mg34"], 2000, 0.55, 0.5, "MG3 / MG42", "tahmin"],
+    [["spe_m1919"], 2500, 0.45, 0.5, "M1919 (dönem)", "tahmin"],
+    [["spe_m1918", "spe_m1918a2"], 2500, 0.5, 0.5, "BAR M1918", "tahmin"],
+    [["spe_fm_24", "spe_lmg_303"], 3000, 0.5, 0.5, "FM 24/29 / Bren (dönem)", "tahmin"],
+    [["spe_stg44", "stg44"], 3500, 0.5, 0.5, "StG 44", "tahmin"],
+    [["spe_fg42"], 2500, 0.6, 0.6, "FG 42", "tahmin"],
+    [["spe_g43"], 3000, 0.55, 0.55, "Gewehr 43", "tahmin"],
+    [["spe_m1_carbine", "spe_m1a1_carbine"], 3500, 0.5, 0.5, "M1 Carbine", "tahmin"],
+    [["spe_k98", "spe_m1903", "spe_no3", "spe_mas_36"], 15000, 0.2, 0.3, "Sürgülü tüfek (II. Dünya Savaşı)", "tahmin"],
+    [["spe_fusil", "spe_model_37"], 6000, 0.3, 0.3, "Pompalı / av tüfeği", "tahmin"],
+    [["spe_p08"], 3500, 0.6, 0.6, "Luger P08", "tahmin"],
+    [["sten"], 2000, 0.6, 0.6, "Sten (düşük güvenilirlik)", "tahmin"],
+    [["spe_mp40", "spe_mp35"], 4000, 0.45, 0.5, "MP 40 / MP 35", "tahmin"],
+    [["spe_m1a1_thompson", "spe_m3_greasegun"], 3500, 0.5, 0.5, "Thompson / M3 Grease Gun", "tahmin"],
     // --- Global Mobilization (gm_) ve CSLA (csla_) ---
     [["mpikm", "mpiak"], 5000, 0.25, 0.3, "AK ailesi (Doğu Almanya)", "tahmin"],
     [["lmgk500"], 4500, 0.3, 0.3, "RPK / LMG-K", "tahmin"],
