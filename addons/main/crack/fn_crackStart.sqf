@@ -65,6 +65,7 @@ if (_blur >= 0 && {_blurValue > 0}) then {
     _blur ppEffectForceInNVG true;
     _blur ppEffectAdjust [_blurValue];
     _blur ppEffectCommit 0.1;
+    missionNamespace setVariable ["TAC_crack_blurAdj", _blurValue];
 };
 
 // --- Vignette ----------------------------------------------------------------
@@ -159,6 +160,7 @@ if (TAC_crack_debug) then {
     if (_blur >= 0) then {
         _blur ppEffectAdjust [0];
         _blur ppEffectCommit _fadeTime;
+        missionNamespace setVariable ["TAC_crack_blurAdj", 0];
     };
 
     {

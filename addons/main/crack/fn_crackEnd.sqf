@@ -25,6 +25,8 @@ if (_blur >= 0) then {
     _blur ppEffectEnable false;
 };
 
+missionNamespace setVariable ["TAC_crack_blurAdj", 0];
+
 {
     if (!isNull _x) then {
         _x ctrlSetFade 1;

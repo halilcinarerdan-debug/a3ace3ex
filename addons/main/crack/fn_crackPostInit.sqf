@@ -26,6 +26,11 @@ if (isNil "TAC_crack_ammoCache") then {TAC_crack_ammoCache = createHashMap};
     [_newUnit, _oldUnit] call TAC_fnc_crackAttach;
 }, true] call CBA_fnc_addPlayerEventHandler;
 
+// Optige gecince / cikinca post-process sifirlanabilir: sursurken bulanikligi yeniden uygula
+{
+    [_x, {call TAC_fnc_crackReassert}] call CBA_fnc_addPlayerEventHandler;
+} forEach ["cameraView", "visionMode", "weapon", "turret", "vehicle"];
+
 // ACE Gelismis Firlatma: [unit, projectile]. Olay adi surume gore degisebildiginden ikisi de dinlenir;
 // olmayan olay sessizce hicbir sey yapmaz. (Asil guvence: crackTrack'in cevre taramasi.)
 {

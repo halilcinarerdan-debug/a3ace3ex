@@ -11,6 +11,7 @@ class crack
     class crackBlast {};
     class crackTrack {};
     class crackEnd {};
+    class crackReassert {};
 
     // Teshis (debug konsolu: call TAC_fnc_crackDebug)
     class crackDebug {};
