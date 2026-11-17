@@ -50,7 +50,15 @@ if (TAC_crack_hideHud && {!(missionNamespace getVariable ["TAC_crack_hudHidden",
 // Oncelik 450'den baslar (ACE'nin kullandigi aralik); doluysa ppEffectCreate -1 doner, bir sonrakini dene.
 private _blur = missionNamespace getVariable ["TAC_crack_ppBlur", -1];
 
+// Optik / gorus degisince oyun veya baska bir mod (LPVO dürbünleri vb.) post-process efektlerini silebilir:
+// "kirli" isaretliyse eski efekt silinir ve yeniden yaratilir (yalnizca optik kullanildiktan sonraki ilk tetiklemede).
+if (missionNamespace getVariable ["TAC_crack_ppDirty", false] && {_blur >= 0}) then {
+    ppEffectDestroy _blur;
+    _blur = -1;
+};
+
 if (_blur < 0) then {
+    missionNamespace setVariable ["TAC_crack_ppDirty", false];
     for "_i" from 0 to 100 do {
         _blur = ppEffectCreate ["DynamicBlur", 450 + _i];
         if (_blur >= 0) exitWith {};
