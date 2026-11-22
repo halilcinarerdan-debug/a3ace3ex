@@ -56,9 +56,14 @@ if (_damages isEqualType "") then {
     } forEach _damages;
 };
 
-// 1) Goz kapanmasi
-if (TAC_hit_blink && {_total >= TAC_hit_blinkMinHit || {_damages isEqualType ""}}) then {
-    [_total] call TAC_fnc_hitBlink;
+// 1) Goz kapanmasi + tunel gorusu (yaralanma ekrani)
+if (_total >= TAC_hit_blinkMinHit || {_damages isEqualType ""}) then {
+    if (TAC_hit_blink) then {[_total] call TAC_fnc_hitBlink};
+
+    if (TAC_hit_tunnel) then {
+        // crack altyapisi: vignette + bulaniklik (HUD gizlenmez, crack bekleme suresi etkilenmez)
+        [TAC_hit_tunnelTime, 1, false, TAC_hit_tunnelBlur, TAC_hit_tunnelVignette, false] call TAC_fnc_crackStart;
+    };
 };
 
 // 2) Silah isabeti

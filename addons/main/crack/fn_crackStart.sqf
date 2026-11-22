@@ -16,29 +16,41 @@
     Parametreler (hepsi isteğe bağlı; sayı olmayan / yanlış gelen argüman yok sayılır):
         0: NUMBER - süre sn; verilmezse ayardaki süre
         1: NUMBER - şiddet çarpanı 0..1 (blur ve vignette ile çarpılır); verilmezse 1
+        2: BOOL   - (isteğe bağlı) HUD gizlensin mi (varsayılan true)
+        3: NUMBER - (isteğe bağlı) bulanıklık çarpanı (varsayılan 1; vurulma "tünel görüşü" 2.5)
+        4: NUMBER - (isteğe bağlı) vignette (kenar kararması) çarpanı (varsayılan 1; üst sınır 0.98)
+        5: BOOL   - (isteğe bağlı) bekleme süresi (TAC_crack_last) güncellensin mi (varsayılan true)
 
     Dönüş: yok
 */
 
 private _duration = -1;
 private _power = 1;
+private _hideHud = true;
+private _blurMult = 1;
+private _vigMult = 1;
+private _setLast = true;
 
 if (_this isEqualType 0) then {_duration = _this};
 
 if (_this isEqualType []) then {
     if (count _this > 0 && {(_this select 0) isEqualType 0}) then {_duration = _this select 0};
     if (count _this > 1 && {(_this select 1) isEqualType 0}) then {_power = (_this select 1) max 0 min 1};
+    if (count _this > 2 && {(_this select 2) isEqualType true}) then {_hideHud = _this select 2};
+    if (count _this > 3 && {(_this select 3) isEqualType 0}) then {_blurMult = (_this select 3) max 0};
+    if (count _this > 4 && {(_this select 4) isEqualType 0}) then {_vigMult = (_this select 4) max 0};
+    if (count _this > 5 && {(_this select 5) isEqualType true}) then {_setLast = _this select 5};
 };
 
 if (_duration < 0) then {_duration = TAC_crack_duration};
 
 private _token = (missionNamespace getVariable ["TAC_crack_token", 0]) + 1;
 missionNamespace setVariable ["TAC_crack_token", _token];
-missionNamespace setVariable ["TAC_crack_last", time];
+if (_setLast) then {missionNamespace setVariable ["TAC_crack_last", time]};
 
 // --- HUD ---------------------------------------------------------------------
 // Zaten gizliyse (önceki efekt sürüyor) tekrar kaydetme: orijinal durum bozulmasın.
-if (TAC_crack_hideHud && {!(missionNamespace getVariable ["TAC_crack_hudHidden", false])}) then {
+if (_hideHud && {TAC_crack_hideHud} && {!(missionNamespace getVariable ["TAC_crack_hudHidden", false])}) then {
     missionNamespace setVariable ["TAC_crack_hudSaved", shownHUD];
     missionNamespace setVariable ["TAC_crack_hudHidden", true];
     showHUD false;
@@ -66,7 +78,7 @@ if (_blur < 0) then {
     missionNamespace setVariable ["TAC_crack_ppBlur", _blur];
 };
 
-private _blurValue = TAC_crack_blur * _power;
+private _blurValue = TAC_crack_blur * _power * _blurMult;
 
 if (_blur >= 0 && {_blurValue > 0}) then {
     _blur ppEffectEnable true;
@@ -81,7 +93,7 @@ if (_blur >= 0 && {_blurValue > 0}) then {
 // yaratip silmek takilma yapar); bitince yalnizca gizlenir (fade 1). Katman sayisi, ekran
 // cozunurlugu degisirse ya da kontroller silinmisse yeniden kurulur.
 private _display = findDisplay 46;
-private _vignette = TAC_crack_vignette * _power;
+private _vignette = (TAC_crack_vignette * _power * _vigMult) min 0.98;
 private _layers = round TAC_crack_layers;
 
 if (!isNull _display && {_vignette > 0}) then {

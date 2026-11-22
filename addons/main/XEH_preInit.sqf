@@ -38,5 +38,8 @@ call TAC_fnc_assistInitSettings;
 // 11. Sabit silah / taret
 call TAC_fnc_trtInitSettings;
 
-// 12. Isabet etkileri (silah isabeti + goz kapanmasi)
+// 12. Isabet etkileri (silah isabeti + goz kapanmasi + tunel gorusu)
 call TAC_fnc_hitInitSettings;
+
+// 13. Olum / yarali ekrani
+call TAC_fnc_dthInitSettings;

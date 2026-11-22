@@ -55,3 +55,6 @@ call TAC_fnc_trtPostInit;
 
 // 12. Isabet etkileri
 call TAC_fnc_hitPostInit;
+
+// 13. Olum / yarali ekrani
+call TAC_fnc_dthPostInit;

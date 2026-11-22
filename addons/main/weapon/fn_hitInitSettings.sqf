@@ -128,6 +128,42 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_hit_tunnel",
+    "CHECKBOX",
+    ["Vurulunca tünel görüşü (yaralanma ekranı)", "Açıksa mermi yiyince ekranın kenarları kararır (tünel görüşü) ve bulanıklık belirgin şekilde artar; göz kapanmasının ardından yavaşça söner. Şok dalgası (crack) efektinin vignette ve bulanıklık altyapısını kullanır; HUD gizlenmez. İstemci ayarı."],
+    _category,
+    true,
+    false
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_hit_tunnelTime",
+    "SLIDER",
+    ["Tünel görüşü: süre (sn)", "Tünel görüşünün tam şiddette kaldığı ve sönmeye başladığı süre (toplam süre bunun yaklaşık 1.7 katıdır). İstemci ayarı."],
+    _category,
+    [1, 20, 5, 1],
+    false
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_hit_tunnelBlur",
+    "SLIDER",
+    ["Tünel görüşü: bulanıklık çarpanı", "Şok dalgası (crack) bulanıklık ayarının kaç katı bulanıklık verileceği. İstemci ayarı."],
+    _category,
+    [0, 5, 2, 1],
+    false
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_hit_tunnelVignette",
+    "SLIDER",
+    ["Tünel görüşü: kenar kararması çarpanı", "Şok dalgası (crack) vignette ayarının kaç katı kenar kararması verileceği (üst sınır tam siyah kenar). İstemci ayarı."],
+    _category,
+    [0, 5, 1.8, 1],
+    false
+] call CBA_settings_fnc_init;
+
+[
     "TAC_hit_blinkMute",
     "CHECKBOX",
     ["Ekran kararması: sesler kesilsin", "Açıksa kararma boyunca sesler kesilir ve kararma açılırken yumuşakça (fade-in) geri gelir. ACE'nin kulak çınlaması / koruma sistemiyle uyumludur (en düşük ses ayarı geçerli). İstemci ayarı."],
