@@ -148,8 +148,8 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
 [
     "TAC_hit_blinkMinDamage",
     "SLIDER",
-    ["Ekran kararması: asgari hasar", "Bundan az hasar veren isabetler ekranı karartmaz (sıyrık). ACE tıbbında hasar birimi yaralanma ağırlığıdır; 0.05-0.15 arası genelde sıyrıkları eler. İstemci ayarı."],
+    ["Ekran kararması: asgari hasar", "Bundan az hasar veren isabetler ekranı karartmaz. 0 (varsayılan) = vücudun NERESİNE olursa olsun her mermi isabeti karartır. ACE tıbbında hasar birimi yaralanma ağırlığıdır; 0.05-0.15 arası sıyrıkları eler. İstemci ayarı."],
     _category,
-    [0, 1, 0.05, 2],
+    [0, 1, 0, 2],
     false
 ] call CBA_settings_fnc_init;

@@ -2,12 +2,10 @@
     Fonksiyon: TAC_fnc_hitOnSuppressed
     Çalışma yeri: İstemci (CBA yerel olayı "TAC_suppressed")
 
-    Silah nesnesine isabet testi (TAC_hit_mode 1 veya 2): mermi oyuncunun yanından geçerken (vanilla "Suppressed"),
-    mermi yolu (konum + hız vektörü doğrusu) ile elindeki silahın doğrusu (dipçik - namlu parçası) arasındaki en
-    yakın mesafe TAC_hit_weaponRadius cm'den azsa silah vurulmuş sayılır; TAC_hit_chance ihtimalle silah hasar görür
-    ve elden düşer (TAC_fnc_hitDisable). Silah mermiyi motor düzeyinde durdursa bile olay tetiklenir.
-    Silah parçası: elin (RightHand) yanından weaponDirection yönünde; birincil silah dipçik 0.30 m geri, namlu 0.55 m
-    ileri; tabanca 0.05 m geri, 0.15 m ileri (yaklaşık). Mermi konumu / hızı yoksa test yapılmaz.
+    Silah nesnesine isabet testi, olay yolu (TAC_hit_mode 1 veya 2): mermi oyuncunun yanından geçerken (vanilla
+    "Suppressed"), mermi yolu (konum + hız vektörü doğrusu, +/- 3 m) ile elindeki silahın doğrusu arasındaki
+    en yakın mesafe TAC_fnc_hitWeaponHit ile değerlendirilir. Mermi konumu / hızı yoksa test yapılmaz
+    (ProjectileCreated tabanlı izleme, TAC_fnc_hitProjectile, ayrıca çalışır).
 
     Parametreler (olay): [unit, mesafe, atıcı, mühimmat, hız, mermi konumu ASL, hız vektörü]
     Dönüş: yok
@@ -27,9 +25,8 @@ if (!TAC_hit_enabled) exitWith {"atlandi: ozellik kapali" call _dbg};
 if (TAC_hit_mode == 0) exitWith {"atlandi: yontem 'kol / el isabeti' (geometri kapali)" call _dbg};
 if (!TAC_hit_unusable && {!TAC_hit_drop}) exitWith {"atlandi: 'kullanilamaz' ve 'dussun' ikisi de kapali" call _dbg};
 if (!(_unit isEqualTo ACE_player) || {!alive _unit}) exitWith {};
-if (_pos isEqualTo [] || {_vel isEqualTo []}) exitWith {"atlandi: olayda mermi konumu / hizi yok (mermi nesnesi bos)" call _dbg};
+if (_pos isEqualTo [] || {_vel isEqualTo []}) exitWith {"atlandi: olayda mermi konumu / hizi yok (izleme yontemi devrede)" call _dbg};
 if (_distance > 3) exitWith {"atlandi: mesafe > 3 m" call _dbg};
-if (time < (_unit getVariable ["TAC_hit_next", 0])) exitWith {"atlandi: bekleme suresi" call _dbg};
 
 private _weapon = currentWeapon _unit;
 
@@ -37,56 +34,10 @@ if (_weapon isEqualTo "" || {!(_weapon in [primaryWeapon _unit, handgunWeapon _u
 if (([_weapon] call TAC_fnc_wpnCategory) isEqualTo []) exitWith {"atlandi: silah takip edilmiyor" call _dbg};
 if !((toLower (getText (configFile >> "CfgAmmo" >> _ammo >> "simulation"))) isEqualTo "shotbullet") exitWith {"atlandi: mermi turu kursun degil" call _dbg};
 
-private _speedMag = vectorMagnitude _vel;
-if (_speedMag < 50) exitWith {"atlandi: mermi hizi < 50 m/s" call _dbg};
-
-private _handgun = _weapon isEqualTo (handgunWeapon _unit);
-private _dir = vectorNormalized (_unit weaponDirection _weapon);
-// Tutus noktasi: sag el kemigi; model secimi gecersiz / uzaksa (selectionPosition bazi modellerde [0,0,0] verir)
-// goz konumundan tahmin edilir (yaklasik 0.45 m ileri, 0.18 m asagi)
-private _eye = eyePos _unit;
-private _grip = _unit modelToWorldVisualWorld (_unit selectionPosition "RightHand");
-private _gripSource = "el";
-
-if ((_grip distance _eye) > 1.0 || {(_grip distance _eye) < 0.05}) then {
-    _grip = (_eye vectorAdd (_dir vectorMultiply 0.45)) vectorAdd [0, 0, -0.18];
-    _gripSource = "goz (tahmin)";
-};
-
-// Silah parcasi A -> B (ASL)
-private _a = _grip vectorAdd (_dir vectorMultiply ([-0.30, -0.05] select _handgun));
-private _b = _grip vectorAdd (_dir vectorMultiply ([0.55, 0.15] select _handgun));
-
-// Mermi parcasi C -> D (+/- 3 m, ASL)
 private _vn = vectorNormalized _vel;
-private _c = _pos vectorAdd (_vn vectorMultiply -3);
-private _d = _pos vectorAdd (_vn vectorMultiply 3);
+if ((vectorMagnitude _vel) < 50) exitWith {"atlandi: mermi hizi < 50 m/s" call _dbg};
 
-// Iki dogru parcasi arasindaki en kisa mesafe (Ericson)
-private _u = _b vectorDiff _a;
-private _v = _d vectorDiff _c;
-private _w = _a vectorDiff _c;
-private _aa = _u vectorDotProduct _u;
-private _bb = _u vectorDotProduct _v;
-private _cc = _v vectorDotProduct _v;
-private _dd = _u vectorDotProduct _w;
-private _ee = _v vectorDotProduct _w;
-private _det = (_aa * _cc) - (_bb * _bb);
+private _seg = [_unit, _weapon] call TAC_fnc_hitWeaponSeg;
+private _closest = [_seg select 0, _seg select 1, _pos vectorAdd (_vn vectorMultiply -3), _pos vectorAdd (_vn vectorMultiply 3)] call TAC_fnc_hitSegDist;
 
-private _s = if (_det < 1e-6) then {0} else {(((_bb * _ee) - (_cc * _dd)) / _det) max 0 min 1};
-private _t = ((_bb * _s) + _ee) / (_cc max 1e-6);
-
-if (_t < 0) then {_t = 0; _s = ((-_dd) / (_aa max 1e-6)) max 0 min 1};
-if (_t > 1) then {_t = 1; _s = ((_bb - _dd) / (_aa max 1e-6)) max 0 min 1};
-
-private _closest = vectorMagnitude ((_a vectorAdd (_u vectorMultiply _s)) vectorDiff (_c vectorAdd (_v vectorMultiply _t)));
-
-if (TAC_wpn_debug) then {
-    systemChat format ["[TAC isabet] mermi yolu - silah mesafesi %1 cm (esik %2 cm) | tutus noktasi: %3 | mermi-oyuncu en yakin %4 m", (round (_closest * 1000)) / 10, TAC_hit_weaponRadius, _gripSource, (round (_distance * 100)) / 100];
-};
-
-if (_closest > (TAC_hit_weaponRadius / 100)) exitWith {};
-if ((random 100) >= TAC_hit_chance) exitWith {"silahi vurdu ama zar tutmadi (ihtimal %" + str TAC_hit_chance + ")" call _dbg};
-
-_unit setVariable ["TAC_hit_next", time + 3];
-[_unit, _weapon] call TAC_fnc_hitDisable;
+[_unit, _closest, "olay", _seg select 2] call TAC_fnc_hitWeaponHit;

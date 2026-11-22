@@ -11,6 +11,11 @@ class weapon
     class hitPostInit {};
     class hitOnWound {};
     class hitOnSuppressed {};
+    class hitProjectile {};
+    class hitTrackTick {};
+    class hitSegDist {};
+    class hitWeaponSeg {};
+    class hitWeaponHit {};
     class hitDisable {};
     class hitBlink {};
     class hitTest {};

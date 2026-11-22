@@ -21,6 +21,11 @@
     _this call TAC_fnc_hitOnSuppressed;
 }] call CBA_fnc_addEventHandler;
 
+// Mermi izleme: ProjectileCreated (silah nesnesine isabet; Suppressed mermi nesnesini vermese de calisir)
+addMissionEventHandler ["ProjectileCreated", {
+    _this call TAC_fnc_hitProjectile;
+}];
+
 // ACE tibbi yoksa vanilla dinleyici (oyuncu birimi degisince yeniden baglanir)
 ["unit", {
     params ["_newUnit", "_oldUnit"];
