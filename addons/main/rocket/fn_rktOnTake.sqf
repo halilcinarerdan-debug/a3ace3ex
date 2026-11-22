@@ -36,20 +36,10 @@ if (TAC_rkt_debug) then {
     ];
 };
 
-// Hasar yedek defteri (mermi isabeti): normal kayit kaybolsa bile hasarli firlatici hasarli kalir
-private _inherited = !(_state isEqualTo []) && {_state param [11, false]};
-private _brokenFromReg = [_unit, _container, _item, _inherited] call TAC_fnc_hitBrokenTake;
-
 if (_state isEqualTo []) then {
-    if (_brokenFromReg) then {
-        private _s = [_unit, _item] call TAC_fnc_rktGetState;
-        _s set [11, true];
-    } else {
-        _all deleteAt _key;
-    };
+    _all deleteAt _key;
 } else {
     _all set [_key, _state];
-    if (_brokenFromReg) then {_state set [11, true]};
 };
 
 if !(_container isKindOf "WeaponHolder") then {

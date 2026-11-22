@@ -19,9 +19,6 @@ private _state = [_unit, _weapon] call TAC_fnc_rktGetState;
 // zari "ateslenmeyecek" demisti) atis GERI ALINIR: roket silinir, harcanan mermi geri verilir, durum degismez.
 private _cancelReason = "";
 
-if (TAC_hit_enabled && {TAC_hit_unusable} && {_state param [11, false]}) then {
-    _cancelReason = "firlatici hasarli (mermi isabeti)";
-} else {
 if (TAC_rkt_prepare && {!(_state select 5)}) then {
     _cancelReason = "hazirlik yapilmamis";
 } else {
@@ -29,7 +26,6 @@ if (TAC_rkt_prepare && {!(_state select 5)}) then {
         private _why = [_state] call TAC_fnc_rktGuidedCheck;
         if !(_why isEqualTo "") then {_cancelReason = "guduml: " + _why};
     };
-};
 };
 
 if (_cancelReason isEqualTo "" && {_state select 1} && {_state select 2}) then {_cancelReason = "ateslenmeme (misfire) isaretli"};

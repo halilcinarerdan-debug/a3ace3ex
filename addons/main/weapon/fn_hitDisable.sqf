@@ -10,9 +10,6 @@
     Düşme sonrasında (0.3 sn) durum yerdeki kaba kaydedilir; Put olayı kendiliğinden de tetiklenirse ikinci
     çağrı zararsızdır.
 
-    Roketatar (ikincil silah) da desteklenir: hasarlı işareti roketatar durumunda (dizin 11) tutulur, düşünce
-    TAC_fnc_rktOnPut ile kaba kaydedilir.
-
     Parametreler:
         0: OBJECT - oyuncu birimi
         1: STRING - silah classname
@@ -24,12 +21,9 @@ params [["_unit", objNull, [objNull]], ["_weapon", ""]];
 
 if (isNull _unit || {_weapon isEqualTo ""}) exitWith {};
 
-// Hasarli isareti: birincil silah / tabanca = bakim durumu dizin 10; roketatar = roketatar durumu dizin 11
-private _isLauncher = _weapon isEqualTo (secondaryWeapon _unit);
-
 if (TAC_hit_unusable) then {
-    private _ref = [_unit, _weapon] call TAC_fnc_hitStateRef;
-    (_ref select 0) set [_ref select 1, true];
+    private _state = [_unit, _weapon] call TAC_fnc_wpnGetState;
+    _state set [10, true];
 };
 
 if (!TAC_hit_drop) exitWith {
@@ -66,14 +60,10 @@ if (TAC_wpn_debug) then {
 };
 
 [{
-    params ["_unit", "_holder", "_weapon", "_isLauncher"];
+    params ["_unit", "_holder", "_weapon"];
 
     // Silah artik uzerimizde degilse durumu kaba kaydet (OnPut ayni sinif baska silah yoksa kayitlari siler)
     if (!isNull _holder && {!(_weapon in (weapons _unit))}) then {
-        if (_isLauncher) then {
-            [_unit, _holder, _weapon] call TAC_fnc_rktOnPut;
-        } else {
-            [_unit, _holder, _weapon] call TAC_fnc_wpnOnPut;
-        };
+        [_unit, _holder, _weapon] call TAC_fnc_wpnOnPut;
     };
-}, [_unit, _holder, _weapon, _isLauncher], 0.3] call CBA_fnc_waitAndExecute;
+}, [_unit, _holder, _weapon], 0.3] call CBA_fnc_waitAndExecute;

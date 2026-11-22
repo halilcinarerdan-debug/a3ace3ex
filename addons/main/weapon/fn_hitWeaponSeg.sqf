@@ -16,7 +16,6 @@
 params ["_unit", "_weapon"];
 
 private _handgun = _weapon isEqualTo (handgunWeapon _unit);
-private _launcher = _weapon isEqualTo (secondaryWeapon _unit);
 private _dir = vectorNormalized (_unit weaponDirection _weapon);
 private _eye = eyePos _unit;
 private _grip = _unit modelToWorldVisualWorld (_unit selectionPosition "RightHand");
@@ -27,13 +26,8 @@ if ((_grip distance _eye) > 1.0 || {(_grip distance _eye) < 0.05}) then {
     _source = "goz (tahmin)";
 };
 
-// Dipcik / namlu uzakligi (m): birincil [-0.30, 0.55]; tabanca [-0.05, 0.15]; roketatar (omuz) [-0.45, 0.60]
-private _kind = if (_launcher) then {2} else {[0, 1] select _handgun};
-private _back = [-0.30, -0.05, -0.45] select _kind;
-private _front = [0.55, 0.15, 0.60] select _kind;
-
 [
-    _grip vectorAdd (_dir vectorMultiply _back),
-    _grip vectorAdd (_dir vectorMultiply _front),
+    _grip vectorAdd (_dir vectorMultiply ([-0.30, -0.05] select _handgun)),
+    _grip vectorAdd (_dir vectorMultiply ([0.55, 0.15] select _handgun)),
     _source
 ]

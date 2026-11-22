@@ -22,7 +22,7 @@ private _hit = false;
     if (!_hit && {TAC_hit_enabled} && {TAC_hit_detect != 0} && {!isNull _target} && {alive _target}) then {
         private _weapon = currentWeapon _target;
 
-        if ([_target, _weapon] call TAC_fnc_hitEligible) then {
+        if (!(_weapon isEqualTo "") && {_weapon in [primaryWeapon _target, handgunWeapon _target]}) then {
             private _key = netId _target;
             private _seg = _segs getOrDefault [_key, []];
 

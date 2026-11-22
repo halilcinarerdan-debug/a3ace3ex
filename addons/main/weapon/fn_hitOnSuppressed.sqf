@@ -30,7 +30,8 @@ if (_distance > 3) exitWith {"atlandi: mesafe > 3 m" call _dbg};
 
 private _weapon = currentWeapon _unit;
 
-if !([_unit, _weapon] call TAC_fnc_hitEligible) exitWith {"atlandi: elde uygun silah yok (birincil / tabanca / roketatar)" call _dbg};
+if (_weapon isEqualTo "" || {!(_weapon in [primaryWeapon _unit, handgunWeapon _unit])}) exitWith {"atlandi: elde birincil silah / tabanca yok" call _dbg};
+if (([_weapon] call TAC_fnc_wpnCategory) isEqualTo []) exitWith {"atlandi: silah takip edilmiyor" call _dbg};
 if !((toLower (getText (configFile >> "CfgAmmo" >> _ammo >> "simulation"))) isEqualTo "shotbullet") exitWith {"atlandi: mermi turu kursun degil" call _dbg};
 
 private _vn = vectorNormalized _vel;
