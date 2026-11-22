@@ -3,7 +3,7 @@
     Çalışma yeri: İstemci (debug konsolu, "Yerel çalıştır"). Zeus remote control'de KONTROL ETTİĞİN birim (ACE_player) üzerinde çalışır
 
     İsabet etkilerini OLAYLARDAN BAĞIMSIZ elle dener (tek başına test için):
-        ["blink"] call TAC_fnc_hitTest   -> ekran kararması (orta şiddet)
+        ["blink"] call TAC_fnc_hitTest   -> ölüm / yere düşme ani kararmasını dener (4 sn sonra söner)
         ["drop"] call TAC_fnc_hitTest    -> elindeki silahı hasarlı yap ve düşür (ihtimal zarı atlanır)
         ["version"] call TAC_fnc_hitTest -> yüklü TAC PBO sürümleri (tac_main + uyumluluk PBO'ları)
         ["info"] call TAC_fnc_hitTest    -> sürüm + ayar değerleri ve dinleyicilerin kurulu olup olmadığı
@@ -25,8 +25,9 @@ private _out = "";
 
 switch (toLower _what) do {
     case "blink": {
-        [0.3] call TAC_fnc_hitBlink;
-        _out = "kararma tetiklendi";
+        ["incap"] call TAC_fnc_dthStart;
+        [{[3] call TAC_fnc_dthEnd}, [], 4] call CBA_fnc_waitAndExecute;
+        _out = "ani kararma tetiklendi (yere dusme), 4 sn sonra soner";
     };
     case "drop": {
         private _weapon = currentWeapon ACE_player;
@@ -106,9 +107,9 @@ switch (toLower _what) do {
         // Kucuk parcalar halinde (tek buyuk format dizisi "pre stack size violation" verebiliyordu)
         private _parts = [];
         _parts pushBack format ["surum: %1", getText (configFile >> "CfgPatches" >> "tac_main" >> "versionStr")];
-        _parts pushBack format ["islevler: hitOnWound %1 | hitOnSuppressed %2 | hitBlink %3 | hitDisable %4 | hitProjectile %5", !isNil "TAC_fnc_hitOnWound", !isNil "TAC_fnc_hitOnSuppressed", !isNil "TAC_fnc_hitBlink", !isNil "TAC_fnc_hitDisable", !isNil "TAC_fnc_hitProjectile"];
+        _parts pushBack format ["islevler: hitOnWound %1 | hitOnSuppressed %2 | dthDark %3 | hitDisable %4 | hitProjectile %5", !isNil "TAC_fnc_hitOnWound", !isNil "TAC_fnc_hitOnSuppressed", !isNil "TAC_fnc_dthDark", !isNil "TAC_fnc_hitDisable", !isNil "TAC_fnc_hitProjectile"];
         _parts pushBack format ["ayar: etkin %1 | yontem %2 | bolge %3 | ihtimal %4 | kullanilamaz %5 | dussun %6", missionNamespace getVariable ["TAC_hit_enabled", "YOK"], missionNamespace getVariable ["TAC_hit_detect", "YOK"], missionNamespace getVariable ["TAC_hit_zone", "YOK"], missionNamespace getVariable ["TAC_hit_weaponChance", "YOK"], missionNamespace getVariable ["TAC_hit_unusable", "YOK"], missionNamespace getVariable ["TAC_hit_drop", "YOK"]];
-        _parts pushBack format ["kararma: %1 | siddet %2 | sure %3 | esik %4 cm", missionNamespace getVariable ["TAC_hit_blink", "YOK"], missionNamespace getVariable ["TAC_hit_blinkStrength", "YOK"], missionNamespace getVariable ["TAC_hit_blinkTime", "YOK"], missionNamespace getVariable ["TAC_hit_weaponRadius", "YOK"]];
+        _parts pushBack format ["ani kararma: %1 | sure %2 sn | olum bekleme %3 sn | yere dusme bekleme %4 sn | silah esigi %5 cm", missionNamespace getVariable ["TAC_dth_instant", "YOK"], missionNamespace getVariable ["TAC_dth_instantTime", "YOK"], missionNamespace getVariable ["TAC_dth_deathHold", "YOK"], missionNamespace getVariable ["TAC_dth_incapHold", "YOK"], missionNamespace getVariable ["TAC_hit_weaponRadius", "YOK"]];
         _parts pushBack format ["ACE tibbi: modu %1 | ace_medical_fnc_addDamageToUnit %2 (YOKSA vanilla HandleDamage dinleyicisi kullanilir)", ["ace_medical"] call ace_common_fnc_isModLoaded, !isNil "ace_medical_fnc_addDamageToUnit"];
         _out = _parts joinString " || ";
     };

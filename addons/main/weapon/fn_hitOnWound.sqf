@@ -3,7 +3,8 @@
     Çalışma yeri: İstemci (isabet alan oyuncu; ACE "ace_medical_woundReceived" ya da vanilla HandleDamage)
 
     Oyuncuya mermi isabet edince:
-      1) Göz kapanması (TAC_hit_blink): hasar >= asgari ise ekran kararır (TAC_fnc_hitBlink).
+      1) Vignette + bulanıklık (TAC_hit_tunnel, TAC_hit_vignette): ekran kenarları kararır, bulanıklık artar (crack altyapısı). Ekranın tamamen
+         kararması yalnızca ölümde / yere düşmede olur (death modülü, TAC_fnc_dthStart).
       2) Silah isabeti (TAC_hit_enabled): isabet KOL / EL ise ve elde birincil silah ya da tabanca varsa
          TAC_hit_weaponChance ihtimalle silah hasar görür ve elden düşer (TAC_fnc_hitDisable).
     Yalnızca mermi (simülasyon shotBullet) sayılır; patlama / düşme vb. etkilemez. Aynı isabetin birden çok
@@ -56,14 +57,10 @@ if (_damages isEqualType "") then {
     } forEach _damages;
 };
 
-// 1) Goz kapanmasi + tunel gorusu (yaralanma ekrani)
-if (_total >= TAC_hit_blinkMinHit || {_damages isEqualType ""}) then {
-    if (TAC_hit_blink) then {[_total] call TAC_fnc_hitBlink};
-
-    if (TAC_hit_tunnel) then {
-        // crack altyapisi: vignette + bulaniklik (HUD gizlenmez, crack bekleme suresi etkilenmez)
-        [TAC_hit_tunnelTime, 1, false, TAC_hit_tunnelBlur, TAC_hit_tunnelVignette, false] call TAC_fnc_crackStart;
-    };
+// 1) Tunel gorusu (yaralanma ekrani)
+if (TAC_hit_tunnel) then {
+    // crack altyapisi: vignette + bulaniklik (HUD gizlenmez, crack bekleme suresi etkilenmez)
+    [TAC_hit_tunnelTime, 1, false, TAC_hit_tunnelBlur, 1, false, TAC_hit_vignette / 100] call TAC_fnc_crackStart;
 };
 
 // 2) Silah isabeti

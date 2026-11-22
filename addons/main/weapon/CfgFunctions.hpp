@@ -19,7 +19,6 @@ class weapon
     class hitWeaponHit {};
     class hitDisable {};
     class hitBrokenTake {};
-    class hitBlink {};
     class hitTest {};
     class wpnBrokenCheck {};
     class wpnBrokenDo {};

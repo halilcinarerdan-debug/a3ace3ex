@@ -19,9 +19,9 @@ class CfgPatches
         magazines[] = {"TAC_SpareBarrel_Light", "TAC_SpareBarrel_Heavy"};
         requiredVersion = 0.1;
         requiredAddons[] = {"cba_main", "ace_main", "ace_common", "ace_interact_menu", "ace_overheating"};
-        version = 0.43;
-        versionStr = "0.43.0";
-        versionAr[] = {0,43,0};
+        version = 0.44;
+        versionStr = "0.44.0";
+        versionAr[] = {0,44,0};
     };
 };
 

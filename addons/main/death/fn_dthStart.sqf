@@ -2,9 +2,9 @@
     Fonksiyon: TAC_fnc_dthStart
     Çalışma yeri: İstemci
 
-    Ölüm / yaralı ekranını başlatır: sesler kısılır (ACE kulak sistemi ya da fadeSound), ekran bulanıklaşır
-    (DynamicBlur), griye döner (ColorCorrections) ve kararır (display 46'da siyah kontrol). Efekt TAC_dth_fadeIn
-    sürede tam şiddete gelir. Post-process efektleri ve kontrol bir kez kurulur, kalıcıdır (birim değişince silinmez:
+    Ölüm / yaralı ekranını başlatır: ekran bulanıklaşır (DynamicBlur) ve griye döner (ColorCorrections); karartma ve
+    sesler TAC_fnc_dthDark'ta: ANI KARARMA (TAC_dth_instant) açıksa vurulduğu an ekran tam siyah olur ve sesler kesilir,
+    bekleme sonunda ölüm / yaralı ekranına geçilir; kapalıysa efekt TAC_dth_fadeIn sürede gelir. Post-process efektleri ve kontrol bir kez kurulur, kalıcıdır (birim değişince silinmez:
     yeniden doğunca efekt KESİLMEZ, TAC_fnc_dthEnd yumuşakça söndürür). Durum: TAC_dth_active, TAC_dth_reason.
 
     Parametreler:
@@ -19,9 +19,16 @@ if (!hasInterface || {!TAC_dth_enabled}) exitWith {};
 if (_reason isEqualTo "incap" && {!TAC_dth_incap}) exitWith {};
 if (_reason isEqualTo "death" && {!TAC_dth_death}) exitWith {};
 
-// Zaten etkin: yalnizca neden "olum"e yukselir (yaralidan olume gecerken kesilmez)
+// Zaten etkin: neden "olum"e yukselirse (yaralidan olume) durum guncellenir; ani kararma aciksa olum icin yeniden tam siyah olur
 if (missionNamespace getVariable ["TAC_dth_active", false]) exitWith {
-    if (_reason isEqualTo "death") then {TAC_dth_reason = "death"};
+    if (_reason isEqualTo "death" && {!(TAC_dth_reason isEqualTo "death")}) then {
+        TAC_dth_reason = "death";
+
+        if (TAC_dth_instant) then {
+            TAC_dth_token = (missionNamespace getVariable ["TAC_dth_token", 0]) + 1;
+            ["death"] call TAC_fnc_dthDark;
+        };
+    };
 };
 
 TAC_dth_active = true;
@@ -65,33 +72,7 @@ if (_color >= 0) then {
     _color ppEffectCommit _fade;
 };
 
-// --- Karartma kontrolu (display 46; kalici) ---
-private _display = findDisplay 46;
-
-if (!isNull _display) then {
-    private _ctrl = uiNamespace getVariable ["TAC_dth_ctrl", controlNull];
-
-    if (isNull _ctrl) then {
-        _ctrl = _display ctrlCreate ["RscText", -1];
-        _ctrl ctrlSetPosition [safeZoneX, safeZoneY, safeZoneW, safeZoneH];
-        _ctrl ctrlSetBackgroundColor [0, 0, 0, 1];
-        _ctrl ctrlSetFade 1;
-        _ctrl ctrlCommit 0;
-        uiNamespace setVariable ["TAC_dth_ctrl", _ctrl];
-    };
-
-    _ctrl ctrlSetFade (1 - (TAC_dth_dark / 100));
-    _ctrl ctrlCommit _fade;
-};
-
-// --- Sesler ---
-private _level = (1 - (TAC_dth_muffle / 100)) max 0;
-
-if (isNil "ace_common_fnc_setHearingCapability") then {
-    _fade fadeSound _level;
-    _fade fadeRadio _level;
-} else {
-    ["tac_death", _level, true, _fade] call ace_common_fnc_setHearingCapability;
-};
+// --- Karartma + ses (ani kararma ya da yavas gelis): TAC_fnc_dthDark ---
+[_reason] call TAC_fnc_dthDark;
 
 if (TAC_wpn_debug) then {systemChat format ["[TAC olum ekrani] basladi (%1)", _reason]};

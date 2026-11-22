@@ -20,6 +20,8 @@
         3: NUMBER - (isteğe bağlı) bulanıklık çarpanı (varsayılan 1; vurulma "tünel görüşü" 2.5)
         4: NUMBER - (isteğe bağlı) vignette (kenar kararması) çarpanı (varsayılan 1; üst sınır 0.98)
         5: BOOL   - (isteğe bağlı) bekleme süresi (TAC_crack_last) güncellensin mi (varsayılan true)
+        6: NUMBER - (isteğe bağlı) MUTLAK vignette şiddeti 0..1; verilirse (>= 0) crack vignette ayarı ve çarpan yok sayılır
+                    (vurulma vignette'i, crack ayarından bağımsız çalışsın diye; üst sınır 0.98)
 
     Dönüş: yok
 */
@@ -30,6 +32,7 @@ private _hideHud = true;
 private _blurMult = 1;
 private _vigMult = 1;
 private _setLast = true;
+private _vigAbs = -1;
 
 if (_this isEqualType 0) then {_duration = _this};
 
@@ -40,6 +43,7 @@ if (_this isEqualType []) then {
     if (count _this > 3 && {(_this select 3) isEqualType 0}) then {_blurMult = (_this select 3) max 0};
     if (count _this > 4 && {(_this select 4) isEqualType 0}) then {_vigMult = (_this select 4) max 0};
     if (count _this > 5 && {(_this select 5) isEqualType true}) then {_setLast = _this select 5};
+    if (count _this > 6 && {(_this select 6) isEqualType 0}) then {_vigAbs = _this select 6};
 };
 
 if (_duration < 0) then {_duration = TAC_crack_duration};
@@ -93,7 +97,7 @@ if (_blur >= 0 && {_blurValue > 0}) then {
 // yaratip silmek takilma yapar); bitince yalnizca gizlenir (fade 1). Katman sayisi, ekran
 // cozunurlugu degisirse ya da kontroller silinmisse yeniden kurulur.
 private _display = findDisplay 46;
-private _vignette = (TAC_crack_vignette * _power * _vigMult) min 0.98;
+private _vignette = if (_vigAbs >= 0) then {(_vigAbs * _power) min 0.98} else {(TAC_crack_vignette * _power * _vigMult) min 0.98};
 private _layers = round TAC_crack_layers;
 
 if (!isNull _display && {_vignette > 0}) then {

@@ -4,7 +4,7 @@
 
     CBA ayarları - isabet etkileri:
       1) Silah isabeti: kola (el / kol) mermi isabet edince silah hasar görür (kullanılamaz) ve elden düşer.
-      2) Göz kapanması: mermi yenince ekran kısa süre kararır (görsel ayarlar istemci ayarıdır).
+      2) Vurulma ekranı: mermi yenince tünel görüşü (istemci ayarı). Ölüm / yere düşme kararması: death modülü (TAC_dth_*).
     Sürekli döngü yoktur.
 */
 
@@ -74,63 +74,9 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
 ] call CBA_settings_fnc_init;
 
 [
-    "TAC_hit_blink",
-    "CHECKBOX",
-    ["Mermi yiyince ekran kararsın (göz kapanması)", "Açıksa vücuda mermi isabet edince ekran kısa süre kararır (göz kısılması / refleks) ve yavaşça açılır. İstemci ayarı: her oyuncu kendisi seçer."],
-    _category,
-    true,
-    false
-] call CBA_settings_fnc_init;
-
-[
-    "TAC_hit_blinkStrength",
-    "SLIDER",
-    ["Ekran kararması: şiddet (%)", "Tam şiddette ekranın ne kadarı kararır (%100 = tam siyah). Gerçek kararma isabet eden hasara göre ölçeklenir. İstemci ayarı."],
-    _category,
-    [5, 100, 100, 0],
-    false
-] call CBA_settings_fnc_init;
-
-[
-    "TAC_hit_blinkScaleDamage",
-    "CHECKBOX",
-    ["Ekran kararması: hasara göre ölçeklensin", "Kapalıysa (varsayılan) her mermi isabetinde ekran ayarlanan şiddette (%100 = tam siyah) ve sürede kararır. Açıksa küçük hasarlar daha hafif ve kısa, büyük hasarlar tam kararma verir. İstemci ayarı."],
-    _category,
-    false,
-    false
-] call CBA_settings_fnc_init;
-
-[
-    "TAC_hit_blinkTime",
-    "SLIDER",
-    ["Ekran kararması: süre (sn)", "Kararma tepe noktasından açılana kadar geçen süre (tam hasarda). Aşağıdaki çarpanla çarpılır. İstemci ayarı."],
-    _category,
-    [0.2, 10, 2, 1],
-    false
-] call CBA_settings_fnc_init;
-
-[
-    "TAC_hit_blinkScale",
-    "SLIDER",
-    ["Ekran kararması: süre çarpanı", "Kararma süresini (açılma + tepede tutma) bu kadar katına çıkarır; 1 = olduğu gibi, 2.5 = 2.5 kat uzun. İstemci ayarı."],
-    _category,
-    [0.5, 2.5, 1.5, 1],
-    false
-] call CBA_settings_fnc_init;
-
-[
-    "TAC_hit_blinkHold",
-    "SLIDER",
-    ["Ekran kararması: tepe süresi (sn)", "Ekran en karanlık noktada ne kadar tutulur (göz kapalı kalma süresi), sonra açılmaya başlar. İstemci ayarı."],
-    _category,
-    [0, 3, 0.3, 2],
-    false
-] call CBA_settings_fnc_init;
-
-[
     "TAC_hit_tunnel",
     "CHECKBOX",
-    ["Vurulunca tünel görüşü (yaralanma ekranı)", "Açıksa mermi yiyince ekranın kenarları kararır (tünel görüşü) ve bulanıklık belirgin şekilde artar; göz kapanmasının ardından yavaşça söner. Şok dalgası (crack) efektinin vignette ve bulanıklık altyapısını kullanır; HUD gizlenmez. İstemci ayarı."],
+    ["Vurulunca vignette ve bulanıklık (yaralanma ekranı)", "Açıksa mermi yiyince ekranın kenarları kararır (vignette / tünel görüşü) ve bulanıklık artar; sonra yavaşça söner. Şok dalgası (crack) efektinin altyapısını kullanır; HUD gizlenmez. İstemci ayarı."],
     _category,
     true,
     false
@@ -155,37 +101,11 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
 ] call CBA_settings_fnc_init;
 
 [
-    "TAC_hit_tunnelVignette",
+    "TAC_hit_vignette",
     "SLIDER",
-    ["Tünel görüşü: kenar kararması çarpanı", "Şok dalgası (crack) vignette ayarının kaç katı kenar kararması verileceği (üst sınır tam siyah kenar). İstemci ayarı."],
+    ["Vurulunca vignette: kenar kararması (%)", "Mermi isabet edince ekran kenarlarının ne kadar karardığı (100 = kenarlar tam siyah, orta bölge temiz kalır). Şok dalgası (crack) ayarlarından bağımsızdır. Ekranın tamamen kararması yalnızca ölümde / revive'de yere düşmede olur (Ölüm ve yaralı ekranı). İstemci ayarı."],
     _category,
-    [0, 5, 1.8, 1],
+    [0, 100, 90, 0],
     false
 ] call CBA_settings_fnc_init;
 
-[
-    "TAC_hit_blinkMute",
-    "CHECKBOX",
-    ["Ekran kararması: sesler kesilsin", "Açıksa kararma boyunca sesler kesilir ve kararma açılırken yumuşakça (fade-in) geri gelir. ACE'nin kulak çınlaması / koruma sistemiyle uyumludur (en düşük ses ayarı geçerli). İstemci ayarı."],
-    _category,
-    true,
-    false
-] call CBA_settings_fnc_init;
-
-[
-    "TAC_hit_blinkMuteLevel",
-    "SLIDER",
-    ["Ekran kararması: ses kesilme oranı (%)", "100 = sesler tamamen kesilir. Düşük değer sesleri yalnızca kısar. İstemci ayarı."],
-    _category,
-    [0, 100, 100, 0],
-    false
-] call CBA_settings_fnc_init;
-
-[
-    "TAC_hit_blinkMinHit",
-    "SLIDER",
-    ["Ekran kararması: asgari hasar", "Bundan az hasar veren isabetler ekranı karartmaz. 0 (varsayılan) = vücudun NERESİNE olursa olsun her mermi isabeti karartır. ACE tıbbında hasar birimi yaralanma ağırlığıdır; 0.05-0.15 arası sıyrıkları eler. İstemci ayarı."],
-    _category,
-    [0, 1, 0, 2],
-    false
-] call CBA_settings_fnc_init;
