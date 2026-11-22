@@ -30,8 +30,19 @@ if (!TAC_hit_drop) exitWith {
     if (TAC_wpn_debug) then {systemChat format ["[TAC silah] ISABET: %1 hasar gordu (elde kaldi)", _weapon]};
 };
 
-private _holder = createVehicle ["GroundWeaponHolder", getPosATL _unit, [], 0, "CAN_COLLIDE"];
-_unit action ["DropWeapon", _holder, _weapon];
+// DropWeapon eylemi bazi durumlarda sessizce hicbir sey yapmaz; silahi (nisangah, susturucu, sarjor dahil)
+// dogrudan cikarip yerdeki kaba ekleriz.
+private _items = (weaponsItems _unit) select {(toLower (_x select 0)) isEqualTo (toLower _weapon)};
+private _item = if (_items isEqualTo []) then {[_weapon, "", "", "", [], [], ""]} else {_items select 0};
+
+private _pos = _unit modelToWorld [0, 0.5, 0];
+_pos set [2, 0];
+
+private _holder = createVehicle ["GroundWeaponHolder", _pos, [], 0, "CAN_COLLIDE"];
+_holder setPosATL _pos;
+
+_unit removeWeapon _weapon;
+_holder addWeaponWithAttachmentsCargoGlobal [_item, 1];
 
 if (TAC_wpn_debug) then {
     systemChat format ["[TAC silah] ISABET: %1 hasar gordu ve elden dustu", _weapon];

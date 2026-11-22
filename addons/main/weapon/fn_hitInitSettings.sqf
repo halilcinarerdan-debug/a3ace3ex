@@ -94,9 +94,18 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
 [
     "TAC_hit_blinkTime",
     "SLIDER",
-    ["Ekran kararması: süre (sn)", "Kararma tepe noktasından açılana kadar geçen süre (tam hasarda). İstemci ayarı."],
+    ["Ekran kararması: süre (sn)", "Kararma tepe noktasından açılana kadar geçen süre (tam hasarda). Aşağıdaki çarpanla çarpılır. İstemci ayarı."],
     _category,
-    [0.2, 4, 1.2, 1],
+    [0.2, 10, 2, 1],
+    false
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_hit_blinkScale",
+    "SLIDER",
+    ["Ekran kararması: süre çarpanı", "Kararma süresini (açılma + tepede tutma) bu kadar katına çıkarır; 1 = olduğu gibi, 2.5 = 2.5 kat uzun. İstemci ayarı."],
+    _category,
+    [0.5, 2.5, 1.5, 1],
     false
 ] call CBA_settings_fnc_init;
 
@@ -105,7 +114,7 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
     "SLIDER",
     ["Ekran kararması: tepe süresi (sn)", "Ekran en karanlık noktada ne kadar tutulur (göz kapalı kalma süresi), sonra açılmaya başlar. İstemci ayarı."],
     _category,
-    [0, 1.5, 0.12, 2],
+    [0, 3, 0.3, 2],
     false
 ] call CBA_settings_fnc_init;
 

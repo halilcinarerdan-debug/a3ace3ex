@@ -4,7 +4,7 @@
 
     Mermi yenince göz kapanması: ekran çok hızlı kararır (0.06 sn), tepe noktasında kısa tutar ve yavaşça
     açılır. Şiddet (TAC_hit_blinkPower) isabet eden hasarla ölçeklenir (hasar 0.5 ve üzeri = tam şiddet;
-    en az %30); süre (TAC_hit_blinkTime) hasarla ölçeklenir (en az %40). Siyah kontrol display 46'da bir kez
+    en az %30); süre (TAC_hit_blinkTime x TAC_hit_blinkScale çarpanı) hasarla ölçeklenir (en az %60); tepede tutma süresi de aynı çarpanla uzar. Siyah kontrol display 46'da bir kez
     kurulur ve kalıcıdır. Arka arkaya isabetlerde en kuvvetli etki geçerli kalır; döngü yoktur.
 
     Parametreler:
@@ -33,7 +33,7 @@ if (isNull _ctrl) then {
 
 private _k = if (_damage <= 0) then {0.6} else {((_damage / 0.5) max 0.3) min 1};
 private _alpha = (TAC_hit_blinkPower / 100) * _k;
-private _time = TAC_hit_blinkTime * (_k max 0.4);
+private _time = TAC_hit_blinkTime * TAC_hit_blinkScale * (_k max 0.6);
 
 private _token = (uiNamespace getVariable ["TAC_hit_blinkToken", 0]) + 1;
 uiNamespace setVariable ["TAC_hit_blinkToken", _token];
@@ -53,4 +53,4 @@ _ctrl ctrlCommit 0.06;
         _c ctrlSetFade 1;
         _c ctrlCommit _time;
     };
-}, [_token, _time], 0.06 + TAC_hit_blinkHold] call CBA_fnc_waitAndExecute;
+}, [_token, _time], 0.06 + (TAC_hit_blinkHold * TAC_hit_blinkScale)] call CBA_fnc_waitAndExecute;
