@@ -42,7 +42,16 @@ if (_speedMag < 50) exitWith {"atlandi: mermi hizi < 50 m/s" call _dbg};
 
 private _handgun = _weapon isEqualTo (handgunWeapon _unit);
 private _dir = vectorNormalized (_unit weaponDirection _weapon);
+// Tutus noktasi: sag el kemigi; model secimi gecersiz / uzaksa (selectionPosition bazi modellerde [0,0,0] verir)
+// goz konumundan tahmin edilir (yaklasik 0.45 m ileri, 0.18 m asagi)
+private _eye = eyePos _unit;
 private _grip = _unit modelToWorldVisualWorld (_unit selectionPosition "RightHand");
+private _gripSource = "el";
+
+if ((_grip distance _eye) > 1.0 || {(_grip distance _eye) < 0.05}) then {
+    _grip = (_eye vectorAdd (_dir vectorMultiply 0.45)) vectorAdd [0, 0, -0.18];
+    _gripSource = "goz (tahmin)";
+};
 
 // Silah parcasi A -> B (ASL)
 private _a = _grip vectorAdd (_dir vectorMultiply ([-0.30, -0.05] select _handgun));
@@ -73,7 +82,7 @@ if (_t > 1) then {_t = 1; _s = ((_bb - _dd) / (_aa max 1e-6)) max 0 min 1};
 private _closest = vectorMagnitude ((_a vectorAdd (_u vectorMultiply _s)) vectorDiff (_c vectorAdd (_v vectorMultiply _t)));
 
 if (TAC_wpn_debug) then {
-    systemChat format ["[TAC isabet] mermi yolu - silah mesafesi %1 cm (esik %2 cm)", (round (_closest * 1000)) / 10, TAC_hit_weaponRadius];
+    systemChat format ["[TAC isabet] mermi yolu - silah mesafesi %1 cm (esik %2 cm) | tutus noktasi: %3 | mermi-oyuncu en yakin %4 m", (round (_closest * 1000)) / 10, TAC_hit_weaponRadius, _gripSource, (round (_distance * 100)) / 100];
 };
 
 if (_closest > (TAC_hit_weaponRadius / 100)) exitWith {};

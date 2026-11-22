@@ -33,7 +33,7 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
     "SLIDER",
     ["Silah isabeti: silah nesnesi kalınlığı (cm)", "Silah nesnesine isabet yönteminde mermi yolunun silahın doğrusuna en fazla bu kadar yaklaşması isabet sayılır. Büyütmek silahı vurmayı kolaylaştırır."],
     _category,
-    [2, 30, 8, 0],
+    [2, 40, 12, 0],
     true
 ] call CBA_settings_fnc_init;
 
