@@ -5,7 +5,8 @@
     İsabet etkilerini OLAYLARDAN BAĞIMSIZ elle dener (tek başına test için):
         ["blink"] call TAC_fnc_hitTest   -> ekran kararması (orta şiddet)
         ["drop"] call TAC_fnc_hitTest    -> elindeki silahı hasarlı yap ve düşür (ihtimal zarı atlanır)
-        ["info"] call TAC_fnc_hitTest    -> ayar değerleri ve dinleyicilerin kurulu olup olmadığı
+        ["version"] call TAC_fnc_hitTest -> yüklü TAC PBO sürümleri (tac_main + uyumluluk PBO'ları)
+        ["info"] call TAC_fnc_hitTest    -> sürüm + ayar değerleri ve dinleyicilerin kurulu olup olmadığı
         ["supp", 0] call TAC_fnc_hitTest -> sentetik "Suppressed" olayı: silahı tam kesen mermi yolu (0 = isabet,
                                             0.5 = silahın 0.5 m üstünden geçer = ıska)
         ["bullet", 0] call TAC_fnc_hitTest -> GERÇEK mermi nesnesi silahın ortasından geçer (oyuncu 2.5 sn hasar almaz);
@@ -36,6 +37,14 @@ switch (toLower _what) do {
             [ACE_player, _weapon] call TAC_fnc_hitDisable;
             _out = format ["%1 hasarli yapildi ve birakildi (ayarlara gore)", _weapon];
         };
+    };
+    case "version": {
+        // Yuklu TAC PBO'larinin surumleri (tac_main + varsa tac_compat_*) ve bu makinedeki mod / oyun bilgisi
+        private _list = ("(configName _x) select [0, 4] == 'tac_'" configClasses (configFile >> "CfgPatches")) apply {
+            format ["%1 %2", configName _x, getText (_x >> "versionStr")]
+        };
+
+        _out = format ["SURUM | %1 || oyuncu: %2 | %3 | ACE_player yerel: %4", _list joinString " | ", name player, if (isServer) then {"sunucu/host"} else {"istemci"}, local ACE_player];
     };
     case "supp": {
         // Sentetik "Suppressed" olayi: silah doğrusunu yandan kesen mermi yolu (_off metre yukarı kaydırılabilir; 0 = tam isabet)
@@ -96,6 +105,7 @@ switch (toLower _what) do {
     default {
         // Kucuk parcalar halinde (tek buyuk format dizisi "pre stack size violation" verebiliyordu)
         private _parts = [];
+        _parts pushBack format ["surum: %1", getText (configFile >> "CfgPatches" >> "tac_main" >> "versionStr")];
         _parts pushBack format ["islevler: hitOnWound %1 | hitOnSuppressed %2 | hitBlink %3 | hitDisable %4 | hitProjectile %5", !isNil "TAC_fnc_hitOnWound", !isNil "TAC_fnc_hitOnSuppressed", !isNil "TAC_fnc_hitBlink", !isNil "TAC_fnc_hitDisable", !isNil "TAC_fnc_hitProjectile"];
         _parts pushBack format ["ayar: etkin %1 | yontem %2 | bolge %3 | ihtimal %4 | kullanilamaz %5 | dussun %6", missionNamespace getVariable ["TAC_hit_enabled", "YOK"], missionNamespace getVariable ["TAC_hit_detect", "YOK"], missionNamespace getVariable ["TAC_hit_zone", "YOK"], missionNamespace getVariable ["TAC_hit_weaponChance", "YOK"], missionNamespace getVariable ["TAC_hit_unusable", "YOK"], missionNamespace getVariable ["TAC_hit_drop", "YOK"]];
         _parts pushBack format ["kararma: %1 | siddet %2 | sure %3 | esik %4 cm", missionNamespace getVariable ["TAC_hit_blink", "YOK"], missionNamespace getVariable ["TAC_hit_blinkStrength", "YOK"], missionNamespace getVariable ["TAC_hit_blinkTime", "YOK"], missionNamespace getVariable ["TAC_hit_weaponRadius", "YOK"]];
