@@ -723,6 +723,10 @@ CBA "TAC - Gerçekçilik Paketi > Recoil": **Recoil güçlendirme** (`TAC_recoil
 
 Güçlendirme varsayılan kategorileri değişti: **SMG / PDW (kat. 1), AR 5.56 (kat. 2) ve AK 7.62x39 (kat. 3) AÇIK; ağır kalibre 7.62x51 (kat. 4), .338 / .50 (kat. 5) ve tabanca KAPALI.** Üst sınırlar kaldırıldı: güçlendirme 30'a, sert tavan 100'e kadar. **Atış sarsıntısı** (`TAC_recoil_kick`, açık, istemci ayarı): her atışta `addCamShake [güç, süre, sıklık]` (`TAC_recoil_kickPower` 5, `TAC_recoil_kickTime` 0.4 sn, `TAC_recoil_kickFreq` 22; güç kategoriye göre SMG x0.7, AR x1, AK x1.3, ağır x1.6, aşırı x2); aynı kategori kutularını ve tabanca kuralını kullanır. Silahın kendi recoil'i sıfır / çok düşükse (başka mod kısıyorsa) recoil çarpanı 0 x N = 0 kaldığından sarsıntı yine de recoil hissi verir. Kamera sarsıntısı silahın nişan yönünü kaldırmaz (motorda piyade nişan yönünü doğrudan ayarlayan bir komut yok); yukarı tırmanma için `TAC_recoil_boost` gerekir.
 
+### Recoil ayarları görünmüyordu: derleme hatası düzeltildi (0.44.1)
+
+`fn_recoilInitSettings.sqf` içindeki "Sert tavan" açıklamasında dizenin içine kaçışsız çift tırnak yazılmıştı (`nişan "kilitlenebilir" (kamera ...`). Bu, dosyayı **derlenmez** yapıyordu: `TAC_fnc_recoilInitSettings` çalışmıyor, CBA'da "Recoil" kategorisi ve `TAC_recoil_*` ayarları kaydolmuyor, ayarlar tanımsız kaldığı için recoil güncellemesi de çalışmıyordu. Hata **0.42.3, 0.43.0 ve 0.44.0** sürümlerinde vardı (0.42.2 ve öncesi sağlam). Düzeltme: tırnaklar tek tırnak yapıldı. Yeni denetim aracı `tools/check_sqf_quotes.py` (dize içinde kaçışsız çift tırnağı bulur; paketlemeden önce çalıştır: `python3 tools/check_sqf_quotes.py`, çıktı `temiz` olmalı). Kural: dize içinde tırnak gerekiyorsa tek tırnak (`'...'`) kullan.
+
 ### Ani kararma: ölüm / revive, vurulunca vignette (0.44.0)
 
 **Eski "her isabette karar" kaldırıldı** (`fn_hitBlink`, `TAC_hit_blink`, `TAC_hit_blinkStrength / ScaleDamage / Time / Scale / Hold / Mute / MuteLevel / MinHit`). Kayıtlı eski CBA değerleri varsa görmezden gelinir. Artık iki ayrı iş var (hepsi **istemci ayarı**):

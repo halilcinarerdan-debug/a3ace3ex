@@ -65,7 +65,7 @@ private _refresh = {call TAC_fnc_recoilRefresh};
 [
     "TAC_recoil_hardCap",
     "SLIDER",
-    ["Sert tavan (en yüksek toplam çarpan)", "Güçlendirmeden sonra bile hiçbir silah bu çarpanı aşamaz. Çok yüksek çarpanlarda silah / nişan "kilitlenebilir" (kamera yukarıda takılır, kontrol zorlaşır); varsayılan 4 güvenlidir. Kilitlenme görürsen düşür."],
+    ["Sert tavan (en yüksek toplam çarpan)", "Güçlendirmeden sonra bile hiçbir silah bu çarpanı aşamaz. Çok yüksek çarpanlarda silah / nişan 'kilitlenebilir' (kamera yukarıda takılır, kontrol zorlaşır); varsayılan 4 güvenlidir. Kilitlenme görürsen düşür."],
     _category,
     [1, 100, 4, 1],
     true,
