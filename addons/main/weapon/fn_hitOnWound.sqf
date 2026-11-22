@@ -16,8 +16,15 @@
 params ["_unit", ["_damages", []], ["_shooter", objNull], ["_ammo", ""]];
 
 if (!hasInterface || {!(_unit isEqualTo ACE_player)} || {!alive _unit}) exitWith {};
+
+if (TAC_wpn_debug) then {
+    systemChat format ["[TAC isabet] yara olayi geldi | muhimmat %1 | hasarlar %2", _ammo, _damages];
+};
+
 if !(_ammo isEqualType "") exitWith {};
-if !((toLower (getText (configFile >> "CfgAmmo" >> _ammo >> "simulation"))) isEqualTo "shotbullet") exitWith {};
+if !((toLower (getText (configFile >> "CfgAmmo" >> _ammo >> "simulation"))) isEqualTo "shotbullet") exitWith {
+    if (TAC_wpn_debug) then {systemChat "[TAC isabet] yara atlandi: mermi turu kursun degil"};
+};
 
 if (time < (_unit getVariable ["TAC_hit_lock", 0])) exitWith {};
 _unit setVariable ["TAC_hit_lock", time + 0.25];

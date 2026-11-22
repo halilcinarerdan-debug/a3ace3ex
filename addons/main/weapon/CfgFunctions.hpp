@@ -13,6 +13,7 @@ class weapon
     class hitOnSuppressed {};
     class hitDisable {};
     class hitBlink {};
+    class hitTest {};
     class wpnBrokenCheck {};
     class wpnBrokenDo {};
 

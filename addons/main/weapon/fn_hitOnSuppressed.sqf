@@ -15,19 +15,30 @@
 
 params ["_unit", "_distance", "_shooter", "_ammo", ["_speed", -1], ["_pos", []], ["_vel", []]];
 
-if (!hasInterface || {!TAC_hit_enabled} || {TAC_hit_mode == 0} || {!TAC_hit_unusable && {!TAC_hit_drop}}) exitWith {};
-if (!(_unit isEqualTo ACE_player) || {!alive _unit} || {_pos isEqualTo []} || {_vel isEqualTo []}) exitWith {};
-if (_distance > 3) exitWith {};
-if (time < (_unit getVariable ["TAC_hit_next", 0])) exitWith {};
+if (!hasInterface) exitWith {};
+
+private _dbg = {if (TAC_wpn_debug) then {systemChat format ["[TAC isabet] gecen mermi: %1", _this]}};
+
+if (TAC_wpn_debug && {_unit isEqualTo ACE_player}) then {
+    systemChat format ["[TAC isabet] gecen mermi olayi geldi | mesafe %1 m | mermi nesnesi %2 | hiz vektoru %3", (round (_distance * 10)) / 10, !(_pos isEqualTo []), !(_vel isEqualTo [])];
+};
+
+if (!TAC_hit_enabled) exitWith {"atlandi: ozellik kapali" call _dbg};
+if (TAC_hit_mode == 0) exitWith {"atlandi: yontem 'kol / el isabeti' (geometri kapali)" call _dbg};
+if (!TAC_hit_unusable && {!TAC_hit_drop}) exitWith {"atlandi: 'kullanilamaz' ve 'dussun' ikisi de kapali" call _dbg};
+if (!(_unit isEqualTo ACE_player) || {!alive _unit}) exitWith {};
+if (_pos isEqualTo [] || {_vel isEqualTo []}) exitWith {"atlandi: olayda mermi konumu / hizi yok (mermi nesnesi bos)" call _dbg};
+if (_distance > 3) exitWith {"atlandi: mesafe > 3 m" call _dbg};
+if (time < (_unit getVariable ["TAC_hit_next", 0])) exitWith {"atlandi: bekleme suresi" call _dbg};
 
 private _weapon = currentWeapon _unit;
 
-if (_weapon isEqualTo "" || {!(_weapon in [primaryWeapon _unit, handgunWeapon _unit])}) exitWith {};
-if (([_weapon] call TAC_fnc_wpnCategory) isEqualTo []) exitWith {};
-if !((toLower (getText (configFile >> "CfgAmmo" >> _ammo >> "simulation"))) isEqualTo "shotbullet") exitWith {};
+if (_weapon isEqualTo "" || {!(_weapon in [primaryWeapon _unit, handgunWeapon _unit])}) exitWith {"atlandi: elde birincil silah / tabanca yok" call _dbg};
+if (([_weapon] call TAC_fnc_wpnCategory) isEqualTo []) exitWith {"atlandi: silah takip edilmiyor" call _dbg};
+if !((toLower (getText (configFile >> "CfgAmmo" >> _ammo >> "simulation"))) isEqualTo "shotbullet") exitWith {"atlandi: mermi turu kursun degil" call _dbg};
 
 private _speedMag = vectorMagnitude _vel;
-if (_speedMag < 50) exitWith {};
+if (_speedMag < 50) exitWith {"atlandi: mermi hizi < 50 m/s" call _dbg};
 
 private _handgun = _weapon isEqualTo (handgunWeapon _unit);
 private _dir = vectorNormalized (_unit weaponDirection _weapon);
@@ -62,11 +73,11 @@ if (_t > 1) then {_t = 1; _s = ((_bb - _dd) / (_aa max 1e-6)) max 0 min 1};
 private _closest = vectorMagnitude ((_a vectorAdd (_u vectorMultiply _s)) vectorDiff (_c vectorAdd (_v vectorMultiply _t)));
 
 if (TAC_wpn_debug) then {
-    systemChat format ["[TAC silah] mermi yolu - silah mesafesi %1 cm (esik %2 cm)", (round (_closest * 1000)) / 10, TAC_hit_weaponRadius];
+    systemChat format ["[TAC isabet] mermi yolu - silah mesafesi %1 cm (esik %2 cm)", (round (_closest * 1000)) / 10, TAC_hit_weaponRadius];
 };
 
 if (_closest > (TAC_hit_weaponRadius / 100)) exitWith {};
-if ((random 100) >= TAC_hit_chance) exitWith {};
+if ((random 100) >= TAC_hit_chance) exitWith {"silahi vurdu ama zar tutmadi (ihtimal %" + str TAC_hit_chance + ")" call _dbg};
 
 _unit setVariable ["TAC_hit_next", time + 3];
 [_unit, _weapon] call TAC_fnc_hitDisable;
