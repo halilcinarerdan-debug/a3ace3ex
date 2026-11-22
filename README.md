@@ -715,6 +715,10 @@ CBA kategorisi **TAC - Gerçekçilik Paketi > İsabet etkileri**. İki bağıms�
 
 **Kararma ayarları sıfırlandı (0.38.1):** ekran bazen yarı kararıyordu: CBA daha önce kaydettiğin eski şiddet değerini (%65) koruyordu. `TAC_hit_blinkPower` -> `TAC_hit_blinkStrength` ve `TAC_hit_blinkMinDamage` -> `TAC_hit_blinkMinHit` olarak yeniden adlandırıldı; eski kayıtlı değerler geçersiz, varsayılanlar (şiddet %100 = tam siyah, asgari hasar 0) geçerli. Şiddeti elle düşürmedikçe her isabet tam siyah verir.
 
+### Recoil güçlendirme (0.42.1)
+
+CBA "TAC - Gerçekçilik Paketi > Recoil": **Recoil güçlendirme** (`TAC_recoil_boost`, 0.5-6, varsayılan 1.8) kategori çarpanı ve "Maksimum çarpan" (tavan) uygulandıktan **sonra** çarpılır, yani eski tavana (3) takılmadan tüm silahların recoil'ini artırır; son güvenlik **Sert tavan** (`TAC_recoil_hardCap`, 2-30, varsayılan 12). **Tabancalara dokunma** (`TAC_recoil_skipPistols`, açık): elde tabanca (el silahı) varken çarpan 1'dir; tabanca kalibreli SMG / PDW'ler normal uygulanır. Üst sınırlar yükseltildi: genel ölçek 5, tavan 20, kategori çarpanları 12. Önbellek anahtarı silah türünü de içerir (aynı mühimmatla tabanca <-> SMG geçişi doğru yeniden hesaplanır). Test göstergesi (`TAC_recoil_debug`) güçlendirmeyi ve tabancayı yazar. **Not:** gerçek motor tavanını bilmiyorum; `setUnitRecoilCoefficient` belgelerde üst sınır belirtmiyor, çok yüksek çarpanlarda nişan kontrolden çıkabilir; sert tavanı ona göre ayarla.
+
 ### Vurulma ekranı ve ölüm ekranı (0.42.0)
 
 İki ayrı özellik, hepsi **istemci ayarı** (CBA: "TAC - Gerçekçilik Paketi > İsabet etkileri" ve "Ölüm ve yaralı ekranı"):

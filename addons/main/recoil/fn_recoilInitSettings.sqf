@@ -37,7 +37,7 @@ private _refresh = {call TAC_fnc_recoilRefresh};
     "SLIDER",
     ["Genel ölçek", "Tüm kategori çarpanlarına uygulanan ek ölçek. 1 = olduğu gibi."],
     _category,
-    [0.1, 3, 1, 2],
+    [0.1, 5, 1, 2],
     true,
     _refresh
 ] call CBA_settings_fnc_init;
@@ -47,7 +47,37 @@ private _refresh = {call TAC_fnc_recoilRefresh};
     "SLIDER",
     ["Maksimum çarpan (tavan)", "Hiçbir silah bu çarpanı aşamaz. Silah ekrana/kameraya giriyorsa düşür."],
     _category,
-    [1, 8, 3, 2],
+    [1, 20, 3, 2],
+    true,
+    _refresh
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_recoil_boost",
+    "SLIDER",
+    ["Recoil güçlendirme (tavandan SONRA çarpan)", "Kategori çarpanı ve 'Maksimum çarpan' (tavan) uygulandıktan SONRA tüm silahların (tabanca hariç, aşağıdaki seçeneğe göre) çarpanı bu sayıyla çarpılır; yani tavana takılmadan recoil'i genel olarak artırır. 1 = değişmez. Üst sınır 'Sert tavan'dır."],
+    _category,
+    [0.5, 6, 1.8, 2],
+    true,
+    _refresh
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_recoil_hardCap",
+    "SLIDER",
+    ["Sert tavan (en yüksek toplam çarpan)", "Güçlendirmeden sonra bile hiçbir silah bu çarpanı aşamaz (kamera / nişan kontrolden çıkmasın diye son güvenlik). Yükseltince recoil daha da artabilir."],
+    _category,
+    [2, 30, 12, 1],
+    true,
+    _refresh
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_recoil_skipPistols",
+    "CHECKBOX",
+    ["Tabancalara dokunma", "Açıksa elde TABANCA (el silahı) varken recoil değişmez (çarpan 1). Tabanca kalibreli SMG / PDW'ler tabanca sayılmaz, normal uygulanır."],
+    _category,
+    true,
     true,
     _refresh
 ] call CBA_settings_fnc_init;
@@ -91,7 +121,7 @@ private _multipliers = [
         "SLIDER",
         [_title, "Bu kategorideki silahların mevcut recoil'i bu sayıyla çarpılır. 1 = değişmez."],
         _category,
-        [0.1, 6, _default, 2],
+        [0.1, 12, _default, 2],
         true,
         _refresh
     ] call CBA_settings_fnc_init;

@@ -33,9 +33,14 @@ if (_ammo isEqualTo "") then {
     };
 };
 
-// Aynı mühimmat zaten uygulandıysa çık (ayar değişince recoilRefresh önbelleği sıfırlar).
-if (_ammo isEqualTo (_unit getVariable ["TAC_recoil_ammo", "<yok>"])) exitWith {};
-_unit setVariable ["TAC_recoil_ammo", _ammo];
+// Elde tabanca (el silahi) mi? (tabanca kalibreli SMG / PDW tabanca sayilmaz)
+private _handgun = handgunWeapon _unit;
+private _isPistol = !(_handgun isEqualTo "") && {(currentWeapon _unit) isEqualTo _handgun};
+
+// Ayni muhimmat + ayni silah turu zaten uygulandiysa cik (ayar degisince recoilRefresh onbellegi sifirlar).
+private _key = format ["%1|%2", _ammo, _isPistol];
+if (_key isEqualTo (_unit getVariable ["TAC_recoil_ammo", "<yok>"])) exitWith {};
+_unit setVariable ["TAC_recoil_ammo", _key];
 
 private _category = 0;
 private _coef = 1;
@@ -48,8 +53,14 @@ if (TAC_recoil_enabled && {!(_ammo isEqualTo "")}) then {
 
         _coef = ((_multipliers select (_category - 1)) * TAC_recoil_scale);
         _coef = (_coef min TAC_recoil_maxCoef) max 0.1;
+
+        // Guclendirme: tavandan SONRA carpilir (tavana takilmaz), sert tavanla sinirlanir
+        _coef = ((_coef * TAC_recoil_boost) min TAC_recoil_hardCap) max 0.1;
     };
 };
+
+// Tabancalara dokunma (ayara gore)
+if (_isPistol && {TAC_recoil_skipPistols}) then {_coef = 1};
 
 if ((abs (_coef - (unitRecoilCoefficient _unit))) > 0.001) then {
     _unit setUnitRecoilCoefficient _coef;
@@ -59,10 +70,12 @@ if (TAC_recoil_debug) then {
     private _energy = [_ammo] call TAC_fnc_recoilGetEnergy;
 
     hintSilent parseText format [
-        "<t color='#ffcc00'>[TEST] Recoil</t><br/>Mühimmat: %1<br/>Enerji: %2 J<br/>Kategori: %3<br/>Çarpan: x%4",
+        "<t color='#ffcc00'>[TEST] Recoil</t><br/>Mühimmat: %1<br/>Enerji: %2 J<br/>Kategori: %3<br/>Çarpan: x%4 (güçlendirme x%5%6)",
         _ammo,
         round _energy,
         _category,
-        (round (_coef * 100)) / 100
+        (round (_coef * 100)) / 100,
+        TAC_recoil_boost,
+        ["", " | TABANCA: dokunulmadi"] select (_isPistol && {TAC_recoil_skipPistols})
     ];
 };
