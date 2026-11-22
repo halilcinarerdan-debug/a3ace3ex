@@ -20,11 +20,11 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
 ] call CBA_settings_fnc_init;
 
 [
-    "TAC_hit_mode",
+    "TAC_hit_detect",
     "LIST",
     ["Silah isabeti: algılama yöntemi", "Kol / el isabeti: kola isabet eden mermi silahı vurmuş sayılır. Silah nesnesi: mermi yolu elindeki silahın hacmine (namlu - dipçik doğrusu) çok yakın geçerse silah vurulmuş sayılır (silah mermiyi durdursa bile tetiklenir). İkisi birden."],
     _category,
-    [[0, 1, 2], ["Kol / el isabeti", "Silah nesnesine isabet (geometri)", "İkisi birden"], 2],
+    [[0, 1, 2], ["Kol / el isabeti", "Silah nesnesine isabet (geometri)", "İkisi birden"], 1],
     true
 ] call CBA_settings_fnc_init;
 
@@ -65,11 +65,11 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
 ] call CBA_settings_fnc_init;
 
 [
-    "TAC_hit_chance",
+    "TAC_hit_weaponChance",
     "SLIDER",
-    ["Silah isabeti: ihtimal (%)", "Kola isabet eden her mermide silahın vurulma ihtimali. Silah elde tutulurken geçerlidir."],
+    ["Silah isabeti: ihtimal (%)", "Silaha (ya da seçili yönteme göre kola) isabet eden her mermide silahın hasar görme ihtimali. 100 = silaha değen her mermi silahı bozar ve düşürür."],
     _category,
-    [0, 100, 35, 0],
+    [0, 100, 100, 0],
     true
 ] call CBA_settings_fnc_init;
 

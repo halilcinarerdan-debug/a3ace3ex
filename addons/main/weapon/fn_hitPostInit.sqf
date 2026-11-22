@@ -21,6 +21,22 @@
     _this call TAC_fnc_hitOnSuppressed;
 }] call CBA_fnc_addEventHandler;
 
+// Silah vuruldu (baska makinede izlenen mermiden): yerel birimde silahi hasarla ve dusur
+["TAC_hit_weapon", {
+    params ["_unit"];
+
+    if (!local _unit || {!alive _unit}) exitWith {};
+    if (time < (_unit getVariable ["TAC_hit_next", 0])) exitWith {};
+
+    private _weapon = currentWeapon _unit;
+
+    if (_weapon isEqualTo "" || {!(_weapon in [primaryWeapon _unit, handgunWeapon _unit])}) exitWith {};
+    if (([_weapon] call TAC_fnc_wpnCategory) isEqualTo []) exitWith {};
+
+    _unit setVariable ["TAC_hit_next", time + 3];
+    [_unit, _weapon] call TAC_fnc_hitDisable;
+}] call CBA_fnc_addEventHandler;
+
 // Mermi izleme: ProjectileCreated (silah nesnesine isabet; Suppressed mermi nesnesini vermese de calisir)
 addMissionEventHandler ["ProjectileCreated", {
     _this call TAC_fnc_hitProjectile;

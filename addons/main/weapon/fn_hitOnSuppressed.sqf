@@ -2,7 +2,7 @@
     Fonksiyon: TAC_fnc_hitOnSuppressed
     Çalışma yeri: İstemci (CBA yerel olayı "TAC_suppressed")
 
-    Silah nesnesine isabet testi, olay yolu (TAC_hit_mode 1 veya 2): mermi oyuncunun yanından geçerken (vanilla
+    Silah nesnesine isabet testi, olay yolu (TAC_hit_detect 1 veya 2): mermi oyuncunun yanından geçerken (vanilla
     "Suppressed"), mermi yolu (konum + hız vektörü doğrusu, +/- 3 m) ile elindeki silahın doğrusu arasındaki
     en yakın mesafe TAC_fnc_hitWeaponHit ile değerlendirilir. Mermi konumu / hızı yoksa test yapılmaz
     (ProjectileCreated tabanlı izleme, TAC_fnc_hitProjectile, ayrıca çalışır).
@@ -22,7 +22,7 @@ if (TAC_wpn_debug && {_unit isEqualTo ACE_player}) then {
 };
 
 if (!TAC_hit_enabled) exitWith {"atlandi: ozellik kapali" call _dbg};
-if (TAC_hit_mode == 0) exitWith {"atlandi: yontem 'kol / el isabeti' (geometri kapali)" call _dbg};
+if (TAC_hit_detect == 0) exitWith {"atlandi: yontem 'kol / el isabeti' (geometri kapali)" call _dbg};
 if (!TAC_hit_unusable && {!TAC_hit_drop}) exitWith {"atlandi: 'kullanilamaz' ve 'dussun' ikisi de kapali" call _dbg};
 if (!(_unit isEqualTo ACE_player) || {!alive _unit}) exitWith {};
 if (_pos isEqualTo [] || {_vel isEqualTo []}) exitWith {"atlandi: olayda mermi konumu / hizi yok (izleme yontemi devrede)" call _dbg};

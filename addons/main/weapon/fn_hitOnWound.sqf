@@ -5,7 +5,7 @@
     Oyuncuya mermi isabet edince:
       1) Göz kapanması (TAC_hit_blink): hasar >= asgari ise ekran kararır (TAC_fnc_hitBlink).
       2) Silah isabeti (TAC_hit_enabled): isabet KOL / EL ise ve elde birincil silah ya da tabanca varsa
-         TAC_hit_chance ihtimalle silah hasar görür ve elden düşer (TAC_fnc_hitDisable).
+         TAC_hit_weaponChance ihtimalle silah hasar görür ve elden düşer (TAC_fnc_hitDisable).
     Yalnızca mermi (simülasyon shotBullet) sayılır; patlama / düşme vb. etkilemez. Aynı isabetin birden çok
     yara kaydı için 0.25 sn kilit vardır.
 
@@ -58,14 +58,14 @@ if (TAC_hit_blink && {_total >= TAC_hit_blinkMinHit || {_damages isEqualType ""}
 };
 
 // 2) Silah isabeti
-if (!TAC_hit_enabled || {TAC_hit_mode == 1} || {!_arm} || {!TAC_hit_unusable && {!TAC_hit_drop}}) exitWith {};
+if (!TAC_hit_enabled || {TAC_hit_detect == 1} || {!_arm} || {!TAC_hit_unusable && {!TAC_hit_drop}}) exitWith {};
 if (time < (_unit getVariable ["TAC_hit_next", 0])) exitWith {};
 
 private _weapon = currentWeapon _unit;
 
 if (_weapon isEqualTo "" || {!(_weapon in [primaryWeapon _unit, handgunWeapon _unit])}) exitWith {};
 if (([_weapon] call TAC_fnc_wpnCategory) isEqualTo []) exitWith {};
-if ((random 100) >= TAC_hit_chance) exitWith {};
+if ((random 100) >= TAC_hit_weaponChance) exitWith {};
 
 _unit setVariable ["TAC_hit_next", time + 3];
 [_unit, _weapon] call TAC_fnc_hitDisable;

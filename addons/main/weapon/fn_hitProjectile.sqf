@@ -1,13 +1,15 @@
 /*
     Fonksiyon: TAC_fnc_hitProjectile
-    Çalışma yeri: İstemci (mission olayı "ProjectileCreated": yalnızca bu makinede yerel mermiler)
+    Çalışma yeri: İstemci (mission olayı "ProjectileCreated": yalnızca bu makinede YEREL mermiler = bu makinedeki atıcıların mermileri)
 
-    Silah nesnesine isabet testi, İZLEME yolu (TAC_hit_mode 1 veya 2). "Suppressed" olayı mermi nesnesini vermese ya da
-    mermi silahta durup silinse bile çalışır: oyuncuya doğru gelen (yolu göğsünden 2 m içinden geçen, 2 sn içinde ulaşan)
-    mermiler izlenir (TAC_fnc_hitTrackTick: her karede önceki ve şimdiki konum arasındaki "süpürme" parçası silah
-    doğrusuyla test edilir; mermi silinirse son hız yönünde bir kare daha). Tek başına / sunucuda (yapay zekâ mermileri
-    sunucuda yerel) çalışır; başka oyuncunun merminde yalnızca "Suppressed" yolu vardır.
-    Filtre ucuzdur: ilk çağrıda çoğu mermi elenir; izleme döngüsü yalnızca izlenen mermi varken çalışır.
+    Silah nesnesine isabet testi, İZLEME yolu (TAC_hit_detect 1 veya 2). Her yerel mermi için TÜM oyunculara (kendimiz ve
+    diğer oyuncular; Zeus ile kontrol edilen birim dahil) bakılır: yolu o oyuncunun göğsünden 2 m içinden geçen, 2 sn
+    içinde ulaşan, elinde birincil silah / tabanca olan hedefler için mermi izlenir (TAC_fnc_hitTrackTick: her karede
+    önceki-şimdiki konum "süpürmesi" hedefin silah doğrusuyla test edilir; mermi silinirse son hız yönünde bir kare daha).
+    Böylece ARKADAŞIN ateş edince de çalışır: mermi atıcının makinesinde yerel olduğundan test atıcının makinesinde yapılır;
+    isabet olursa silah sahibine olay gider (TAC_hit_weapon: silahı hasarla + düşür). Yapay zekâ mermileri (sunucuda yerel)
+    sunucudaki mod ile hedef oyunculara aynı yolla iletilir (hedef, oyuncunun kendi makinesi).
+    Filtre ucuzdur: çoğu mermi ilk çağrıda elenir; izleme döngüsü yalnızca izlenen mermi varken çalışır.
 
     Parametreler (olay): [mermi]
     Dönüş: yok
@@ -15,43 +17,50 @@
 
 params ["_projectile"];
 
-if (!hasInterface || {!TAC_hit_enabled} || {TAC_hit_mode == 0} || {!TAC_hit_unusable && {!TAC_hit_drop}}) exitWith {};
-
-private _unit = ACE_player;
-
-if (isNull _unit || {!alive _unit}) exitWith {};
-
-private _weapon = currentWeapon _unit;
-
-if (_weapon isEqualTo "" || {!(_weapon in [primaryWeapon _unit, handgunWeapon _unit])}) exitWith {};
+if (!hasInterface && {!isServer}) exitWith {};
+if (!TAC_hit_enabled || {TAC_hit_detect == 0} || {!TAC_hit_unusable && {!TAC_hit_drop}}) exitWith {};
 
 private _v = velocity _projectile;
 private _vv = _v vectorDotProduct _v;
 
 if (_vv < 2500) exitWith {};   // < 50 m/s
 
-private _p = getPosASL _projectile;
-
-if ((_p distance _unit) > 400) exitWith {};
-
-// Kendi mermimizi izleme
-if (((getShotParents _projectile) param [1, objNull]) isEqualTo _unit) exitWith {};
-
-// Yol, gogsumuzden 2 m icinden gecmeli ve en gec 2 sn icinde ulasmali
-private _chest = (getPosASL _unit) vectorAdd [0, 0, 1.1];
-private _t = (((_chest vectorDiff _p) vectorDotProduct _v) / _vv);
-
-if (_t < 0 || {_t > 2}) exitWith {};
-if ((vectorMagnitude ((_p vectorAdd (_v vectorMultiply _t)) vectorDiff _chest)) > 2) exitWith {};
-
 if !((toLower (getText (configFile >> "CfgAmmo" >> typeOf _projectile >> "simulation"))) isEqualTo "shotbullet") exitWith {};
 
+private _p = getPosASL _projectile;
+private _shooter = (getShotParents _projectile) param [1, objNull];
+
+// Hedefler: tum oyuncular (+ kontrol ettigimiz birim: Zeus remote control)
+private _targets = +allPlayers;
+if (hasInterface && {!isNull ACE_player}) then {_targets pushBackUnique ACE_player};
+
 private _list = missionNamespace getVariable ["TAC_hit_tracked", []];
-_list pushBack [_projectile, _p, _v, time];
+private _added = 0;
+
+{
+    private _t = _x;
+
+    if (alive _t && {!(_t isEqualTo _shooter)} && {(_p distance _t) < 400}) then {
+        private _w = currentWeapon _t;
+
+        if (!(_w isEqualTo "") && {_w in [primaryWeapon _t, handgunWeapon _t]}) then {
+            private _chest = (getPosASL _t) vectorAdd [0, 0, 1.1];
+            private _time = (((_chest vectorDiff _p) vectorDotProduct _v) / _vv);
+
+            if (_time >= 0 && {_time <= 2} && {(vectorMagnitude ((_p vectorAdd (_v vectorMultiply _time)) vectorDiff _chest)) <= 2}) then {
+                _list pushBack [_projectile, _p, _v, time, _t];
+                _added = _added + 1;
+            };
+        };
+    };
+} forEach _targets;
+
+if (_added == 0) exitWith {};
+
 missionNamespace setVariable ["TAC_hit_tracked", _list];
 
 if (TAC_wpn_debug) then {
-    systemChat format ["[TAC isabet] izlenen mermi eklendi | uzaklik %1 m | hiz %2 m/s", round (_p distance _unit), round (sqrt _vv)];
+    systemChat format ["[TAC isabet] izlenen mermi eklendi | uzaklik %1 m | hiz %2 m/s | hedef sayisi %3 | atici %4", round (_p distance ACE_player), round (sqrt _vv), _added, if (isNull _shooter) then {"?"} else {name _shooter}];
 };
 
 if ((missionNamespace getVariable ["TAC_hit_pfh", -1]) < 0) then {
