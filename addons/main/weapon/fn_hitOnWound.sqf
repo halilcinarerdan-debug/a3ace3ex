@@ -67,8 +67,7 @@ if (time < (_unit getVariable ["TAC_hit_next", 0])) exitWith {};
 
 private _weapon = currentWeapon _unit;
 
-if (_weapon isEqualTo "" || {!(_weapon in [primaryWeapon _unit, handgunWeapon _unit])}) exitWith {};
-if (([_weapon] call TAC_fnc_wpnCategory) isEqualTo []) exitWith {};
+if !([_unit, _weapon] call TAC_fnc_hitEligible) exitWith {};
 if ((random 100) >= TAC_hit_weaponChance) exitWith {};
 
 _unit setVariable ["TAC_hit_next", time + 3];

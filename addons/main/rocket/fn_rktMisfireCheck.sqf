@@ -36,6 +36,12 @@ if (
 
 private _state = [_unit, _weapon] call TAC_fnc_rktGetState;
 
+// Mermi isabetiyle hasar gormus firlatici atesleyemez (kalici; TAC_fnc_hitDisable)
+if (TAC_hit_enabled && {TAC_hit_unusable} && {_state param [11, false]}) exitWith {
+    missionNamespace setVariable ["TAC_rkt_blockPrep", true];
+    true
+};
+
 // Hazirlanmamis firlatici atesleyemez (tetik sadece tik sesi verir, zar atilmaz, bekleme baslamaz).
 missionNamespace setVariable ["TAC_rkt_blockPrep", false];
 

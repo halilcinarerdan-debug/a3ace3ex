@@ -44,7 +44,7 @@ private _added = 0;
     if (alive _t && {!(_t isEqualTo _shooter)} && {(_p distance _t) < 400}) then {
         private _w = currentWeapon _t;
 
-        if (!(_w isEqualTo "") && {_w in [primaryWeapon _t, handgunWeapon _t]}) then {
+        if ([_t, _w] call TAC_fnc_hitEligible) then {
             private _chest = (getPosASL _t) vectorAdd [0, 0, 1.1];
             private _time = (((_chest vectorDiff _p) vectorDotProduct _v) / _vv);
 

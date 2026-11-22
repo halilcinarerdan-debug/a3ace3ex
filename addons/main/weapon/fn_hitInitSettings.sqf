@@ -38,6 +38,15 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_hit_launchers",
+    "CHECKBOX",
+    ["Silah isabeti: roketatar da vurulsun", "Açıksa elinde roketatar varken silah nesnesine (tüp doğrusuna) isabet eden mermi roketatarı da hasarlar (kullanılamaz, tetik tık verir) ve elden düşürür. Hasar kalıcıdır (yerde / kutuda da); roketatar için onarım yoktur (yeni bir tane gerekir)."],
+    _category,
+    true,
+    true
+] call CBA_settings_fnc_init;
+
+[
     "TAC_hit_zone",
     "LIST",
     ["Silah isabeti: hangi bölge", "Kol / el isabeti yöntemi için: silahın vurulmasına hangi vücut bölgelerine isabet yol açar: kol + el; kol + el + gövde; tüm vücut; yalnızca el (kol hariç: vanilla hasar modelinde eller bölgesi; ACE tıbbında el ayrı bölge olmadığı için kol sayılır). Silah nesnesi (geometri) yöntemini etkilemez."],
