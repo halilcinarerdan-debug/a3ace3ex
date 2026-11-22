@@ -57,7 +57,7 @@ private _refresh = {call TAC_fnc_recoilRefresh};
     "SLIDER",
     ["Recoil güçlendirme (tavandan SONRA çarpan)", "Kategori çarpanı ve 'Maksimum çarpan' (tavan) uygulandıktan SONRA tüm silahların (tabanca hariç, aşağıdaki seçeneğe göre) çarpanı bu sayıyla çarpılır; yani tavana takılmadan recoil'i genel olarak artırır. 1 = değişmez. Üst sınır 'Sert tavan'dır."],
     _category,
-    [0.5, 6, 1.8, 2],
+    [0.5, 6, 1.5, 2],
     true,
     _refresh
 ] call CBA_settings_fnc_init;
@@ -65,9 +65,9 @@ private _refresh = {call TAC_fnc_recoilRefresh};
 [
     "TAC_recoil_hardCap",
     "SLIDER",
-    ["Sert tavan (en yüksek toplam çarpan)", "Güçlendirmeden sonra bile hiçbir silah bu çarpanı aşamaz (kamera / nişan kontrolden çıkmasın diye son güvenlik). Yükseltince recoil daha da artabilir."],
+    ["Sert tavan (en yüksek toplam çarpan)", "Güçlendirmeden sonra bile hiçbir silah bu çarpanı aşamaz. Çok yüksek çarpanlarda silah / nişan "kilitlenebilir" (kamera yukarıda takılır, kontrol zorlaşır); varsayılan 4 güvenlidir. Kilitlenme görürsen düşür."],
     _category,
-    [2, 30, 12, 1],
+    [1, 30, 4, 1],
     true,
     _refresh
 ] call CBA_settings_fnc_init;
