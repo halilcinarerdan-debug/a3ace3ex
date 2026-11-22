@@ -67,6 +67,10 @@ if (TAC_recoil_enabled && {!(_ammo isEqualTo "")}) then {
 // Tabancalara dokunma (ayara gore)
 if (_isPistol && {TAC_recoil_skipPistols}) then {_coef = 1};
 
+// Atis sarsintisi (TAC_fnc_recoilKick) icin son kategori ve tabanca bilgisi
+_unit setVariable ["TAC_recoil_cat", _category];
+_unit setVariable ["TAC_recoil_isPistol", _isPistol];
+
 if ((abs (_coef - (unitRecoilCoefficient _unit))) > 0.001) then {
     _unit setUnitRecoilCoefficient _coef;
 };

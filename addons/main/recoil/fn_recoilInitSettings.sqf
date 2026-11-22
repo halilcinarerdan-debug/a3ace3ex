@@ -57,7 +57,7 @@ private _refresh = {call TAC_fnc_recoilRefresh};
     "SLIDER",
     ["Recoil güçlendirme (tavandan SONRA çarpan)", "Kategori çarpanı ve 'Maksimum çarpan' (tavan) uygulandıktan SONRA tüm silahların (tabanca hariç, aşağıdaki seçeneğe göre) çarpanı bu sayıyla çarpılır; yani tavana takılmadan recoil'i genel olarak artırır. 1 = değişmez. Üst sınır 'Sert tavan'dır."],
     _category,
-    [0.5, 6, 1.5, 2],
+    [0.5, 30, 1.5, 2],
     true,
     _refresh
 ] call CBA_settings_fnc_init;
@@ -67,17 +67,17 @@ private _refresh = {call TAC_fnc_recoilRefresh};
     "SLIDER",
     ["Sert tavan (en yüksek toplam çarpan)", "Güçlendirmeden sonra bile hiçbir silah bu çarpanı aşamaz. Çok yüksek çarpanlarda silah / nişan "kilitlenebilir" (kamera yukarıda takılır, kontrol zorlaşır); varsayılan 4 güvenlidir. Kilitlenme görürsen düşür."],
     _category,
-    [1, 30, 4, 1],
+    [1, 100, 4, 1],
     true,
     _refresh
 ] call CBA_settings_fnc_init;
 
 // Guclendirmenin hangi kategorilere uygulanacagi (varsayilan: yalniz 5.56 ve 7.62 ailesi)
 private _boostCats = [
-    ["TAC_recoil_boostC1", "Güçlendirme: Tabanca kalibreli SMG / PDW (kategori 1)", false],
-    ["TAC_recoil_boostC2", "Güçlendirme: Hafif 5.56 / 5.45 (kategori 2)", true],
-    ["TAC_recoil_boostC3", "Güçlendirme: Orta 7.62x39 / 6.5 (kategori 3)", true],
-    ["TAC_recoil_boostC4", "Güçlendirme: Ağır 7.62x51 / 7.62x54R (kategori 4)", true],
+    ["TAC_recoil_boostC1", "Güçlendirme: Tabanca kalibreli SMG / PDW (kategori 1)", true],
+    ["TAC_recoil_boostC2", "Güçlendirme: Hafif 5.56 / 5.45, AR (kategori 2)", true],
+    ["TAC_recoil_boostC3", "Güçlendirme: Orta 7.62x39 / 6.5, AK (kategori 3)", true],
+    ["TAC_recoil_boostC4", "Güçlendirme: Ağır 7.62x51 / 7.62x54R (kategori 4)", false],
     ["TAC_recoil_boostC5", "Güçlendirme: Aşırı .338 / .50 (kategori 5, yüksek kalibre)", false]
 ];
 
@@ -94,6 +94,44 @@ private _boostCats = [
         _refresh
     ] call CBA_settings_fnc_init;
 } forEach _boostCats;
+
+// Atis sarsintisi: silahin kendi recoil'i cok dusuk / sifir olsa bile (baska mod recoil'i kisiyorsa carpan 0 x N = 0 kalir)
+// her atista kamera sarsilir; guclendirme kategori kutulariyla ayni kategorilere uygulanir
+[
+    "TAC_recoil_kick",
+    "CHECKBOX",
+    ["Atış sarsıntısı (kamera)", "Açıksa güçlendirme kategorilerindeki silahlarla (tabanca ve yüksek kalibre varsayılan olarak hariç) her atışta kamera sarsılır. Silahın kendi recoil'i çok düşük ya da sıfırsa da çalışır (recoil çarpanı 0'ı çarpınca 0 kalır). İstemci ayarı."],
+    _category,
+    true,
+    false
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_recoil_kickPower",
+    "SLIDER",
+    ["Atış sarsıntısı: güç", "Kamera sarsıntısının gücü (kategoriye göre x0.7 - x2 ölçeklenir; SMG 0.7, AR 1, AK 1.3, ağır 1.6, aşırı 2). Üst sınır yoktur: yüksek değerlerde nişan almak zorlaşır. İstemci ayarı."],
+    _category,
+    [0, 60, 5, 1],
+    false
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_recoil_kickTime",
+    "SLIDER",
+    ["Atış sarsıntısı: süre (sn)", "Her atışın sarsıntısının süresi. Seri atışta üst üste biner. İstemci ayarı."],
+    _category,
+    [0.05, 2, 0.4, 2],
+    false
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_recoil_kickFreq",
+    "SLIDER",
+    ["Atış sarsıntısı: sıklık", "Sarsıntı frekansı (düşük = yavaş, ağır sallanma; yüksek = hızlı titreme). İstemci ayarı."],
+    _category,
+    [1, 80, 22, 0],
+    false
+] call CBA_settings_fnc_init;
 
 [
     "TAC_recoil_skipPistols",

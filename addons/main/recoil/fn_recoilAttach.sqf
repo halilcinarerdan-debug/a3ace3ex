@@ -33,6 +33,7 @@ if ((_newUnit getVariable ["TAC_recoil_ehFired", -1]) < 0) then {
     // Fired: [unit, weapon, muzzle, mode, ammo, ...] -> o anki mühimmatla güncelle
     private _fired = _newUnit addEventHandler ["Fired", {
         [_this select 0, _this select 4] call TAC_fnc_recoilUpdate;
+        [_this select 0] call TAC_fnc_recoilKick;
     }];
 
     // Reloaded: [unit, weapon, muzzle, newMagazine, oldMagazine]

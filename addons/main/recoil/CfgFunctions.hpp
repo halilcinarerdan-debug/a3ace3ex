@@ -12,6 +12,7 @@ class recoil
 
     // Uygulama
     class recoilUpdate {};
+    class recoilKick {};
     class recoilRefresh {};
     class recoilAttach {};
 
