@@ -702,6 +702,19 @@ GM (`gm_`) ve CSLA taramaları bekleniyor.
 
 **Şok dalgası ve optik (0.36.7):** efekt sürerken optiğe geçince / çıkınca bulanıklık kayboluyordu (oyun görüş değişiminde post-process'i sıfırlayabiliyor). Artık görüş, optik, silah ve taret değişimlerinde (CBA oyuncu olayları) efekt SÜRÜYORSA bulanıklık yeniden açılır ve son değerine ayarlanır; geçişten 0.15 ve 0.5 sn sonra bir kez daha uygulanır. Döngü yoktur; efekt sürmüyorsa hiçbir şey yapmaz. `TAC_crack_debug` açıkken "blur yeniden uygulandi" satırı çıkar. **0.36.8:** LPVO dürbünlerinde bulanıklık hiç geri gelmiyordu (dürbün modu efekti silmiş olabilir): artık efekt sürerken optik değişimlerinde bulanıklık efekti SİLİNİP yeniden yaratılır, efekt sürmüyorsa "kirli" işaretlenir ve sonraki şok dalgasında yeniden yaratılır. Düzeltme kaynağı **tahmindir**: sorun oyunun optik çizim aşamasında post-process'i hiç uygulamamasıysa (ör. PiP dürbünler) bulanıklık yine görünmeyebilir.
 
+### İsabet etkileri (0.37.0)
+
+CBA kategorisi **TAC - Gerçekçilik Paketi > İsabet etkileri**. İki bağımsız özellik, hepsi CBA'dan ayarlanır:
+
+**1) Silah isabeti** (`TAC_hit_enabled`, açık): Arma'da silah modeline isabet algılanamaz; bunun yakın karşılığı **kola / ele isabet**tir (`TAC_hit_zone`: yalnızca kol-el | kol + gövde | tüm vücut). Elde birincil silah ya da tabanca varken isabet eden mermi `TAC_hit_chance` (%35) ihtimalle silahı vurur:
+- `TAC_hit_unusable` (açık): silah hasarlanır; tetik yalnızca tık verir. Hasar silahın bakım durumunda (indeks 10) tutulur: yere düşünce, kutuya girince, başkası alınca da hasarlı kalır. Onarım: silahçı "Silah Bakımı > Parça değiştir" (Silah Yedek Parça Seti gerekir). "Silahı incele" kartı "HASARLI" yazar.
+- `TAC_hit_drop` (açık): silah nişangah ve şarjörüyle yere düşer. İkisi de bağımsız kapatılabilir.
+- Yalnızca mermi (shotBullet) sayılır; patlama / düşme etkilemez. ACE tıbbı varsa `ace_medical_woundReceived` olayı, yoksa vanilla `HandleDamage` kullanılır (hasarı değiştirmez).
+
+**2) Göz kapanması** (`TAC_hit_blink`, açık, **istemci ayarı**): vücuda mermi isabet edince ekran çok hızlı kararır, tepede kısa tutar ve yavaşça açılır. `TAC_hit_blinkPower` (en koyu %; 65), `TAC_hit_blinkTime` (açılma süresi sn; 1.2), `TAC_hit_blinkHold` (tepe tutma sn; 0.12), `TAC_hit_blinkMinDamage` (sıyrıkları eleme; 0.05). Şiddet ve süre isabet eden hasarla ölçeklenir. Kontrol display 46'da bir kez kurulur; döngü yoktur.
+
+**Bilinmeyenler / tahmin:** ACE olayının argüman sırası (`[unit, hasarlar, atıcı, mühimmat]`) sürüme göre değişebilir; olay gelmezse kararma ve silah isabeti çalışmaz. Bölge adları ACE'nin `leftarm / rightarm / body` adlarıdır. `GroundWeaponHolder` + `DropWeapon` eylemi oyunda denenmedi.
+
 Beğenmediğin bir değeri CBA'daki `MRBS tablosu` ayarına `classname=MRBS` yazarak (ör. `rhs_weap_m4a1=2500, CUP_arifle_AK74=4000`) ezebilirsin; Silahı incele kartında silahçı, silahın profilini (etiket, MRBS, kalite) görür.
 
 **Kaynaklar:**

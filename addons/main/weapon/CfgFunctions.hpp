@@ -6,6 +6,15 @@ class weapon
     class wpnPostInit {};
     class wpnAttach {};
 
+    // Isabet etkileri
+    class hitInitSettings {};
+    class hitPostInit {};
+    class hitOnWound {};
+    class hitDisable {};
+    class hitBlink {};
+    class wpnBrokenCheck {};
+    class wpnBrokenDo {};
+
     // Durum ve hesap
     class wpnCategory {};
     class wpnSearchKey {};

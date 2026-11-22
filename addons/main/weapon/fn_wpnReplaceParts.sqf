@@ -29,5 +29,9 @@ private _cat = [_weapon] call TAC_fnc_wpnCategory;
     private _state = [_unit, _weapon] call TAC_fnc_wpnGetState;
     _state set [2, 0];
 
-    [format ["%1: parçalar değiştirildi.", getText (configFile >> "CfgWeapons" >> _weapon >> "displayName")]] call ace_common_fnc_displayTextStructured;
+    // Mermi isabetiyle hasar gormus silah da onarilir
+    private _wasBroken = _state param [10, false];
+    _state set [10, false];
+
+    [format [["%1: parçalar değiştirildi.", "%1: hasar onarıldı, parçalar değiştirildi."] select _wasBroken, getText (configFile >> "CfgWeapons" >> _weapon >> "displayName")]] call ace_common_fnc_displayTextStructured;
 }, [_weapon], "parts"] call TAC_fnc_wpnRun;

@@ -72,6 +72,10 @@ private _lines = [
     format ["Son arıza: %1", _lastText]
 ];
 
+if (_state param [10, false]) then {
+    _lines pushBack "<t color='#ff6a5a'>HASARLI: isabet aldı, kullanılamaz (silahçı parça değişimi gerekir)</t>";
+};
+
 // MG: besleme kapagi
 if (TAC_mg_feedStep && {[_weapon] call TAC_fnc_wpnIsBeltFed}) then {
     _lines pushBack format ["Besleme: %1", ["kayış yerleştirilmedi / kapak açık", "hazır"] select (_state param [7, true])];

@@ -25,6 +25,12 @@ private _events = [
 ];
 
 if (!isNull _oldUnit) then {
+    private _actionId = _oldUnit getVariable ["TAC_wpn_actionId", -1];
+    if (_actionId != -1) then {
+        [_oldUnit, "DefaultAction", _actionId] call ace_common_fnc_removeActionEventHandler;
+    };
+    _oldUnit setVariable ["TAC_wpn_actionId", -1];
+
     {
         _x params ["_event", "_var"];
         private _id = _oldUnit getVariable [_var, -1];
@@ -54,3 +60,11 @@ _newUnit setVariable ["TAC_wpn_ehTake", _newUnit addEventHandler ["Take", {
 _newUnit setVariable ["TAC_wpn_ehReloaded", _newUnit addEventHandler ["Reloaded", {
     _this call TAC_fnc_wpnOnReloaded;
 }]];
+
+// Hasarli silahta (mermi isabeti) tetik yalnizca tik verir (ACE DefaultAction: rocket / ACE ariza sistemiyle ayni mekanizma)
+_newUnit setVariable ["TAC_wpn_actionId", [
+    _newUnit,
+    "DefaultAction",
+    {_this call TAC_fnc_wpnBrokenCheck},
+    {_this call TAC_fnc_wpnBrokenDo}
+] call ace_common_fnc_addActionEventHandler];

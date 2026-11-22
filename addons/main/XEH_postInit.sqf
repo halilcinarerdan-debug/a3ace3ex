@@ -49,3 +49,6 @@ call TAC_fnc_assistPostInit;
 
 // 11. Sabit silah / taret
 call TAC_fnc_trtPostInit;
+
+// 12. Isabet etkileri
+call TAC_fnc_hitPostInit;
