@@ -4,8 +4,8 @@
 
     Ekranı ve sesi karartır. ANI KARARMA açıksa (TAC_dth_instant): ölümcül isabet anında ekran TAM siyah olur ve sesler kesilir
     (TAC_dth_instantTime sn, varsayılan 0.05), neden "death" ise TAC_dth_deathHold, "incap" (revive'de yere düşme) ise
-    TAC_dth_incapHold sn tam karanlıkta kalır, sonra TAC_dth_fadeIn sürede ölüm / yaralı ekranına (TAC_dth_dark %,
-    TAC_dth_muffle %) yumuşakça geçer. Kapalıysa doğrudan TAC_dth_fadeIn sürede o seviyeye gelir.
+    TAC_dth_incapHold sn tam karanlıkta kalır, sonra TAC_dth_fadeIn sürede ölüm / yaralı ekranına (ölümde TAC_dth_dark %,
+    yere düşmede TAC_dth_incapDark %, varsayılan 100 = simsiyah; ses: TAC_dth_muffle %) yumuşakça geçer. Kapalıysa doğrudan TAC_dth_fadeIn sürede o seviyeye gelir.
     Bekleme zamanlayıcısı jeton (TAC_dth_token) taşır: efekt arada söndürülürse (revive, yeniden doğma) hiçbir şey yapmaz.
     Karartma kontrolü display 46'da bir kez kurulur ve kalıcıdır. Döngü yoktur.
 
@@ -46,7 +46,7 @@ private _setSound = {
     };
 };
 
-private _finalAlpha = TAC_dth_dark / 100;
+private _finalAlpha = (if (_reason isEqualTo "incap") then {TAC_dth_incapDark} else {TAC_dth_dark}) / 100;
 private _finalSound = (1 - (TAC_dth_muffle / 100)) max 0;
 
 if (!TAC_dth_instant) exitWith {

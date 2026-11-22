@@ -112,9 +112,18 @@ private _category = ["TAC - Gerçekçilik Paketi", "Ölüm ve yaralı ekranı"];
 [
     "TAC_dth_dark",
     "SLIDER",
-    ["Kararma (%)", "Ani kararmanın ardından ölüm / yaralı ekranında ekranın ne kadar karardığı (100 = tam siyah kalır). İstemci ayarı."],
+    ["Ölünce: kararma (%)", "Ani kararmanın ve bekleme süresinin ardından ÖLÜM ekranında ekranın ne kadar karardığı (100 = simsiyah kalır). Yere düşünce (revive) için ayrı ayar vardır. İstemci ayarı."],
     _category,
     [0, 100, 55, 0],
+    false
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_dth_incapDark",
+    "SLIDER",
+    ["Yere düşünce (revive): kararma (%)", "Revive'de yerdeyken ekranın ne kadar karardığı (100 = simsiyah; kaldırılana ya da öldürülene kadar böyle kalır, kalkınca yumuşakça söner). Ani kararma açıksa önce tam siyah olur, bekleme süresinden sonra bu seviyeye geçer. İstemci ayarı."],
+    _category,
+    [0, 100, 100, 0],
     false
 ] call CBA_settings_fnc_init;
 
