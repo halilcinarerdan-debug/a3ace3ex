@@ -33,6 +33,7 @@ private _shooter = (getShotParents _projectile) param [1, objNull];
 // Hedefler: tum oyuncular (+ kontrol ettigimiz birim: Zeus remote control)
 private _targets = +allPlayers;
 if (hasInterface && {!isNull ACE_player}) then {_targets pushBackUnique ACE_player};
+{if (!isNull _x) then {_targets pushBackUnique _x}} forEach (missionNamespace getVariable ["TAC_hit_ctlList", []]);
 
 private _list = missionNamespace getVariable ["TAC_hit_tracked", []];
 private _added = 0;
@@ -59,7 +60,7 @@ if (_added == 0) exitWith {};
 
 missionNamespace setVariable ["TAC_hit_tracked", _list];
 
-if (TAC_wpn_debug) then {
+if (TAC_wpn_debug && {hasInterface}) then {
     systemChat format ["[TAC isabet] izlenen mermi eklendi | uzaklik %1 m | hiz %2 m/s | hedef sayisi %3 | atici %4", round (_p distance ACE_player), round (sqrt _vv), _added, if (isNull _shooter) then {"?"} else {name _shooter}];
 };
 

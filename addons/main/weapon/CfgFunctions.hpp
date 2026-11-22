@@ -8,6 +8,7 @@ class weapon
 
     // Isabet etkileri
     class hitInitSettings {};
+    class hitInit {};
     class hitPostInit {};
     class hitOnWound {};
     class hitOnSuppressed {};

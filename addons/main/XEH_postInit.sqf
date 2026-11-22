@@ -17,6 +17,9 @@ call TAC_fnc_assistInit;
 // 11. Sabit silah / taret: mühimmat boşaltma olayı (araç sahibinde)
 call TAC_fnc_trtInit;
 
+// Isabet izleme: sunucuda da gerekir (yapay zekâ mermileri sunucuda yerel)
+call TAC_fnc_hitInit;
+
 // Her şey oyuncu arayüzüyle ilgili: sunucuda / headless client'ta yapacak iş yok.
 if (!hasInterface) exitWith {};
 

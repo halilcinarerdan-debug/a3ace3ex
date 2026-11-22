@@ -37,14 +37,15 @@
     [_unit, _weapon] call TAC_fnc_hitDisable;
 }] call CBA_fnc_addEventHandler;
 
-// Mermi izleme: ProjectileCreated (silah nesnesine isabet; Suppressed mermi nesnesini vermese de calisir)
-addMissionEventHandler ["ProjectileCreated", {
-    _this call TAC_fnc_hitProjectile;
-}];
+// (Mermi izleme: ProjectileCreated ve Zeus kontrol listesi TAC_fnc_hitInit icinde, tum makinelerde)
 
 // ACE tibbi yoksa vanilla dinleyici (oyuncu birimi degisince yeniden baglanir)
 ["unit", {
     params ["_newUnit", "_oldUnit"];
+
+    // Kontrol ettigimiz birimi herkese bildir (Zeus remote control: sunucudaki mermi izleme bu birimi de hedef alsin)
+    if (!isNull _oldUnit) then {["TAC_hit_ctl", [_oldUnit, false]] call CBA_fnc_globalEvent};
+    if (!isNull _newUnit) then {["TAC_hit_ctl", [_newUnit, true]] call CBA_fnc_globalEvent};
 
     if (!isNull _oldUnit) then {
         private _id = _oldUnit getVariable ["TAC_hit_ehDamage", -1];
