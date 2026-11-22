@@ -87,7 +87,16 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
     "SLIDER",
     ["Ekran kararması: şiddet (%)", "Tam şiddette ekranın ne kadarı kararır (%100 = tam siyah). Gerçek kararma isabet eden hasara göre ölçeklenir. İstemci ayarı."],
     _category,
-    [5, 100, 65, 0],
+    [5, 100, 100, 0],
+    false
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_hit_blinkScaleDamage",
+    "CHECKBOX",
+    ["Ekran kararması: hasara göre ölçeklensin", "Kapalıysa (varsayılan) her mermi isabetinde ekran ayarlanan şiddette (%100 = tam siyah) ve sürede kararır. Açıksa küçük hasarlar daha hafif ve kısa, büyük hasarlar tam kararma verir. İstemci ayarı."],
+    _category,
+    false,
     false
 ] call CBA_settings_fnc_init;
 

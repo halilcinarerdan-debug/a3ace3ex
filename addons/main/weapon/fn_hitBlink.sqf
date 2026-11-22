@@ -3,8 +3,8 @@
     Çalışma yeri: İstemci
 
     Mermi yenince göz kapanması (sesler de kesilir; kararma açılırken fade-in ile geri gelir): ekran çok hızlı kararır (0.06 sn), tepe noktasında kısa tutar ve yavaşça
-    açılır. Şiddet (TAC_hit_blinkPower) isabet eden hasarla ölçeklenir (hasar 0.5 ve üzeri = tam şiddet;
-    en az %30); süre (TAC_hit_blinkTime x TAC_hit_blinkScale çarpanı) hasarla ölçeklenir (en az %60); tepede tutma süresi de aynı çarpanla uzar. Siyah kontrol display 46'da bir kez
+    açılır. Şiddet (TAC_hit_blinkPower) varsayılan olarak her isabette TAM uygulanır; TAC_hit_blinkScaleDamage açıksa
+    isabet eden hasarla ölçeklenir (hasar 0.5 ve üzeri = tam şiddet; en az %30); süre (TAC_hit_blinkTime x TAC_hit_blinkScale çarpanı) hasarla ölçeklenir (en az %60); tepede tutma süresi de aynı çarpanla uzar. Siyah kontrol display 46'da bir kez
     kurulur ve kalıcıdır. Arka arkaya isabetlerde en kuvvetli etki geçerli kalır; döngü yoktur.
 
     Parametreler:
@@ -31,7 +31,8 @@ if (isNull _ctrl) then {
     uiNamespace setVariable ["TAC_hit_blinkCtrl", _ctrl];
 };
 
-private _k = if (_damage <= 0) then {0.6} else {((_damage / 0.5) max 0.3) min 1};
+// Hasara gore olcekleme kapaliysa her isabette tam siddet / tam sure (k = 1)
+private _k = if (!TAC_hit_blinkScaleDamage) then {1} else {if (_damage <= 0) then {0.6} else {((_damage / 0.5) max 0.3) min 1}};
 private _alpha = (TAC_hit_blinkPower / 100) * _k;
 private _time = TAC_hit_blinkTime * TAC_hit_blinkScale * (_k max 0.6);
 
