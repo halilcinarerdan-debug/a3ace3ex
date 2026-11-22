@@ -119,6 +119,24 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_hit_blinkMute",
+    "CHECKBOX",
+    ["Ekran kararması: sesler kesilsin", "Açıksa kararma boyunca sesler kesilir ve kararma açılırken yumuşakça (fade-in) geri gelir. ACE'nin kulak çınlaması / koruma sistemiyle uyumludur (en düşük ses ayarı geçerli). İstemci ayarı."],
+    _category,
+    true,
+    false
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_hit_blinkMuteLevel",
+    "SLIDER",
+    ["Ekran kararması: ses kesilme oranı (%)", "100 = sesler tamamen kesilir. Düşük değer sesleri yalnızca kısar. İstemci ayarı."],
+    _category,
+    [0, 100, 100, 0],
+    false
+] call CBA_settings_fnc_init;
+
+[
     "TAC_hit_blinkMinDamage",
     "SLIDER",
     ["Ekran kararması: asgari hasar", "Bundan az hasar veren isabetler ekranı karartmaz (sıyrık). ACE tıbbında hasar birimi yaralanma ağırlığıdır; 0.05-0.15 arası genelde sıyrıkları eler. İstemci ayarı."],

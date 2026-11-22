@@ -2,7 +2,7 @@
     Fonksiyon: TAC_fnc_hitBlink
     Çalışma yeri: İstemci
 
-    Mermi yenince göz kapanması: ekran çok hızlı kararır (0.06 sn), tepe noktasında kısa tutar ve yavaşça
+    Mermi yenince göz kapanması (sesler de kesilir; kararma açılırken fade-in ile geri gelir): ekran çok hızlı kararır (0.06 sn), tepe noktasında kısa tutar ve yavaşça
     açılır. Şiddet (TAC_hit_blinkPower) isabet eden hasarla ölçeklenir (hasar 0.5 ve üzeri = tam şiddet;
     en az %30); süre (TAC_hit_blinkTime x TAC_hit_blinkScale çarpanı) hasarla ölçeklenir (en az %60); tepede tutma süresi de aynı çarpanla uzar. Siyah kontrol display 46'da bir kez
     kurulur ve kalıcıdır. Arka arkaya isabetlerde en kuvvetli etki geçerli kalır; döngü yoktur.
@@ -42,6 +42,18 @@ uiNamespace setVariable ["TAC_hit_blinkToken", _token];
 _ctrl ctrlSetFade (1 - _alpha);
 _ctrl ctrlCommit 0.06;
 
+// Sesler: kararma boyunca kesilir (ACE'nin kulak sistemiyle uyumlu: en dusuk ses ayari gecerli), acilirken fade-in
+if (TAC_hit_blinkMute) then {
+    private _level = (1 - (TAC_hit_blinkMuteLevel / 100)) max 0;
+
+    if (isNil "ace_common_fnc_setHearingCapability") then {
+        0.05 fadeSound _level;
+        0.05 fadeRadio _level;
+    } else {
+        ["tac_hit", _level, true, 0.05] call ace_common_fnc_setHearingCapability;
+    };
+};
+
 [{
     params ["_token", "_time"];
 
@@ -52,5 +64,15 @@ _ctrl ctrlCommit 0.06;
     if (!isNull _c) then {
         _c ctrlSetFade 1;
         _c ctrlCommit _time;
+    };
+
+    // Sesler: kararmayla ayni surede yumusakca geri acilir (fade-in)
+    if (TAC_hit_blinkMute) then {
+        if (isNil "ace_common_fnc_setHearingCapability") then {
+            _time fadeSound 1;
+            _time fadeRadio 1;
+        } else {
+            ["tac_hit", 1, false, _time] call ace_common_fnc_setHearingCapability;
+        };
     };
 }, [_token, _time], 0.06 + (TAC_hit_blinkHold * TAC_hit_blinkScale)] call CBA_fnc_waitAndExecute;
