@@ -1,6 +1,6 @@
 /*
     Fonksiyon: TAC_fnc_hitTest
-    Çalışma yeri: İstemci (debug konsolu, "Yerel çalıştır")
+    Çalışma yeri: İstemci (debug konsolu, "Yerel çalıştır"). Zeus remote control'de KONTROL ETTİĞİN birim (ACE_player) üzerinde çalışır
 
     İsabet etkilerini OLAYLARDAN BAĞIMSIZ elle dener (tek başına test için):
         ["blink"] call TAC_fnc_hitTest   -> ekran kararması (orta şiddet)
@@ -28,52 +28,52 @@ switch (toLower _what) do {
         _out = "kararma tetiklendi";
     };
     case "drop": {
-        private _weapon = currentWeapon player;
+        private _weapon = currentWeapon ACE_player;
 
         if (_weapon isEqualTo "") then {
             _out = "elinde silah yok";
         } else {
-            [player, _weapon] call TAC_fnc_hitDisable;
+            [ACE_player, _weapon] call TAC_fnc_hitDisable;
             _out = format ["%1 hasarli yapildi ve birakildi (ayarlara gore)", _weapon];
         };
     };
     case "supp": {
         // Sentetik "Suppressed" olayi: silah doğrusunu yandan kesen mermi yolu (_off metre yukarı kaydırılabilir; 0 = tam isabet)
-        private _weapon = currentWeapon player;
+        private _weapon = currentWeapon ACE_player;
 
-        if !(_weapon in [primaryWeapon player, handgunWeapon player]) then {
+        if !(_weapon in [primaryWeapon ACE_player, handgunWeapon ACE_player]) then {
             _out = "elinde birincil silah / tabanca yok";
         } else {
-            private _seg = [player, _weapon] call TAC_fnc_hitWeaponSeg;
+            private _seg = [ACE_player, _weapon] call TAC_fnc_hitWeaponSeg;
             private _mid = ((_seg select 0) vectorAdd (_seg select 1)) vectorMultiply 0.5;
-            private _dir = vectorNormalized (player weaponDirection _weapon);
+            private _dir = vectorNormalized (ACE_player weaponDirection _weapon);
             private _right = vectorNormalized (_dir vectorCrossProduct [0, 0, 1]);
             private _start = (_mid vectorAdd [0, 0, _off]) vectorAdd (_dir vectorMultiply 6) vectorAdd (_right vectorMultiply 4);
             private _vel = (vectorNormalized (((_mid vectorAdd [0, 0, _off])) vectorDiff _start)) vectorMultiply 800;
-            private _before = player getVariable ["TAC_hit_next", 0];
+            private _before = ACE_player getVariable ["TAC_hit_next", 0];
 
-            player setVariable ["TAC_hit_next", 0];
-            [player, 0.3, objNull, "B_556x45_Ball", 800, _mid vectorAdd (_vel vectorMultiply -0.002), _vel] call TAC_fnc_hitOnSuppressed;
+            ACE_player setVariable ["TAC_hit_next", 0];
+            [ACE_player, 0.3, objNull, "B_556x45_Ball", 800, _mid vectorAdd (_vel vectorMultiply -0.002), _vel] call TAC_fnc_hitOnSuppressed;
             _out = format ["sentetik Suppressed olayi gonderildi (kaydirma %1 m); sonucu '[TAC isabet]' satirlarindan oku (TAC_wpn_debug acik olmali)", _off];
         };
     };
     case "bullet": {
         // Gercek mermi nesnesi: silah ortasindan gecen mermi yaratilir; oyuncu 2.5 sn hasar almaz (allowDamage false)
-        private _weapon = currentWeapon player;
+        private _weapon = currentWeapon ACE_player;
 
-        if !(_weapon in [primaryWeapon player, handgunWeapon player]) then {
+        if !(_weapon in [primaryWeapon ACE_player, handgunWeapon ACE_player]) then {
             _out = "elinde birincil silah / tabanca yok";
         } else {
-            private _seg = [player, _weapon] call TAC_fnc_hitWeaponSeg;
+            private _seg = [ACE_player, _weapon] call TAC_fnc_hitWeaponSeg;
             private _mid = ((_seg select 0) vectorAdd (_seg select 1)) vectorMultiply 0.5;
-            private _dir = vectorNormalized (player weaponDirection _weapon);
+            private _dir = vectorNormalized (ACE_player weaponDirection _weapon);
             private _right = vectorNormalized (_dir vectorCrossProduct [0, 0, 1]);
             private _target = _mid vectorAdd [0, 0, _off];
             private _start = _target vectorAdd (_dir vectorMultiply 10) vectorAdd (_right vectorMultiply 8);
             private _vel = (vectorNormalized (_target vectorDiff _start)) vectorMultiply 800;
 
-            player allowDamage false;
-            [{player allowDamage true}, [], 2.5] call CBA_fnc_waitAndExecute;
+            ACE_player allowDamage false;
+            [{ACE_player allowDamage true}, [], 2.5] call CBA_fnc_waitAndExecute;
 
             private _proj = createVehicle ["B_556x45_Ball", ASLToAGL _start, [], 0, "CAN_COLLIDE"];
             _proj setPosASL _start;
