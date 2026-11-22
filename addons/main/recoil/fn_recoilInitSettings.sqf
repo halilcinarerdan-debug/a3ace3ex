@@ -72,6 +72,29 @@ private _refresh = {call TAC_fnc_recoilRefresh};
     _refresh
 ] call CBA_settings_fnc_init;
 
+// Guclendirmenin hangi kategorilere uygulanacagi (varsayilan: yalniz 5.56 ve 7.62 ailesi)
+private _boostCats = [
+    ["TAC_recoil_boostC1", "Güçlendirme: Tabanca kalibreli SMG / PDW (kategori 1)", false],
+    ["TAC_recoil_boostC2", "Güçlendirme: Hafif 5.56 / 5.45 (kategori 2)", true],
+    ["TAC_recoil_boostC3", "Güçlendirme: Orta 7.62x39 / 6.5 (kategori 3)", true],
+    ["TAC_recoil_boostC4", "Güçlendirme: Ağır 7.62x51 / 7.62x54R (kategori 4)", true],
+    ["TAC_recoil_boostC5", "Güçlendirme: Aşırı .338 / .50 (kategori 5, yüksek kalibre)", false]
+];
+
+{
+    _x params ["_name", "_title", "_default"];
+
+    [
+        _name,
+        "CHECKBOX",
+        [_title, "Açıksa 'Recoil güçlendirme' çarpanı bu kategorideki silahlara da uygulanır. Kapalıysa bu kategori güçlendirilmez (yalnızca kendi kategori çarpanı geçerli)."],
+        _category,
+        _default,
+        true,
+        _refresh
+    ] call CBA_settings_fnc_init;
+} forEach _boostCats;
+
 [
     "TAC_recoil_skipPistols",
     "CHECKBOX",

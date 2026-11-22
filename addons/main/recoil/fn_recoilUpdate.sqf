@@ -54,8 +54,13 @@ if (TAC_recoil_enabled && {!(_ammo isEqualTo "")}) then {
         _coef = ((_multipliers select (_category - 1)) * TAC_recoil_scale);
         _coef = (_coef min TAC_recoil_maxCoef) max 0.1;
 
-        // Guclendirme: tavandan SONRA carpilir (tavana takilmaz), sert tavanla sinirlanir
-        _coef = ((_coef * TAC_recoil_boost) min TAC_recoil_hardCap) max 0.1;
+        // Guclendirme: tavandan SONRA carpilir (tavana takilmaz), sert tavanla sinirlanir;
+        // yalnizca secili kategorilere (varsayilan 5.56 / 5.45 ve 7.62 aileleri; tabanca kalibreli ve yuksek kalibre haric)
+        private _boostOn = [TAC_recoil_boostC1, TAC_recoil_boostC2, TAC_recoil_boostC3, TAC_recoil_boostC4, TAC_recoil_boostC5] select (_category - 1);
+
+        if (_boostOn) then {
+            _coef = ((_coef * TAC_recoil_boost) min TAC_recoil_hardCap) max 0.1;
+        };
     };
 };
 
