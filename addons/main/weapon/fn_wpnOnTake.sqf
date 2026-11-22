@@ -25,12 +25,22 @@ private _payload = [_container, _unit, "w:" + _key] call TAC_fnc_stashPop;
 private _all = _unit getVariable "TAC_wpn_state";
 private _optAll = _unit getVariable "TAC_opt_state";
 
-if (_payload isEqualTo []) exitWith {
-    if (TAC_wpn_debug) then {systemChat format ["[TAC silah] ALINDI %1 | kayit YOK -> sifirdan basliyor", _item]};
+// Hasar yedek defteri: normal kayit kaybolsa bile hasarli silah hasarli kalir
+private _inherited = !(_payload isEqualTo []) && {((_payload select 0) param [10, false])};
+private _brokenFromReg = [_unit, _container, _item, _inherited] call TAC_fnc_hitBrokenTake;
 
-    if (({(toLower _x) isEqualTo _key} count (weapons _unit)) <= 1) then {
-        if (!isNil "_all") then {_all deleteAt _key};
-        if (!isNil "_optAll") then {_optAll deleteAt _key};
+if (_payload isEqualTo []) exitWith {
+    if (TAC_wpn_debug) then {systemChat format ["[TAC silah] ALINDI %1 | kayit YOK -> sifirdan basliyor%2", _item, ["", " (ama hasar defterinde: hasarli)"] select _brokenFromReg]};
+
+    if (_brokenFromReg) then {
+        // normal kayit yok ama hasar defterde: silah hasarli, bakim varsayilanlariyla
+        private _s = [_unit, _item] call TAC_fnc_wpnGetState;
+        _s set [10, true];
+    } else {
+        if (({(toLower _x) isEqualTo _key} count (weapons _unit)) <= 1) then {
+            if (!isNil "_all") then {_all deleteAt _key};
+            if (!isNil "_optAll") then {_optAll deleteAt _key};
+        };
     };
 };
 
@@ -43,6 +53,9 @@ if (!(_state isEqualTo [])) then {
     };
 
     _all set [_key, _state];
+
+    // Normal kayitta hasar yok ama yedek defterde var: hasarli yap
+    if (_brokenFromReg) then {_state set [10, true]};
 };
 
 if (!(_optState isEqualTo [])) then {

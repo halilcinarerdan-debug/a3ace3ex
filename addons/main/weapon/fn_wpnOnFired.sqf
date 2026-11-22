@@ -19,7 +19,7 @@
     Dönüş: yok
 */
 
-params ["_unit", "_weapon", "", "", "_ammo"];
+params ["_unit", "_weapon", "", "", "_ammo", "", ["_projectile", objNull]];
 
 if (!TAC_wpn_enabled || {!(_ammo isKindOf "BulletBase")}) exitWith {};
 
@@ -29,6 +29,16 @@ if (_cat isEqualTo []) exitWith {};
 _cat params ["_catName", "_dirtMult", "", "_isMG"];
 
 private _state = [_unit, _weapon] call TAC_fnc_wpnGetState;
+
+// GUVENLIK AGI: mermi isabetiyle hasar gormus silah ateslenmemeli (tetik engeli TAC_fnc_wpnBrokenCheck atlandiysa):
+// mermiyi sil, harcanan mermiyi geri ver, atis sayma
+if (TAC_hit_enabled && {TAC_hit_unusable} && {_state param [10, false]}) exitWith {
+    if (!isNull _projectile) then {deleteVehicle _projectile};
+    _unit setAmmo [_weapon, (_unit ammo _weapon) + 1];
+
+    if (TAC_wpn_debug) then {systemChat format ["[TAC isabet] hasarli silahtan atis engellendi (guvenlik agi): %1", _weapon]};
+};
+
 private _env = [_unit] call TAC_fnc_wpnEnvFactor;
 private _accel = if (TAC_wpn_testMode) then {TAC_wpn_testMult} else {1};
 

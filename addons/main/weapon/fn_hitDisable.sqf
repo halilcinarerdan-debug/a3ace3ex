@@ -44,6 +44,17 @@ _holder setPosATL _pos;
 _unit removeWeapon _weapon;
 _holder addWeaponWithAttachmentsCargoGlobal [_item, 1];
 
+// Dayanikli yedek defter (hasar, kap silinse / kayit siniri dolsa da kaybolmasin): TAC_fnc_hitBrokenTake
+if (TAC_hit_unusable) then {
+    private _reg = missionNamespace getVariable ["TAC_hit_brokenList", []];
+
+    _reg pushBack [toLower _weapon, getPosASL _holder, time];
+
+    if (count _reg > 300) then {_reg deleteAt 0};
+
+    missionNamespace setVariable ["TAC_hit_brokenList", _reg, true];
+};
+
 if (TAC_wpn_debug) then {
     systemChat format ["[TAC silah] ISABET: %1 hasar gordu ve elden dustu", _weapon];
 };
