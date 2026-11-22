@@ -16,6 +16,11 @@
     _this call TAC_fnc_hitOnWound;
 }] call CBA_fnc_addEventHandler;
 
+// Silah nesnesine isabet testi: mermi yolu silah dogrusuna cok yakin gecerse
+["TAC_suppressed", {
+    _this call TAC_fnc_hitOnSuppressed;
+}] call CBA_fnc_addEventHandler;
+
 // ACE tibbi yoksa vanilla dinleyici (oyuncu birimi degisince yeniden baglanir)
 ["unit", {
     params ["_newUnit", "_oldUnit"];

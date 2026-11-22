@@ -51,7 +51,8 @@ if (TAC_hit_blink && {_total >= TAC_hit_blinkMinDamage || {_damages isEqualType 
 };
 
 // 2) Silah isabeti
-if (!TAC_hit_enabled || {!_arm} || {!TAC_hit_unusable && {!TAC_hit_drop}}) exitWith {};
+if (!TAC_hit_enabled || {TAC_hit_mode == 1} || {!_arm} || {!TAC_hit_unusable && {!TAC_hit_drop}}) exitWith {};
+if (time < (_unit getVariable ["TAC_hit_next", 0])) exitWith {};
 
 private _weapon = currentWeapon _unit;
 
@@ -59,4 +60,5 @@ if (_weapon isEqualTo "" || {!(_weapon in [primaryWeapon _unit, handgunWeapon _u
 if (([_weapon] call TAC_fnc_wpnCategory) isEqualTo []) exitWith {};
 if ((random 100) >= TAC_hit_chance) exitWith {};
 
+_unit setVariable ["TAC_hit_next", time + 3];
 [_unit, _weapon] call TAC_fnc_hitDisable;

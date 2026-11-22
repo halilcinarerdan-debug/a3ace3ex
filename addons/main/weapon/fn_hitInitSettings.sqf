@@ -20,6 +20,24 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
 ] call CBA_settings_fnc_init;
 
 [
+    "TAC_hit_mode",
+    "LIST",
+    ["Silah isabeti: algılama yöntemi", "Kol / el isabeti: kola isabet eden mermi silahı vurmuş sayılır. Silah nesnesi: mermi yolu elindeki silahın hacmine (namlu - dipçik doğrusu) çok yakın geçerse silah vurulmuş sayılır (silah mermiyi durdursa bile tetiklenir). İkisi birden."],
+    _category,
+    [[0, 1, 2], ["Kol / el isabeti", "Silah nesnesine isabet (geometri)", "İkisi birden"], 2],
+    true
+] call CBA_settings_fnc_init;
+
+[
+    "TAC_hit_weaponRadius",
+    "SLIDER",
+    ["Silah isabeti: silah nesnesi kalınlığı (cm)", "Silah nesnesine isabet yönteminde mermi yolunun silahın doğrusuna en fazla bu kadar yaklaşması isabet sayılır. Büyütmek silahı vurmayı kolaylaştırır."],
+    _category,
+    [2, 30, 8, 0],
+    true
+] call CBA_settings_fnc_init;
+
+[
     "TAC_hit_zone",
     "LIST",
     ["Silah isabeti: hangi bölge", "Silahın vurulmasına hangi vücut bölgelerine isabet yol açar: yalnızca kollar / eller; kollar + gövde (silah gövdede taşınıyor gibi); tüm vücut."],

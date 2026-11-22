@@ -10,6 +10,7 @@ class weapon
     class hitInitSettings {};
     class hitPostInit {};
     class hitOnWound {};
+    class hitOnSuppressed {};
     class hitDisable {};
     class hitBlink {};
     class wpnBrokenCheck {};
