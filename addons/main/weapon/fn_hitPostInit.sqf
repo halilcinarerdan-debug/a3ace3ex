@@ -59,8 +59,11 @@ addMissionEventHandler ["ProjectileCreated", {
 
         // Yalnizca genel ("") hasar cagrisi, mermi ise: kol secimi ve toplam hasar tek olaya cevrilir
         private _part = switch (true) do {
-            case (_selection in ["hand_l", "arm_l"]): {"leftarm"};
-            case (_selection in ["hand_r", "arm_r"]): {"rightarm"};
+            case (_selection isEqualTo "hand_l"): {"hand_l"};
+            case (_selection isEqualTo "hand_r"): {"hand_r"};
+            case (_selection isEqualTo "hands"): {"hands"};
+            case (_selection isEqualTo "arm_l"): {"leftarm"};
+            case (_selection isEqualTo "arm_r"): {"rightarm"};
             case (_selection isEqualTo ""): {"body"};
             default {""};
         };

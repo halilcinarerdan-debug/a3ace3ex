@@ -706,7 +706,7 @@ GM (`gm_`) ve CSLA taramaları bekleniyor.
 
 CBA kategorisi **TAC - Gerçekçilik Paketi > İsabet etkileri**. İki bağımsız özellik, hepsi CBA'dan ayarlanır:
 
-**1) Silah isabeti** (`TAC_hit_enabled`, açık): Arma'da silah modeline isabet algılanamaz; bunun yakın karşılığı **kola / ele isabet**tir (`TAC_hit_zone`: yalnızca kol-el | kol + gövde | tüm vücut). Elde birincil silah ya da tabanca varken isabet eden mermi `TAC_hit_weaponChance` (%35) ihtimalle silahı vurur:
+**1) Silah isabeti** (`TAC_hit_enabled`, açık): Arma'da silah modeline isabet algılanamaz; bunun yakın karşılığı **kola / ele isabet**tir (`TAC_hit_zone`: kol + el | kol + el + gövde | tüm vücut | **yalnızca el**, kol hariç: vanilla hasar modelinde "eller" bölgesi; ACE tıbbında el ayrı bölge değildir, kol sayılır). Elde birincil silah ya da tabanca varken isabet eden mermi `TAC_hit_weaponChance` (%35) ihtimalle silahı vurur:
 - `TAC_hit_unusable` (açık): silah hasarlanır; tetik yalnızca tık verir. Hasar silahın bakım durumunda (indeks 10) tutulur: yere düşünce, kutuya girince, başkası alınca da hasarlı kalır. Onarım: silahçı "Silah Bakımı > Parça değiştir" (Silah Yedek Parça Seti gerekir). "Silahı incele" kartı "HASARLI" yazar.
 - `TAC_hit_drop` (açık): silah nişangah, susturucu ve şarjörüyle yere düşer (0.37.3: `DropWeapon` eylemi bazı durumlarda sessizce çalışmadığı için silah doğrudan çıkarılıp yerdeki kaba eklenir). İkisi de bağımsız kapatılabilir.
 - Yalnızca mermi (shotBullet) sayılır; patlama / düşme etkilemez. ACE tıbbı varsa `ace_medical_woundReceived` olayı, yoksa vanilla `HandleDamage` kullanılır (hasarı değiştirmez).

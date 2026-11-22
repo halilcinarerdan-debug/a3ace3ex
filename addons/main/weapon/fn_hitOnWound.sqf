@@ -35,10 +35,14 @@ private _arm = false;
 
 // Hangi bolgeler silahi vurur (CBA "Silah isabeti: hangi bolge"): 0 kol / el, 1 kol + govde, 2 hepsi
 private _zones = [
-    ["leftarm", "rightarm"],
-    ["leftarm", "rightarm", "body", "torso"],
-    ["leftarm", "rightarm", "body", "torso", "head", "leftleg", "rightleg"]
-] select (TAC_hit_zone max 0 min 2);
+    ["leftarm", "rightarm", "hands", "hand_l", "hand_r"],
+    ["leftarm", "rightarm", "hands", "hand_l", "hand_r", "body", "torso"],
+    ["leftarm", "rightarm", "hands", "hand_l", "hand_r", "body", "torso", "head", "leftleg", "rightleg"],
+    ["hands", "hand_l", "hand_r"]
+] select (TAC_hit_zone max 0 min 3);
+
+// ACE tibbinda el ayri bolge degil: "yalnizca el" kol sayilir
+if (TAC_hit_zone == 3 && {!isNil "ace_medical_fnc_addDamageToUnit"}) then {_zones = _zones + ["leftarm", "rightarm"]};
 
 if (_damages isEqualType "") then {
     _arm = (toLower _damages) in _zones;
