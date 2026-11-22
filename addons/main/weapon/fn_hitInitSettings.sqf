@@ -40,7 +40,7 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
 [
     "TAC_hit_zone",
     "LIST",
-    ["Silah isabeti: hangi bölge", ""Kol / el isabeti" yöntemi için: silahın vurulmasına hangi vücut bölgelerine isabet yol açar: kol + el; kol + el + gövde; tüm vücut; yalnızca el (kol hariç: vanilla hasar modelinde "eller" bölgesi; ACE tıbbında el ayrı bölge olmadığı için kol sayılır). Silah nesnesi (geometri) yöntemini etkilemez."],
+    ["Silah isabeti: hangi bölge", "Kol / el isabeti yöntemi için: silahın vurulmasına hangi vücut bölgelerine isabet yol açar: kol + el; kol + el + gövde; tüm vücut; yalnızca el (kol hariç: vanilla hasar modelinde eller bölgesi; ACE tıbbında el ayrı bölge olmadığı için kol sayılır). Silah nesnesi (geometri) yöntemini etkilemez."],
     _category,
     [[0, 1, 2, 3], ["Kol + el", "Kol + el + gövde", "Tüm vücut", "Yalnızca el (kol hariç)"], 0],
     true
