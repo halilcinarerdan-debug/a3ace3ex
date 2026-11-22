@@ -39,7 +39,7 @@ switch (toLower _what) do {
             !isNil "TAC_fnc_hitOnWound", !isNil "TAC_fnc_hitOnSuppressed", !isNil "TAC_fnc_hitBlink", !isNil "TAC_fnc_hitDisable",
             missionNamespace getVariable ["TAC_hit_enabled", "YOK"], missionNamespace getVariable ["TAC_hit_mode", "YOK"], missionNamespace getVariable ["TAC_hit_zone", "YOK"],
             missionNamespace getVariable ["TAC_hit_chance", "YOK"], missionNamespace getVariable ["TAC_hit_unusable", "YOK"], missionNamespace getVariable ["TAC_hit_drop", "YOK"],
-            missionNamespace getVariable ["TAC_hit_blink", "YOK"], missionNamespace getVariable ["TAC_hit_blinkPower", "YOK"], missionNamespace getVariable ["TAC_hit_blinkTime", "YOK"],
+            missionNamespace getVariable ["TAC_hit_blink", "YOK"], missionNamespace getVariable ["TAC_hit_blinkStrength", "YOK"], missionNamespace getVariable ["TAC_hit_blinkTime", "YOK"],
             ["ace_medical"] call ace_common_fnc_isModLoaded
         ];
     };

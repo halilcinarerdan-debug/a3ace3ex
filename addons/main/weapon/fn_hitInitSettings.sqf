@@ -83,7 +83,7 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
 ] call CBA_settings_fnc_init;
 
 [
-    "TAC_hit_blinkPower",
+    "TAC_hit_blinkStrength",
     "SLIDER",
     ["Ekran kararması: şiddet (%)", "Tam şiddette ekranın ne kadarı kararır (%100 = tam siyah). Gerçek kararma isabet eden hasara göre ölçeklenir. İstemci ayarı."],
     _category,
@@ -146,7 +146,7 @@ private _category = ["TAC - Gerçekçilik Paketi", "İsabet etkileri"];
 ] call CBA_settings_fnc_init;
 
 [
-    "TAC_hit_blinkMinDamage",
+    "TAC_hit_blinkMinHit",
     "SLIDER",
     ["Ekran kararması: asgari hasar", "Bundan az hasar veren isabetler ekranı karartmaz. 0 (varsayılan) = vücudun NERESİNE olursa olsun her mermi isabeti karartır. ACE tıbbında hasar birimi yaralanma ağırlığıdır; 0.05-0.15 arası sıyrıkları eler. İstemci ayarı."],
     _category,

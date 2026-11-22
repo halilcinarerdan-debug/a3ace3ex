@@ -53,7 +53,7 @@ if (_damages isEqualType "") then {
 };
 
 // 1) Goz kapanmasi
-if (TAC_hit_blink && {_total >= TAC_hit_blinkMinDamage || {_damages isEqualType ""}}) then {
+if (TAC_hit_blink && {_total >= TAC_hit_blinkMinHit || {_damages isEqualType ""}}) then {
     [_total] call TAC_fnc_hitBlink;
 };
 
