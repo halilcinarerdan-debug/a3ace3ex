@@ -7,7 +7,7 @@
       2) herkese yayınlanan genel kayıt listesinde (TAC_stashGlobal: [anahtar, yük, kimlik, konum, zaman]) -
          yedek yol: motor, envanterden atılan eşya için bazen farklı / yeni bir yer-kabı yaratır, kap değişkeni
          kaybolabilir; aynı sınıftan en yakın (8 m) en yeni kayıt o zaman bulunur.
-    Liste en çok 60 kayıt tutar (en eskisi düşer). Kayıt kimliği ikisinde de aynıdır: biri alınınca diğeri silinir.
+    Liste en çok 200 kayıt tutar (en eskisi düşer). Kayıt kimliği ikisinde de aynıdır: biri alınınca diğeri silinir.
 
     Parametreler:
         0: OBJECT - kap (yer-kabı, sandık, araç, ceset)
@@ -33,6 +33,6 @@ private _global = missionNamespace getVariable ["TAC_stashGlobal", []];
 
 _global pushBack [_key, +_payload, _id, _pos, time];
 
-if (count _global > 60) then {_global deleteAt 0};
+if (count _global > 200) then {_global deleteAt 0};
 
 missionNamespace setVariable ["TAC_stashGlobal", _global, true];

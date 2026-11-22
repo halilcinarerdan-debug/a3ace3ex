@@ -17,6 +17,8 @@ class rocket
     class rktOnReloaded {};
     class rktOnTake {};
     class rktOnPut {};
+    class rktRegPush {};
+    class rktRegTake {};
 
     class rktStep {};
     class rktStepApply {};

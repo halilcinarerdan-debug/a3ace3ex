@@ -33,6 +33,7 @@ if (isNil "_state") exitWith {
 [_state] call TAC_fnc_rktPowerOff;
 
 [_container, "r:" + _key, _state, getPosATL _unit] call TAC_fnc_stashPush;
+["r:" + _key, _state, getPosASL _unit] call TAC_fnc_rktRegPush;   // uzun oturuma dayanikli yedek defter
 
 if (TAC_rkt_debug) then {
     systemChat format ["[TAC roket] BIRAKILDI %1 | kaydedildi: atis %2 | zar atildi %3 | ATESLENMEME %4 | hazir %5 | kap %6", _item, _state select 0, _state select 1, _state select 2, _state select 5, typeOf _container];

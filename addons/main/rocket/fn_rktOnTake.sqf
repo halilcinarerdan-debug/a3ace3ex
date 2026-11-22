@@ -26,6 +26,10 @@ if (isNil "_all") then {
 
 private _state = [_container, _unit, "r:" + _key] call TAC_fnc_stashPop;
 
+// Uzun oturum: kap silinmis / yedek liste dolmus olsa bile hazirlik durumu dayanikli defterden gelir
+private _regState = [_unit, _container, "r:" + _key, !(_state isEqualTo [])] call TAC_fnc_rktRegTake;
+if (_state isEqualTo [] && {!(_regState isEqualTo [])}) then {_state = _regState};
+
 if (TAC_rkt_debug) then {
     systemChat format [
         "[TAC roket] ALINDI %1 | kap %2 | kayit %3%4",
