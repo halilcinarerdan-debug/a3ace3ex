@@ -94,14 +94,13 @@ switch (toLower _what) do {
         };
     };
     default {
-        _out = format [
-            "surum islevleri: hitOnWound %1 | hitOnSuppressed %2 | hitBlink %3 | hitDisable %4 || ayar: etkin %5 | yontem %6 | bolge %7 | ihtimal %8 | kullanilamaz %9 | dussun %10 | kararma %11 (siddet %12, sure %13) || ACE tibbi olayi: %14",
-            !isNil "TAC_fnc_hitOnWound", !isNil "TAC_fnc_hitOnSuppressed", !isNil "TAC_fnc_hitBlink", !isNil "TAC_fnc_hitDisable",
-            missionNamespace getVariable ["TAC_hit_enabled", "YOK"], missionNamespace getVariable ["TAC_hit_mode", "YOK"], missionNamespace getVariable ["TAC_hit_zone", "YOK"],
-            missionNamespace getVariable ["TAC_hit_chance", "YOK"], missionNamespace getVariable ["TAC_hit_unusable", "YOK"], missionNamespace getVariable ["TAC_hit_drop", "YOK"],
-            missionNamespace getVariable ["TAC_hit_blink", "YOK"], missionNamespace getVariable ["TAC_hit_blinkStrength", "YOK"], missionNamespace getVariable ["TAC_hit_blinkTime", "YOK"],
-            ["ace_medical"] call ace_common_fnc_isModLoaded
-        ];
+        // Kucuk parcalar halinde (tek buyuk format dizisi "pre stack size violation" verebiliyordu)
+        private _parts = [];
+        _parts pushBack format ["islevler: hitOnWound %1 | hitOnSuppressed %2 | hitBlink %3 | hitDisable %4 | hitProjectile %5", !isNil "TAC_fnc_hitOnWound", !isNil "TAC_fnc_hitOnSuppressed", !isNil "TAC_fnc_hitBlink", !isNil "TAC_fnc_hitDisable", !isNil "TAC_fnc_hitProjectile"];
+        _parts pushBack format ["ayar: etkin %1 | yontem %2 | bolge %3 | ihtimal %4 | kullanilamaz %5 | dussun %6", missionNamespace getVariable ["TAC_hit_enabled", "YOK"], missionNamespace getVariable ["TAC_hit_mode", "YOK"], missionNamespace getVariable ["TAC_hit_zone", "YOK"], missionNamespace getVariable ["TAC_hit_chance", "YOK"], missionNamespace getVariable ["TAC_hit_unusable", "YOK"], missionNamespace getVariable ["TAC_hit_drop", "YOK"]];
+        _parts pushBack format ["kararma: %1 | siddet %2 | sure %3 | esik %4 cm", missionNamespace getVariable ["TAC_hit_blink", "YOK"], missionNamespace getVariable ["TAC_hit_blinkStrength", "YOK"], missionNamespace getVariable ["TAC_hit_blinkTime", "YOK"], missionNamespace getVariable ["TAC_hit_weaponRadius", "YOK"]];
+        _parts pushBack format ["ACE tibbi: modu %1 | ace_medical_fnc_addDamageToUnit %2 (YOKSA vanilla HandleDamage dinleyicisi kullanilir)", ["ace_medical"] call ace_common_fnc_isModLoaded, !isNil "ace_medical_fnc_addDamageToUnit"];
+        _out = _parts joinString " || ";
     };
 };
 
