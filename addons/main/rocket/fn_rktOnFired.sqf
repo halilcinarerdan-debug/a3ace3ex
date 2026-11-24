@@ -34,6 +34,9 @@ if !(_cancelReason isEqualTo "") exitWith {
     if (!isNull _projectile) then {deleteVehicle _projectile};
     _unit setAmmo [_weapon, (_unit ammo _weapon) + 1];
 
+    // Tetik engeli atlandiysa gizli eylem kaybolmus olabilir: dogrula, kayipsa yeniden kur
+    [_unit] call TAC_fnc_actionEnsure;
+
     if (TAC_rkt_debug) then {systemChat format ["[TAC roket] atis GERI ALINDI (guvenlik agi) | neden: %1", _cancelReason]};
 
     // misfire ise bekleme / sayac isleri (tik + bekleme) tetik yolundaki gibi islesin

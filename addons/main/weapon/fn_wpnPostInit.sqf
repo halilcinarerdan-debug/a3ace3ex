@@ -7,6 +7,7 @@
       2. CBA yerel olayı "ace_weaponJammed" (ACE'nin ısı arızası dahil her arıza): son arıza türü ve
          zamanı kartta görünsün diye kaydedilir.
       3. ACE self-menü "Silah Bakımı": İncele | Temizle | Yağla | Arızayı gider (ayrıntılı) | Parça değiştir.
+      4. Tetik engeli doğrulaması (silah / yükleme / araç değişiminde TAC_fnc_actionEnsure).
     Sürekli döngü yok.
 
     Parametreler: yok
@@ -20,6 +21,12 @@ if (isNil "TAC_wpn_mgSet") then {[TAC_wpn_mgTable] call TAC_fnc_wpnParseMgTable}
     params ["_newUnit", "_oldUnit"];
     [_newUnit, _oldUnit] call TAC_fnc_wpnAttach;
 }, true] call CBA_fnc_addPlayerEventHandler;
+
+// Tetik engeli (ACE DefaultAction gizli eylemi) uzun oturumda kaybolabiliyordu: silah / yukleme / arac degisince dogrula,
+// kayipsa yeniden kur (TAC_fnc_actionEnsure; donguden degil olaydan)
+{
+    [_x, {[_this select 0] call TAC_fnc_actionEnsure}] call CBA_fnc_addPlayerEventHandler;
+} forEach ["weapon", "loadout", "vehicle"];
 
 // ACE: [unit, weapon, jamType]
 ["ace_weaponJammed", {

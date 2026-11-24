@@ -36,6 +36,9 @@ if (TAC_hit_enabled && {TAC_hit_unusable} && {_state param [10, false]}) exitWit
     if (!isNull _projectile) then {deleteVehicle _projectile};
     _unit setAmmo [_weapon, (_unit ammo _weapon) + 1];
 
+    // Tetik engeli atlandiysa gizli eylem kaybolmus olabilir: dogrula, kayipsa yeniden kur
+    [_unit] call TAC_fnc_actionEnsure;
+
     if (TAC_wpn_debug) then {systemChat format ["[TAC isabet] hasarli silahtan atis engellendi (guvenlik agi): %1", _weapon]};
 };
 

@@ -4,6 +4,7 @@
 
     İsabet etkilerini OLAYLARDAN BAĞIMSIZ elle dener (tek başına test için):
         ["blink"] call TAC_fnc_hitTest   -> ölüm / yere düşme ani kararmasını dener (4 sn sonra söner)
+        ["actions"] call TAC_fnc_hitTest -> tetik engeli (ACE gizli eylem + silah / roket dinleyicileri) yerinde mi; kayipsa yeniden kurar
         ["drop"] call TAC_fnc_hitTest    -> elindeki silahı hasarlı yap ve düşür (ihtimal zarı atlanır)
         ["version"] call TAC_fnc_hitTest -> yüklü TAC PBO sürümleri (tac_main + uyumluluk PBO'ları)
         ["info"] call TAC_fnc_hitTest    -> sürüm + ayar değerleri ve dinleyicilerin kurulu olup olmadığı
@@ -28,6 +29,23 @@ switch (toLower _what) do {
         ["incap"] call TAC_fnc_dthStart;
         [{[3] call TAC_fnc_dthEnd}, [], 4] call CBA_fnc_waitAndExecute;
         _out = "ani kararma tetiklendi (yere dusme), 4 sn sonra soner";
+    };
+    case "actions": {
+        private _u = ACE_player;
+        private _v = _u getVariable ["ACE_Action_DefaultAction", []];
+        private _engine = if (_v isEqualType [] && {count _v > 0}) then {_v select 0} else {-1};
+        private _ids = if (_v isEqualType [] && {count _v > 1} && {(_v select 1) isEqualType []} && {count (_v select 1) > 1}) then {(_v select 1) select 1} else {[]};
+        private _w = _u getVariable ["TAC_wpn_actionId", -1];
+        private _r = _u getVariable ["TAC_rkt_actionId", -1];
+
+        // Kucuk parcalar halinde (tek buyuk format dizisi "pre stack size violation" verebiliyordu)
+        private _parts = [];
+        _parts pushBack format ["gizli eylem: kimlik %1, motorda %2", _engine, _engine in (actionIDs _u)];
+        _parts pushBack format ["silah dinleyicisi %1 listede %2", _w, _w in _ids];
+        _parts pushBack format ["roket dinleyicisi %1 listede %2", _r, _r in _ids];
+        _parts pushBack format ["liste %1", _ids];
+        _parts pushBack format ["actionEnsure (true = yerindeydi, false = yeniden kuruldu): %1", [_u] call TAC_fnc_actionEnsure];
+        _out = _parts joinString " || ";
     };
     case "drop": {
         private _weapon = currentWeapon ACE_player;

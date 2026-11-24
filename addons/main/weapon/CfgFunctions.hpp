@@ -5,6 +5,8 @@ class weapon
     class wpnInitSettings {};
     class wpnPostInit {};
     class wpnAttach {};
+    class actionRegister {};
+    class actionEnsure {};
 
     // Isabet etkileri
     class hitInitSettings {};
